@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@200;400;600&display=swap');
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: 'Fira Sans Condensed', sans-serif;
+}
+
+body, html {
+  height: 100%
+}
+
+.columns {
+  height: 100%;
+}
+
+.b-sidebar{
+  height: 100%;
+}
