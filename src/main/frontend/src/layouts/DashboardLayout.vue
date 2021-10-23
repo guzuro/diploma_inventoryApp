@@ -18,7 +18,7 @@
             <img style="height: 65px; width: 65px"
                  src="../assets/images/logo-icon.svg"
             />
-            <p class="has-text-weight-bold is-size-5">
+            <p class="sidebar-title has-text-weight-bold is-size-5">
               Управление <br>
               продажами
             </p>
@@ -35,7 +35,7 @@
               <b-menu-item active expanded icon="database" label="Каталог">
                 <b-menu-item icon="cart" label="Товары"
                              tag="router-link"
-                             :to="{name: 'Items'}"/>
+                             :to="{name: 'Products'}"/>
                 <b-menu-item icon="format-list-bulleted-square"
                              label="Категории"
                              tag="router-link"
@@ -75,6 +75,8 @@ export default class DashboardLayout extends Vue {
 </script>
 
 <style lang="scss">
+@import "../assets/styles/bulma/sidebar.scss";
+
 .dashboard-layout {
   height: 100%;
 
@@ -85,97 +87,8 @@ export default class DashboardLayout extends Vue {
   color: #363636;
 }
 
-.sidebar-page {
-  display: flex;
-  flex-direction: column;
+.content {
   width: 100%;
-  min-height: 100%;
-  height: 100%;
-  // min-height: 100vh;
-  .sidebar-layout {
-    display: flex;
-    flex-direction: row;
-    min-height: 100%;
-    // min-height: 100vh;
-  }
+  margin: 10px;
 }
-
-@media screen and (max-width: 768px) {
-  .b-sidebar {
-    .sidebar-content {
-      &.is-mini-mobile {
-        &:not(.is-mini-expand),
-        &.is-mini-expand:not(:hover):not(.is-mini-delayed) {
-          .menu-list {
-            li {
-              a {
-                span:nth-child(2) {
-                  display: none;
-                }
-              }
-
-              ul {
-                padding-left: 0;
-
-                li {
-                  a {
-                    display: inline-block;
-                  }
-                }
-              }
-            }
-          }
-
-          .menu-label:not(:last-child) {
-            margin-bottom: 0;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .b-sidebar {
-    .sidebar-content {
-      &.is-mini {
-        &:not(.is-mini-expand),
-        &.is-mini-expand:not(:hover):not(.is-mini-delayed) {
-          .menu-list {
-            li {
-              a {
-                span:nth-child(2) {
-                  display: none;
-                }
-              }
-
-              ul {
-                padding-left: 0;
-
-                li {
-                  a {
-                    display: inline-block;
-                  }
-                }
-              }
-            }
-          }
-
-          .menu-label:not(:last-child) {
-            margin-bottom: 0;
-          }
-        }
-      }
-    }
-  }
-}
-
-.is-mini-expand {
-  .menu-list a {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 </style>

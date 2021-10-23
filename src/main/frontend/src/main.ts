@@ -1,6 +1,8 @@
 import Buefy from 'buefy';
 import VueApexCharts from 'vue-apexcharts';
 import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 import App from './App.vue';
 import router from './router/router';
 import store from './store';
@@ -9,6 +11,7 @@ import './assets/styles.scss';
 
 Vue.use(Buefy);
 Vue.use(VueApexCharts);
+Vue.use(VueAxios, axios);
 
 Vue.config.productionTip = false;
 

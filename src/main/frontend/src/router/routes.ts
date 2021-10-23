@@ -21,9 +21,14 @@ const routes: Array<RouteConfig> = [
         name: 'Categories',
       },
       {
-        component: () => import('../views/items.vue'),
-        path: 'items',
-        name: 'Items',
+        component: () => import('../views/product-list.vue'),
+        path: 'products',
+        name: 'Products',
+      },
+      {
+        component: () => import('../views/product.vue'),
+        path: 'products/:actionType',
+        name: 'Product',
       },
     ],
   },
