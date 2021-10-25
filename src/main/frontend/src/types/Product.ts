@@ -1,12 +1,13 @@
 export type Product = {
-  code?: string,
+  code?: number,
   category:string,
   name: string,
   description: string,
   price: number,
   price_old?: number,
+  currency: string,
   quantity: number,
   unit: string,
-  images: FileList | [],
+  images: any | [],
   imagesRemoved?: FileList | [],
 }
