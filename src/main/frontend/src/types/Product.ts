@@ -9,5 +9,4 @@ export type Product = {
   quantity: number,
   unit: string,
   images: any | [],
-  imagesRemoved?: FileList | [],
-}
+  }

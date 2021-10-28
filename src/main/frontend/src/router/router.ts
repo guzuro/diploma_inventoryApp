@@ -5,6 +5,7 @@ import routes from '@/router/routes';
 Vue.use(VueRouter);
 
 const router = new VueRouter({
+  linkExactActiveClass: 'is-active',
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
@@ -15,6 +16,7 @@ router.afterEach((to, from) => {
 
 router.beforeEach((to, from, next) => {
   next();
+  // TODO
   // const routeMeta = to.meta;
   // if (to.name !== 'Login' && to.name !== 'Main') {
   //   if (routeMeta && routeMeta.authRole && store.getters['userModule/isAuthenticated']

@@ -32,8 +32,8 @@
                              :to="{name:'Dashboard'}"></b-menu-item>
               </b-menu-list>
 
-              <b-menu-item active expanded icon="database" label="Каталог">
-                <b-menu-item icon="cart" label="Товары"
+              <b-menu-item icon="database" label="Каталог">
+                <b-menu-item icon="cart" label="Номенклатура"
                              tag="router-link"
                              :to="{name: 'Products'}"/>
                 <b-menu-item icon="format-list-bulleted-square"
