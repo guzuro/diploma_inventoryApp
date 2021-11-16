@@ -1,8 +1,11 @@
 package com.guzuro;
 
+import io.vertx.core.Vertx;
+
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new MainVerticle());
     }
 }
