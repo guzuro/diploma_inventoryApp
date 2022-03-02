@@ -2,10 +2,12 @@ package com.guzuro.handlers;
 
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ProductsHandler {
 
     public static void getProducts(RoutingContext context) {
-        System.out.println(context);
+
     }
 
     public static void addProduct(RoutingContext context) {

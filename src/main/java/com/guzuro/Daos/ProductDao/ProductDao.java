@@ -1,4 +1,4 @@
-package com.guzuro.ProductDao;
+package com.guzuro.Daos.ProductDao;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;

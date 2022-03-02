@@ -1,13 +1,8 @@
-package com.guzuro.ProductDao;
+package com.guzuro.Daos.ProductDao;
 
-import com.guzuro.DaoFactory.PostgresDAOFactory;
-import com.guzuro.ProductDao.Product;
+import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlClient;
-import io.vertx.sqlclient.Tuple;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
