@@ -5,11 +5,14 @@ import com.guzuro.Routes.ProductRoutes;
 import com.guzuro.Routes.UserRoutes;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.http.CookieSameSite;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -20,33 +23,38 @@ public class MainVerticle extends AbstractVerticle {
 
 
         router.route()
-                .handler(
-                        CorsHandler.create()
-                                .allowedMethod(HttpMethod.GET)
-                                .allowedMethod(HttpMethod.POST)
-                                .allowedMethod(HttpMethod.PUT)
-                                .allowedMethod(HttpMethod.OPTIONS)
-                                .allowCredentials(true)
-                                .allowedHeader("Access-Control-Allow-Headers")
-                                .allowedHeader("Access-Control-Allow-Method")
-                                .allowedHeader("Access-Control-Allow-Origin")
-                                .allowedHeader("Access-Control-Allow-Credentials")
-                                .allowedHeader("Content-Type"))
+//                .handler(
+//                        CorsHandler.create()
+//                                .allowedMethod(HttpMethod.GET)
+//                                .allowedMethod(HttpMethod.POST)
+//                                .allowedMethod(HttpMethod.PUT)
+//                                .allowedMethod(HttpMethod.OPTIONS)
+//                                .allowCredentials(true)
+//                                .allowedHeader("Access-Control-Allow-Headers")
+//                                .allowedHeader("Access-Control-Allow-Method")
+////                                .allowedHeader("Access-Control-Allow-Origin")
+//                                .allowedHeader("Access-Control-Allow-Credentials")
+//                                .allowedHeader("Content-Type"))
                 .handler(
                         BodyHandler
                                 .create()
                                 .setMergeFormAttributes(true)
                                 .setUploadsDirectory("webroot")
-                );
+                ).handler(
+                SessionHandler.
+                        create(LocalSessionStore.create(vertx))
+                        .setCookieSameSite(CookieSameSite.NONE)
+                        .setCookieHttpOnlyFlag(true)
+                        .setCookieless(false)
+                        .setCookieSecureFlag(true));
 
 
-        router.route("/api");
-
-        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
-        router.mountSubRouter("/user", UserRoutes.setRoutes(vertx));
-        router.mountSubRouter("/auth", AuthRoutes.setRoutes(vertx));
-
-
+//        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
+//        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
+//
+        router.mountSubRouter("/api/auth", new AuthRoutes(vertx).setRoutes(vertx));
+//
+//
         router.get("/").handler(routingContext -> {
             routingContext.response()
                     .putHeader("content-type", "text/html")

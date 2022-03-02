@@ -9,6 +9,4 @@ public interface AuthDao {
     CompletableFuture<User> register(User user);
 
     CompletableFuture<User> login(LoginData data);
-
-    CompletableFuture<Boolean> isAuth();
 }
