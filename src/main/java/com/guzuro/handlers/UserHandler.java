@@ -1,25 +1,37 @@
 package com.guzuro.handlers;
 
+import com.guzuro.Daos.AuthDao.AuthDao;
+import com.guzuro.Daos.AuthDao.PostgresAuthDaoImpl;
+import com.guzuro.Daos.UserDao.PostgresUserDaoImpl;
+import com.guzuro.Daos.UserDao.UserDao;
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
 public class UserHandler {
-    public static void getUserInfo(RoutingContext context) {
+
+    UserDao dao;
+
+    public UserHandler(Vertx vertx) {
+        this.dao = new PostgresUserDaoImpl(vertx);
+    }
+
+    public void getUserInfo(RoutingContext context) {
         System.out.println(context);
     }
 
-    public static void addUser(RoutingContext context) {
+    public void addUser(RoutingContext context) {
         System.out.println(context);
     }
 
-    public static void changeUserRole(RoutingContext context) {
+    public void changeUserRole(RoutingContext context) {
         System.out.println(context);
     }
 
-    public static void updateUser(RoutingContext context) {
+    public void updateUser(RoutingContext context) {
         System.out.println(context);
     }
 
-    public static void deleteUser(RoutingContext context) {
+    public void deleteUser(RoutingContext context) {
         System.out.println(context);
     }
 }
