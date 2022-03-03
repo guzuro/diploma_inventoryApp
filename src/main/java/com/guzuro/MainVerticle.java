@@ -23,18 +23,19 @@ public class MainVerticle extends AbstractVerticle {
 
 
         router.route()
-//                .handler(
-//                        CorsHandler.create()
+                .handler(
+                        CorsHandler.create()
 //                                .allowedMethod(HttpMethod.GET)
 //                                .allowedMethod(HttpMethod.POST)
 //                                .allowedMethod(HttpMethod.PUT)
 //                                .allowedMethod(HttpMethod.OPTIONS)
-//                                .allowCredentials(true)
+                                .allowCredentials(true)
 //                                .allowedHeader("Access-Control-Allow-Headers")
 //                                .allowedHeader("Access-Control-Allow-Method")
 ////                                .allowedHeader("Access-Control-Allow-Origin")
 //                                .allowedHeader("Access-Control-Allow-Credentials")
-//                                .allowedHeader("Content-Type"))
+//                                .allowedHeader("Content-Type")
+                )
                 .handler(
                         BodyHandler
                                 .create()
@@ -48,11 +49,11 @@ public class MainVerticle extends AbstractVerticle {
                         .setCookieless(false)
                         .setCookieSecureFlag(true));
 
-
+        router.route("/api");
 //        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
 //        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
 //
-        router.mountSubRouter("/api/auth", new AuthRoutes(vertx).setRoutes(vertx));
+        router.mountSubRouter("/auth", new AuthRoutes(vertx).setRoutes(vertx));
 //
 //
         router.get("/").handler(routingContext -> {

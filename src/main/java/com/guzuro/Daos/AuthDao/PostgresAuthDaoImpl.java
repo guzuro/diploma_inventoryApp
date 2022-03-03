@@ -23,10 +23,10 @@ public class PostgresAuthDaoImpl implements AuthDao {
                         "VALUES ($1, $2, $3, $4, $5, $6, $7) " +
                         "RETURNING id, email, first_name, last_name, phone, company, role")
                 .execute(Tuple.of(
-                        user.getFirst_name(),
-                        user.getLast_name(),
                         user.getEmail(),
                         user.getPassword(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
                         user.getPhone(),
                         user.getCompany(),
                         user.getRole()
@@ -45,7 +45,7 @@ public class PostgresAuthDaoImpl implements AuthDao {
     public CompletableFuture<User> login(LoginData data) {
         CompletableFuture<User> future = new CompletableFuture<>();
         pgClient.preparedQuery(
-                "SELECT email, first_name, last_name, phone, company, role FROM db_user WHERE email=$1 AND password = $2")
+                "SELECT id, email, first_name, last_name, phone, company, role FROM db_user WHERE email=$1 AND password = $2")
                 .execute(Tuple.of(
                         data.getEmail(),
                         data.getPassword()
