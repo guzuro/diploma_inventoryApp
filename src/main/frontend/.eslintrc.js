@@ -16,5 +16,6 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     "sort-imports": 'off',
     "max-len": 'off',
+    "camelcase": 'off'
   },
 };
