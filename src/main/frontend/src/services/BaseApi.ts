@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { errorNotification } from './NotificationService';
 
 export default class BaseApi {
   static BASE_API = 'http://localhost:8888';
@@ -9,8 +10,8 @@ export default class BaseApi {
         withCredentials: true,
         ...headers,
       });
-    } catch (error) {
-      console.error(error);
+    } catch (error:any) {
+      errorNotification(error.response.message);
       return error;
     }
   }

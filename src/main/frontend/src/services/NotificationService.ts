@@ -1,7 +1,7 @@
 import Vue from 'vue';
 
 const errorNotification = (_error: any): void => {
-  const errorMessage = _error.response.message;
+  const errorMessage = _error;
   Vue.prototype.$buefy.toast.open({
     duration: 5000,
     message: errorMessage,
