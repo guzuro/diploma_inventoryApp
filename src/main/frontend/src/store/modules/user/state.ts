@@ -9,7 +9,7 @@ export interface State {
 
 const state: State = {
   isAuth: false,
-  userData: {},
+  userData: null,
 };
 
 export default {
@@ -17,16 +17,13 @@ export default {
   state,
   mutations: {
     SET_USER_TO_STORE: (state: State, value: any) => {
-      state.userData = value.profile;
+      state.userData = value;
     },
     SET_AUTH_STATE: (state: State, value: any) => {
       state.isAuth = value;
     },
     RESET_USER_STATE: (state: State) => {
       state.userData = {};
-    },
-    RESET_IS_AUTHENTICATED: (state: State) => {
-      state.isAuth = false;
     },
   },
   actions: {
