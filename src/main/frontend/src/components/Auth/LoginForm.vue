@@ -1,6 +1,6 @@
 <template>
   <div class="login-form">
-    <p class="is-size-3 has-text-centered">Войти в учетную запись</p>
+    <p class="is-size-3 text-center mb-2">Войти в учетную запись</p>
     <ValidationObserver v-slot="{ invalid }">
       <ValidationProvider
         name="E-mail"
@@ -8,13 +8,14 @@
         rules="required|email"
         v-slot="{ errors }"
       >
-        <b-field
-          :message="errors[0]"
-          label="Email"
-          :type="errors[0] ? 'is-danger' : 'is-success'"
-        >
-          <b-input maxlength="30" v-model="loginUser.email"> </b-input>
-        </b-field>
+        <label for="">
+          <a-input
+            type="email"
+            v-model="loginUser.email"
+            placeholder="Email..."
+          />
+          {{ errors[0] }}
+        </label>
       </ValidationProvider>
       <ValidationProvider
         name="Password"
@@ -22,23 +23,23 @@
         rules="required|min:7"
         v-slot="{ errors }"
       >
-        <b-field
-          label="Password"
-          :type="errors[0] ? 'is-danger' : 'is-success'"
-          :message="errors[0]"
-        >
-          <b-input type="password" password-reveal v-model="loginUser.password">
-          </b-input>
-        </b-field>
+        <label for="">
+          <a-input
+            class="mt-5"
+            type="password"
+            v-model="loginUser.password"
+            placeholder="Password..."
+          />
+          {{ errors[0] }}
+        </label>
       </ValidationProvider>
-      <b-button
+      <a-button
         :disabled="invalid"
         class="is-block ml-auto mt-5"
-        type="is-success"
         @click="login"
       >
         Войти
-      </b-button>
+      </a-button>
     </ValidationObserver>
   </div>
 </template>
@@ -48,6 +49,7 @@ import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import AuthService from '@/services/AuthService';
+import { errorNotification } from '@/services/NotificationService';
 
 @Component({
   components: {
@@ -57,13 +59,22 @@ import AuthService from '@/services/AuthService';
 })
 export default class LoginForm extends Vue {
   loginUser = {
-    email: 'admin',
-    password: 'admin',
+    email: 'guzurogmn@gmail.com',
+    password: 'fynjif0506212',
   };
 
   async login(): Promise<void> {
-    const response = await AuthService.login(this.loginUser);
-    console.log(response);
+    try {
+      await AuthService.login(this.loginUser);
+      await this.$router.push({
+        name: 'Dashboard',
+        params: {
+          userId: this.$store.state.userModule.userData.id.toString(),
+        },
+      });
+    } catch (e: any) {
+      errorNotification(e);
+    }
   }
 }
 </script>
