@@ -7,7 +7,6 @@ import io.vertx.ext.web.Router;
 public class AuthRoutes {
 
     AuthHandler authHandler;
-    Vertx vertx;
 
     public AuthRoutes(Vertx vertx) {
         this.authHandler = new AuthHandler(vertx);
@@ -17,7 +16,8 @@ public class AuthRoutes {
         Router router = Router.router(vertx);
         router.post("/register").handler(rc -> this.authHandler.register(rc));
         router.post("/login").handler(rc -> this.authHandler.login(rc));
-        router.get("/isauth").handler(rc -> this.authHandler.isAuth(rc));
+        router.post("/isauth").handler(rc -> this.authHandler.isAuth(rc));
+        router.post("/logout").handler(rc -> this.authHandler.logout(rc));
 
         return router;
     }
