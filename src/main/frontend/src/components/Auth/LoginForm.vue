@@ -2,44 +2,38 @@
   <div class="login-form">
     <p class="is-size-3 text-center mb-2">Войти в учетную запись</p>
     <ValidationObserver v-slot="{ invalid }">
-      <ValidationProvider
-        name="E-mail"
-        immediate
-        rules="required|email"
-        v-slot="{ errors }"
-      >
-        <label for="">
+      <div class="flex flex-col">
+        <ValidationProvider
+          name="E-mail"
+          immediate
+          rules="required|email"
+          v-slot="{ errors }"
+        >
           <a-input
             type="email"
             v-model="loginUser.email"
             placeholder="Email..."
           />
-          {{ errors[0] }}
-        </label>
-      </ValidationProvider>
-      <ValidationProvider
-        name="Password"
-        immediate
-        rules="required|min:7"
-        v-slot="{ errors }"
-      >
-        <label for="">
+          <span class="text-red-900"> {{ errors[0] }} </span>
+        </ValidationProvider>
+        <ValidationProvider
+          name="Password"
+          immediate
+          rules="required|min:7"
+          v-slot="{ errors }"
+        >
           <a-input
             class="mt-5"
             type="password"
             v-model="loginUser.password"
             placeholder="Password..."
           />
-          {{ errors[0] }}
-        </label>
-      </ValidationProvider>
-      <a-button
-        :disabled="invalid"
-        class="is-block ml-auto mt-5"
-        @click="login"
-      >
-        Войти
-      </a-button>
+          <span class="text-red-900"> {{ errors[0] }} </span>
+        </ValidationProvider>
+        <a-button :disabled="invalid" class="ml-auto mt-5" @click="login">
+          Войти
+        </a-button>
+      </div>
     </ValidationObserver>
   </div>
 </template>
