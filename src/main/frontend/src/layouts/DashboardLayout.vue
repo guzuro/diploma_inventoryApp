@@ -1,94 +1,142 @@
 <template>
-  <div class="sidebar-page">
-    <section class="sidebar-layout">
-      <b-sidebar
-        type="is-light"
-        :fullheight="true"
-        :overlay="false"
-        :right="false"
-        v-model="open"
-        position="static"
-        :mobile="mobile"
-        :expand-on-hover="expandOnHover"
-        :reduce="reduce"
-        :delay="expandWithDelay ? 500 : null"
+  <a-layout id="components-layout-demo-custom-trigger">
+    <a-layout-sider
+      breakpoint="md"
+      collapsed-width="0"
+      @collapse="onCollapse"
+      @breakpoint="onBreakpoint"
+    >
+      <div class="logo" />
+      <a-menu
+        mode="inline"
+        :default-selected-keys="activeKey"
+        :default-open-keys="activeGroup"
       >
-        <div class="p-1">
-          <div class="is-flex is-align-items-end mb-5">
-            <img style="height: 65px; width: 65px"
-                 src="../assets/images/logo-icon.svg"
-            />
-            <p class="sidebar-title has-text-weight-bold is-size-5">
-              Управление <br>
-              продажами
-            </p>
-          </div>
-          <b-menu>
-            <b-menu-list label="Навигация">
-              <b-menu-list>
-                <b-menu-item label="Dashboard"
-                             icon="link"
-                             tag="router-link"
-                             :to="{name:'Dashboard'}"></b-menu-item>
-              </b-menu-list>
+        <template v-for="item in navItems">
+          <a-menu-item
+            v-if="!item.children"
+            :key="item.path"
+            @click="$router.push(item.path)"
+          >
+            <span>{{ item.name }}</span>
+          </a-menu-item>
 
-              <b-menu-item icon="database" label="Каталог">
-                <b-menu-item icon="cart" label="Номенклатура"
-                             tag="router-link"
-                             :to="{name: 'Products'}"/>
-                <b-menu-item icon="format-list-bulleted-square"
-                             label="Категории"
-                             tag="router-link"
-                             :to="{name: 'Categories'}"/>
-              </b-menu-item>
-            </b-menu-list>
-
-            <b-menu-list label="Actions">
-              <b-menu-item label="Logout"></b-menu-item>
-            </b-menu-list>
-          </b-menu>
-        </div>
-      </b-sidebar>
-      <div class="content">
+          <a-sub-menu v-else :key="item.guid">
+            <span slot="title">
+              <span>{{ item.name }} </span>
+            </span>
+            <a-menu-item
+              v-for="menuChildren in item.children"
+              :key="menuChildren.path"
+              @click="$router.push(menuChildren.path)"
+              >{{ menuChildren.name }}
+            </a-menu-item>
+          </a-sub-menu>
+        </template>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout>
+      <a-layout-content
+        :style="{
+          margin: '24px 16px',
+          padding: '24px',
+          background: '#fff',
+          minHeight: '280px',
+        }"
+      >
         <router-view></router-view>
-      </div>
-    </section>
-  </div>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import AuthService from '@/services/AuthService';
 
 @Component
 export default class DashboardLayout extends Vue {
-  expandOnHover = false;
+  collapsed = false;
 
-  expandWithDelay = false;
+  activeGroup: any[] = [];
 
-  mobile = 'reduce';
+  created() {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of this.navItems) {
+      if (item.children) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const ch of item.children) {
+          if (this.$route.path === ch.path) {
+            this.activeGroup.push(item.guid);
+          }
+        }
+      }
+    }
+  }
 
-  reduce = false;
+  get activeKey(): Array<string> {
+    return [this.$route.path];
+  }
 
-  open = true;
+  get navItems(): any[] {
+    console.log(this.collapsed);
+    return [
+      {
+        path: this.$router.resolve({
+          name: 'Dashboard',
+          params: {
+            userId: this.$store.state.userModule.userData.id.toString(),
+          },
+        }).href,
+        name: 'Dashboard',
+      },
+      {
+        name: 'Основная информация',
+        guid: '123',
+        children: [
+          {
+            name: 'Мой профиль',
+            path: this.$router.resolve({
+              name: 'Profile',
+              params: {
+                userId: this.$store.state.userModule.userData.id.toString(),
+              },
+            }).href,
+          },
+          {
+            name: 'Профиль компании',
+            path: this.$router.resolve({
+              name: 'CompanyProfile',
+              params: {
+                userId: this.$store.state.userModule.userData.id.toString(),
+              },
+            }).href,
+          },
+        ],
+      },
+    ];
+  }
+
+  onCollapse = (collapsed: any, type: any) => {
+    console.log(collapsed, type);
+  };
+
+  onBreakpoint = (broken: any) => {
+    console.log(broken);
+  };
+
+  async doLogout(): Promise<void> {
+    await AuthService.logout();
+    this.$router.push({
+      name: 'Login',
+    });
+  }
 }
 </script>
 
 <style lang="scss">
-@import "../assets/styles/bulma/sidebar.scss";
-
-.dashboard-layout {
+.ant-layout {
   height: 100%;
-
-}
-
-.menu-list a:hover {
-  background-color: #dbdbdb;
-  color: #363636;
-}
-
-.content {
-  width: 100%;
-  margin: 10px;
 }
 </style>
