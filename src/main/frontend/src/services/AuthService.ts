@@ -17,7 +17,7 @@ export default class AuthService {
   }
 
   static async logout(): Promise<void> {
-    BaseApi.sendRequest(`${AuthService.BASE_PATH}/logout`);
+    await BaseApi.sendRequest(`${AuthService.BASE_PATH}/logout`);
     await store.dispatch('userModule/setAuthState', false);
     await store.commit('userModule/RESET_USER_STATE');
   }

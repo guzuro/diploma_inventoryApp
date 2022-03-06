@@ -12,8 +12,7 @@ export default class BaseApi {
       });
       return response;
     } catch (error:any) {
-      // erorNotification(error.response.message);
-      throw error.response.status;
+      throw new Error(error.response.message ? error.response.message : error.response.statusText);
     }
   }
 }

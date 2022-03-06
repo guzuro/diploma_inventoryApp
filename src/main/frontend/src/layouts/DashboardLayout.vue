@@ -16,7 +16,7 @@
           <a-menu-item
             v-if="!item.children"
             :key="item.path"
-            @click="$router.push(item.path)"
+            @click="navigateTo(item.path)"
           >
             <span>{{ item.name }}</span>
           </a-menu-item>
@@ -28,11 +28,14 @@
             <a-menu-item
               v-for="menuChildren in item.children"
               :key="menuChildren.path"
-              @click="$router.push(menuChildren.path)"
+              @click="navigateTo(menuChildren.path)"
               >{{ menuChildren.name }}
             </a-menu-item>
           </a-sub-menu>
         </template>
+        <a-menu-item @click="doLogout()">
+          <span>Выход</span>
+        </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout>
@@ -51,17 +54,22 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import Component from 'vue-class-component';
+import { Mixins } from 'vue-property-decorator';
 import AuthService from '@/services/AuthService';
+import NavigationItems from '@/mixins/NavigationItems.mixin';
 
 @Component
-export default class DashboardLayout extends Vue {
-  collapsed = false;
+export default class DashboardLayout extends Mixins<NavigationItems>(
+  NavigationItems,
+) {
+  activeGroup: Array<string> = [];
 
-  activeGroup: any[] = [];
+  navigateTo(path: string): void {
+    if (this.$route.path !== path) this.$router.push(path);
+  }
 
-  created() {
+  created(): void {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of this.navItems) {
       if (item.children) {
@@ -77,45 +85,6 @@ export default class DashboardLayout extends Vue {
 
   get activeKey(): Array<string> {
     return [this.$route.path];
-  }
-
-  get navItems(): any[] {
-    console.log(this.collapsed);
-    return [
-      {
-        path: this.$router.resolve({
-          name: 'Dashboard',
-          params: {
-            userId: this.$store.state.userModule.userData.id.toString(),
-          },
-        }).href,
-        name: 'Dashboard',
-      },
-      {
-        name: 'Основная информация',
-        guid: '123',
-        children: [
-          {
-            name: 'Мой профиль',
-            path: this.$router.resolve({
-              name: 'Profile',
-              params: {
-                userId: this.$store.state.userModule.userData.id.toString(),
-              },
-            }).href,
-          },
-          {
-            name: 'Профиль компании',
-            path: this.$router.resolve({
-              name: 'CompanyProfile',
-              params: {
-                userId: this.$store.state.userModule.userData.id.toString(),
-              },
-            }).href,
-          },
-        ],
-      },
-    ];
   }
 
   onCollapse = (collapsed: any, type: any) => {
