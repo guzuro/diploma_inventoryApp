@@ -10,7 +10,10 @@ public interface UserDao {
 
     CompletableFuture<User> changeUserRole(int userId, String role);
 
-    CompletableFuture<User> updateUser(User todo);
+    CompletableFuture<User> updateUser(User user);
 
     CompletableFuture<Boolean> deleteUser(int userId);
+
+    CompletableFuture<Boolean> verifyUserPassword(User user);
+
 }

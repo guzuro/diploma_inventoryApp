@@ -17,13 +17,12 @@ public class UserRoutes {
 
 
     public Router setRoutes() {
-        Router router = Router.router(vertx);
+        Router router = Router.router(this.vertx);
 
-        router.get("/:id").handler(rc -> this.userHandler.getUserInfo(rc));
+        router.post("/get").handler(rc -> this.userHandler.getUserInfo(rc));
         router.post("/add").handler(rc -> this.userHandler.addUser(rc));
-        router.post("/changeRole").handler(rc -> this.userHandler.changeUserRole(rc));
-        router.delete("/user/:id").handler(rc -> this.userHandler.deleteUser(rc));
-        router.put("/user/:id").handler(rc -> this.userHandler.updateUser(rc));
+        router.post("/delete").handler(rc -> this.userHandler.deleteUser(rc));
+        router.post("/update").handler(rc -> this.userHandler.updateUser(rc));
 
         return router;
     }
