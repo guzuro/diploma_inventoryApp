@@ -1,12 +1,11 @@
 package com.guzuro;
 
 import com.guzuro.Routes.AuthRoutes;
-import com.guzuro.Routes.ProductRoutes;
+import com.guzuro.Routes.CompanyRoutes;
 import com.guzuro.Routes.UserRoutes;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -30,11 +29,11 @@ public class MainVerticle extends AbstractVerticle {
 //                                .allowedMethod(HttpMethod.PUT)
 //                                .allowedMethod(HttpMethod.OPTIONS)
                                 .allowCredentials(true)
-//                                .allowedHeader("Access-Control-Allow-Headers")
-//                                .allowedHeader("Access-Control-Allow-Method")
-////                                .allowedHeader("Access-Control-Allow-Origin")
-//                                .allowedHeader("Access-Control-Allow-Credentials")
-//                                .allowedHeader("Content-Type")
+                                .allowedHeader("Access-Control-Allow-Headers")
+                                .allowedHeader("Access-Control-Allow-Method")
+                                .allowedHeader("Access-Control-Allow-Origin")
+                                .allowedHeader("Access-Control-Allow-Credentials")
+                                .allowedHeader("Content-Type")
                 )
                 .handler(
                         BodyHandler
@@ -51,7 +50,8 @@ public class MainVerticle extends AbstractVerticle {
 
         router.route("/api");
 //        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
-//        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
+        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
+        router.mountSubRouter("/company", new CompanyRoutes(vertx).setRoutes());
 //
         router.mountSubRouter("/auth", new AuthRoutes(vertx).setRoutes(vertx));
 //

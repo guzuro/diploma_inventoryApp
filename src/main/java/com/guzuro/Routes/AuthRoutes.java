@@ -7,9 +7,11 @@ import io.vertx.ext.web.Router;
 public class AuthRoutes {
 
     AuthHandler authHandler;
+    Vertx vertx;
 
     public AuthRoutes(Vertx vertx) {
         this.authHandler = new AuthHandler(vertx);
+        this.vertx = vertx;
     }
 
     public Router setRoutes(Vertx vertx) {

@@ -17,7 +17,7 @@ public class PostgresDAOFactory extends DaoFactory {
     public static SqlClient createConnection(Vertx vertx) {
         PgConnectOptions connectOptions = new PgConnectOptions()
                 .setPort(5432)
-                .setHost("5432")
+                .setHost("localhost")
                 .setDatabase("inventory_app")
                 .setUser("postgres")
                 .setPassword("Ffanko159357458256s");
