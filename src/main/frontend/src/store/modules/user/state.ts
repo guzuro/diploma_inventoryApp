@@ -2,12 +2,12 @@
 
 import { Commit } from 'vuex';
 
-export interface State {
+export interface UserState {
   isAuth: false;
   userData: any;
 }
 
-const state: State = {
+const state: UserState = {
   isAuth: false,
   userData: null,
 };
@@ -16,13 +16,13 @@ export default {
   namespaced: true,
   state,
   mutations: {
-    SET_USER_TO_STORE: (state: State, value: any) => {
+    SET_USER_TO_STORE: (state: UserState, value: any) => {
       state.userData = value;
     },
-    SET_AUTH_STATE: (state: State, value: any) => {
+    SET_AUTH_STATE: (state: UserState, value: any) => {
       state.isAuth = value;
     },
-    RESET_USER_STATE: (state: State) => {
+    RESET_USER_STATE: (state: UserState) => {
       state.userData = null;
     },
   },
@@ -35,10 +35,10 @@ export default {
     },
   },
   getters: {
-    isAuthenticated(state: State): boolean {
+    isAuthenticated(state: UserState): boolean {
       return state.isAuth;
     },
-    getUserRole(state: State): boolean {
+    getUserRole(state: UserState): boolean {
       return state.userData.role;
     },
   },
