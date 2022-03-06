@@ -2,6 +2,8 @@ package com.guzuro.Daos.AuthDao;
 
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import com.guzuro.Daos.UserDao.User;
+import com.guzuro.Models.Roles.Administrator;
+import com.guzuro.Models.Roles.Employee;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
@@ -52,17 +54,50 @@ public class PostgresAuthDaoImpl implements AuthDao {
                 ), ar -> {
                     if (ar.succeeded()) {
                         if (ar.result().rowCount() == 1) {
-                            User user = ar.result().iterator().next().toJson().mapTo(User.class);
-                            future.complete(user);
+                            String role = ar.result().iterator().next().toJson().getString("role");
+                            if (role.equals("Administrator")) {
+                                Administrator user = ar.result().iterator().next().toJson().mapTo(Administrator.class);
+                                future.complete(user);
+                            } else {
+                                Employee employee = ar.result().iterator().next().toJson().mapTo(Employee.class);
+                                future.complete(employee);
+                            }
                         } else {
                             future.completeExceptionally(new Throwable("NOT FOUND"));
                         }
                     } else {
-                        System.out.println(ar.cause().getMessage());
                         future.completeExceptionally(ar.cause());
                     }
                 });
         return future;
 
+    }
+
+    @Override
+    public CompletableFuture<User> getUserById(Number id) {
+        CompletableFuture<User> future = new CompletableFuture<>();
+        pgClient.preparedQuery(
+                "SELECT id, email, first_name, last_name, phone, company, role FROM db_user WHERE id=$1")
+                .execute(Tuple.of(
+                        id
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        if (ar.result().rowCount() == 1) {
+                            String role = ar.result().iterator().next().toJson().getString("role");
+                            if (role.equals("Administrator")) {
+                                Administrator user = ar.result().iterator().next().toJson().mapTo(Administrator.class);
+                                future.complete(user);
+                            } else {
+                                Employee employee = ar.result().iterator().next().toJson().mapTo(Employee.class);
+                                future.complete(employee);
+                            }
+                        } else {
+                            future.completeExceptionally(new Throwable("NOT FOUND"));
+                        }
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 }

@@ -72,7 +72,26 @@ public class AuthHandler {
         if (session.get("id") == null) {
             response.setStatusCode(401).end();
         } else {
-            response.setStatusCode(200).end();
+           this.dao.getUserById(session.get("id")).thenAccept(resUser -> {
+               response.putHeader("content-type", "application/json; charset=UTF-8")
+                       .setStatusCode(200)
+                       .end(JsonObject.mapFrom(resUser).encodePrettily());
+
+           }).exceptionally(throwable -> {
+               if (throwable.getMessage().contains("NOT FOUND")) {
+                   response.setStatusCode(404).end();
+               } else {
+                   response.setStatusCode(500).end(throwable.getMessage());
+               }
+               return null;
+           });
         }
+    }
+
+    public void logout(RoutingContext context) {
+        HttpServerResponse response = context.response();
+        Session session = context.session();
+        session.destroy();
+        response.setStatusCode(200).end();
     }
 }
