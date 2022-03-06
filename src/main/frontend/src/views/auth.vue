@@ -4,29 +4,19 @@
       <div class="auth-right__content px-5">
         <component :is="currentForm[form].view" />
       </div>
-      <div class="has-text-centered">
+      <div class="text-center">
         <p>
           Уже есть аккаунт?
           <span
             @click="form = 'login'"
-            class="
-              auth-change-view
-              is-uppercase
-              has-text-weight-bold
-              is-clickable
-            "
+            class="auth-change-view is-uppercase font-bold cursor-pointer"
             >Войти</span
           >
         </p>
         <hr />
         <p
           @click="form = 'registration'"
-          class="
-            auth-change-view
-            is-uppercase
-            has-text-weight-bold
-            is-clickable
-          "
+          class="auth-change-view is-uppercase font-bold cursor-pointer"
         >
           Регистрация
         </p>
@@ -66,7 +56,7 @@ export default class Auth extends Vue {
 
   &-wrapper {
     width: 100%;
-    margin:0 auto;
+    margin: 0 auto;
     max-width: 933px;
     padding: 10px;
 

@@ -6,13 +6,14 @@ export default class BaseApi {
 
   static async sendRequest(method: string, body: any = {}, headers: any = {}): Promise<any> {
     try {
-      return Vue.axios.post(BaseApi.BASE_API + method, body, {
+      const response = await Vue.axios.post(BaseApi.BASE_API + method, body, {
         withCredentials: true,
         ...headers,
       });
+      return response;
     } catch (error:any) {
-      errorNotification(error.response.message);
-      return error;
+      // erorNotification(error.response.message);
+      throw error.response.status;
     }
   }
 }

@@ -23,7 +23,7 @@ export default {
       state.isAuth = value;
     },
     RESET_USER_STATE: (state: State) => {
-      state.userData = {};
+      state.userData = null;
     },
   },
   actions: {
