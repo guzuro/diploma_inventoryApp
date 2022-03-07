@@ -1,13 +1,15 @@
 package com.guzuro.Daos.UserDao;
 
+import com.guzuro.Daos.CompanyDao.Company;
+
 public class User {
-    private int    id;
+    private int id;
     private String email;
     private String password;
     private String first_name;
     private String last_name;
     private String phone;
-    private String company;
+    private Company company;
     private String role;
 
     public User() {
@@ -17,15 +19,8 @@ public class User {
         this.id = id;
         this.role = role;
     }
-    public User(String email, String first_name, String last_name, String phone, String company, String role) {
-        this.email = email;
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.phone = phone;
-        this.company = company;
-        this.role = role;
-    }
-    public User(int id, String email, String first_name, String last_name, String phone, String company, String role) {
+
+    public User(int id, String email, String first_name, String last_name, String phone, Company company, String role) {
         this.id = id;
         this.email = email;
         this.first_name = first_name;
@@ -34,7 +29,26 @@ public class User {
         this.company = company;
         this.role = role;
     }
-    public User(String email, String password, String first_name, String last_name, String phone, String company, String role) {
+
+    public User(String email, String first_name, String last_name, String phone, Company company, String role) {
+        this.email = email;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.phone = phone;
+        this.company = company;
+        this.role = role;
+    }
+
+    public User(String email, String password, String first_name, String last_name, String phone, String role) {
+        this.email = email;
+        this.password = password;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.phone = phone;
+        this.role = role;
+    }
+
+    public User(String email, String password, String first_name, String last_name, String phone, Company company, String role) {
         this.email = email;
         this.password = password;
         this.first_name = first_name;
@@ -84,11 +98,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getCompany() {
+    public Company getCompany() {
         return company;
     }
 
-    public void setCompany(String company) {
+    public void setCompany(Company company) {
         this.company = company;
     }
 
