@@ -1,7 +1,6 @@
 package com.guzuro.Daos.CompanyDao;
 
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
-
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
@@ -21,11 +20,9 @@ public class PostgresCompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public CompletableFuture<Company> getCompany(Number owner) {
+    public CompletableFuture<Company> getCompany(Number company_id) {
         CompletableFuture<Company> fut = new CompletableFuture<>();
-
-        this.pgClient.preparedQuery("SELECT id, name, inn, phone, email, country, currency " +
-                "FROM db_company WHERE owner = $1").execute(Tuple.of(owner), ar -> {
+        this.pgClient.preparedQuery("SELECT id, name, inn, phone, email, country, currency " + "FROM db_company WHERE id = $1").execute(Tuple.of(company_id), ar -> {
             if (ar.succeeded()) {
                 if (ar.result().rowCount() > 0) {
                     fut.complete(ar.result().iterator().next().toJson().mapTo(Company.class));
@@ -39,6 +36,30 @@ public class PostgresCompanyDaoImpl implements CompanyDao {
 
     @Override
     public CompletableFuture<Company> updateCompanyInfo(Company company) {
-        return null;
+        CompletableFuture<Company> fut = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("UPDATE db_company " +
+                "SET name=$1, inn=$2, phone=$3, email=$4, country=$5, currency=$6 " +
+                "WHERE id=$7" +
+                "RETURNING id, name, inn, phone, email, country, currency")
+                .execute(Tuple.of(
+                        company.getName(),
+                        company.getInn(),
+                        company.getPhone(),
+                        company.getEmail(),
+                        company.getCountry(),
+                        company.getCurrency(),
+                        company.getId()), ar -> {
+                    if (ar.succeeded()) {
+                        Company resCompany = ar.result().iterator().next().toJson().mapTo(Company.class);
+                        fut.complete(resCompany);
+                    } else {
+                        fut.completeExceptionally(ar.cause());
+                    }
+                });
+        return fut;
     }
 }
+
+
+

@@ -1,5 +1,6 @@
 package com.guzuro.handlers;
 
+import com.guzuro.Daos.CompanyDao.Company;
 import com.guzuro.Daos.CompanyDao.CompanyDao;
 import com.guzuro.Daos.CompanyDao.PostgresCompanyDaoImpl;
 import io.vertx.core.Vertx;
@@ -15,25 +16,19 @@ public class CompanyHandler {
         this.dao = new PostgresCompanyDaoImpl(vertx);
     }
 
-    public void getCompany(RoutingContext context) {
-        Number owner = context.getBodyAsJson().getNumber("owner");
+    public void updateCompanyInfo(RoutingContext context) {
         HttpServerResponse response = context.response();
+        Company reqCompany = context.getBodyAsJson().mapTo(Company.class);
 
-        this.dao.getCompany(owner)
+        this.dao.updateCompanyInfo(reqCompany)
                 .thenAccept(company -> {
                     response.putHeader("content-type", "application/json; charset=UTF-8")
-                            .setStatusCode(201)
+                            .setStatusCode(200)
                             .end(JsonObject.mapFrom(company).encodePrettily());
                 }).exceptionally(throwable -> {
-            response.setStatusCode(500)
-                    .putHeader("content-type", "application/json; charset=UTF-8")
-                    .end(throwable.getCause().getMessage());
+            response.setStatusCode(500).end(throwable.getMessage());
             return null;
         });
-    }
-
-    public void updateCompany(RoutingContext context) {
-
     }
 
 }

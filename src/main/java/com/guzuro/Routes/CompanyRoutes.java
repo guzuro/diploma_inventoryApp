@@ -19,8 +19,7 @@ public class CompanyRoutes {
     public Router setRoutes() {
         Router router = Router.router(this.vertx);
 
-        router.post("/get").handler(rc -> this.companyHandler.getCompany(rc));
-        router.post("/update").handler(rc -> this.companyHandler.updateCompany(rc));
+        router.post("/update").handler(rc -> this.companyHandler.updateCompanyInfo(rc));
 
         return router;
     }
