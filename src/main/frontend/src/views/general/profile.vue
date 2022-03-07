@@ -4,7 +4,7 @@
       <a-card title="Мой профиль" class="w-full">
         <div class="flex flex-col md:flex-row md:justify-between">
           <a-list-item>
-            <a-list-item-meta :description="userCopy.company">
+            <a-list-item-meta :description="userCompany">
               <div slot="title">Название компании / ИП</div>
             </a-list-item-meta>
           </a-list-item>
@@ -83,8 +83,8 @@ export default class Profile extends Vue {
     approved: '',
   };
 
-  created(): void {
-    this.userCopy = { ...this.$store.state.userModule.userData };
+  get userCompany(): string {
+    return this.$store.state.companyModule.company.name;
   }
 
   updateUser(user: any) {
@@ -96,6 +96,10 @@ export default class Profile extends Vue {
       .finally(() => {
         this.spinning = false;
       });
+  }
+
+  created(): void {
+    this.userCopy = { ...this.$store.state.userModule.userData };
   }
 }
 </script>

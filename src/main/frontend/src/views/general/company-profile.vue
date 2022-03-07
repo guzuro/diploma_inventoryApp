@@ -3,7 +3,7 @@
     <div class="company-profile" v-if="companyCopy">
       <ValidationObserver v-slot="{ invalid }">
         <a-card title="Основное" class="w-full">
-          <ValidationProvider name="Имя" immediate rules="required" v-slot="{ errors }">
+          <ValidationProvider name="Навание компании" immediate rules="required" v-slot="{ errors }">
             <field-wrapper :fieldTitle="'Навание компании'">
               <a-input type="text" v-model="companyCopy.name" />
               <span class="text-red-900"> {{ errors[0] }} </span>
@@ -66,23 +66,20 @@ export default class CompanyProfile extends Vue {
   spinning = false;
 
   updateCompanySettings(): void {
-    console.log(this.spinning);
+    this.spinning = true;
+    CompanyService.updateCompanyInfo(this.companyCopy)
+      .then(() => {
+        this.companyCopy = { ...this.$store.getters['companyModule/getCompany'] };
+      })
+      .finally(() => {
+        this.spinning = false;
+      });
   }
 
   created(): void {
     this.spinning = true;
-    if (this.$store.getters['companyModule/getCompany']) {
-      this.companyCopy = { ...this.$store.getters['companyModule/getCompany'] };
-      this.spinning = false;
-    } else {
-      CompanyService.getCompany(Number.parseInt(this.$route.params.userId, 10))
-        .then(() => {
-          this.companyCopy = { ...this.$store.getters['companyModule/getCompany'] };
-        })
-        .finally(() => {
-          this.spinning = false;
-        });
-    }
+    this.companyCopy = { ...this.$store.getters['companyModule/getCompany'] };
+    this.spinning = false;
   }
 }
 </script>
