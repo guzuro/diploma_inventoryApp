@@ -39,6 +39,30 @@ export default class NavigationItems extends Vue {
             },
           ],
         },
+        {
+          name: 'Сотрудники и должности',
+          guid: '124',
+          children: [
+            {
+              name: 'Сотрудники',
+              path: this.$router.resolve({
+                name: 'Employes',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
+            },
+            // {
+            //   name: 'Профиль компании',
+            //   path: this.$router.resolve({
+            //     name: 'CompanyProfile',
+            //     params: {
+            //       userId: this.$store.state.userModule.userData.id.toString(),
+            //     },
+            //   }).href,
+            // },
+          ],
+        },
       ];
     }
     return [];

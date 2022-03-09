@@ -25,11 +25,11 @@ const routes: Array<RouteConfig> = [
         path: '/office/:userId/company-profile',
         name: 'CompanyProfile',
       },
-      // {
-      //   component: () => import('../views/categories.vue'),
-      //   path: 'categories',
-      //   name: 'Categories',
-      // },
+      {
+        component: () => import('../views/employes.vue'),
+        path: '/office/:userId/employes',
+        name: 'Employes',
+      },
       // {
       //   component: () => import('../views/product-list.vue'),
       //   path: 'products',

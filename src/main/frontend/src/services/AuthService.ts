@@ -27,11 +27,15 @@ export default class AuthService {
   }
 
   static async checkLogin(): Promise<void> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const { data } = await BaseApi.sendRequest(`${AuthService.BASE_PATH}/isauth`);
       await AuthService.handleResponseUserData(data);
     } catch (e:any) {
-      errorNotification(e.message);
+      if (e.message === 'Unauthorized') {
+        // eslint-disable-next-line no-throw-literal
+        throw 401;
+      }
     }
   }
 
