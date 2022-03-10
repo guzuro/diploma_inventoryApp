@@ -38,4 +38,25 @@ export default class UserService {
       errorNotification(e.message);
     }
   }
+
+  static async addUser(user: any): Promise<void> {
+    try {
+      console.log(user);
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/add`, user);
+      await store.dispatch('userModule/setUserToStore', data);
+      await successNotification('Успешно');
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
+  }
+
+  static async getUsers({ company_id }: any): Promise<Array<any>> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/getAll`, { company_id });
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
 }
