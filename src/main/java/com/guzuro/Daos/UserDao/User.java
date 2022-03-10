@@ -1,6 +1,7 @@
 package com.guzuro.Daos.UserDao;
 
 import com.guzuro.Daos.CompanyDao.Company;
+import com.guzuro.Models.Roles.Employee;
 
 public class User {
     private int id;
@@ -56,6 +57,16 @@ public class User {
         this.phone = phone;
         this.company = company;
         this.role = role;
+    }
+
+    public User(User employee) {
+        this.email = employee.email;
+        this.password = employee.password;
+        this.first_name = employee.first_name;
+        this.last_name = employee.last_name;
+        this.phone = employee.phone;
+        this.company = employee.company;
+        this.role = employee.role;
     }
 
     public int getId() {
