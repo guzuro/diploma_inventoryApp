@@ -7,13 +7,13 @@ public class Employee extends User {
 
     private Employement employement;
 
-    public Employee() {
-        super();
-    }
-
     public Employee(Employee employee) {
         super(employee);
         this.employement = employee.employement;
+    }
+
+    public Employee() {
+
     }
 
     public Employement getEmployement() {
