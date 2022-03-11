@@ -41,6 +41,10 @@ export default class UserService {
 
   static async updateEmployee(user: any, employement:any): Promise<void> {
     try {
+      // eslint-disable-next-line no-param-reassign
+      delete user.employement;
+      // eslint-disable-next-line no-param-reassign
+      delete user.company;
       const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/updateEmployee`, { user, employement });
       // await store.dispatch('userModule/setUserToStore', data);
       await successNotification('Успешно');
