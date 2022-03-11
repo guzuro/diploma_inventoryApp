@@ -4,10 +4,20 @@
       <a-col :span="7" class="mr-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam, debitis!</a-col>
       <a-col :span="16">
         <a-list :loading="loading" item-layout="horizontal" :data-source="usersList">
-          <div slot="header"><a-button icon="plus" type="primary" @click="employeModalForm = true">Добавить сотрудника</a-button></div>
+          <div slot="header">
+            <a-button
+              icon="plus"
+              type="primary"
+              @click="
+                employeModalForm = true;
+                modalMode = 'create';
+              "
+              >Добавить сотрудника</a-button
+            >
+          </div>
           <a-list-item slot="renderItem" slot-scope="item">
-            <a slot="actions">edit</a>
-            <a slot="actions">remove</a>
+            <a slot="actions"><a-icon @click="getEmployeeInfo(item)" type="edit" /></a>
+            <a slot="actions"><a-icon @click="removeEmployee(item)" type="delete" /></a>
             <a-list-item-meta :description="item.role">
               <div slot="title">{{ getUserName(item) }}</div>
             </a-list-item-meta>
@@ -66,16 +76,6 @@ export default class Employes extends Vue {
     phone: '',
   };
 
-  get date(): any {
-    return this.employment.employement_date;
-  }
-
-  set date(value: any) {
-    this.employment.employement_date = moment(value).format('YYYY-MM-DDT00:00:00');
-  }
-
-  getUserName = (item: any): string => `${item.last_name} ${item.first_name}`;
-
   employment = {
     employement_date: '',
     salary: 0,
@@ -85,8 +85,31 @@ export default class Employes extends Vue {
 
   employeModel = {};
 
+  modalMode = 'create';
+
+  get date(): any {
+    return this.employment.employement_date;
+  }
+
+  set date(value: any) {
+    this.employment.employement_date = moment(value).format('YYYY-MM-DDT00:00:00');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getEmployeeInfo(user: any): void {
+    UserService.getUserEmployement(user.id).then((response) => {
+      this.employment = response;
+      this.user = user;
+      this.employeModalForm = true;
+      this.modalMode = 'edit';
+    });
+  }
+
+  getUserName = (item: any): string => `${item.last_name} ${item.first_name}`;
+
   handleOk(): void {
-    UserService.addUser({ user: this.user, employment: this.employment, company_id: this.$store.getters['companyModule/getCompany'].id });
+    if (this.modalMode === 'create') UserService.addUser({ user: this.user, employment: this.employment, company_id: this.$store.getters['companyModule/getCompany'].id });
+    if (this.modalMode === 'edit') UserService.updateEmployee(this.user, this.employment);
 
     this.employeModalForm = false;
   }

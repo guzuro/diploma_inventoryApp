@@ -5,7 +5,7 @@ import { errorNotification, successNotification } from './NotificationService';
 export default class UserService {
   static BASE_PATH = '/user';
 
-  static async updateUser(userInfo: any, newPassword: { password: string; approved: string }): Promise<void> {
+  static async updateUser(userInfo: any, newPassword: { password: string; approved: string, employement?:any }): Promise<void> {
     try {
       let reqUser = null;
       if (userInfo.password) {
@@ -31,8 +31,18 @@ export default class UserService {
         role: reqUser.role,
       };
 
-      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/update`, reqBody);
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/updateUser`, reqBody);
       await store.dispatch('userModule/setUserToStore', data);
+      await successNotification('Успешно');
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
+  }
+
+  static async updateEmployee(user: any, employement:any): Promise<void> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/updateEmployee`, { user, employement });
+      // await store.dispatch('userModule/setUserToStore', data);
       await successNotification('Успешно');
     } catch (e:any) {
       errorNotification(e.message);
@@ -53,6 +63,18 @@ export default class UserService {
   static async getUsers({ company_id }: any): Promise<Array<any>> {
     try {
       const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/getAll`, { company_id });
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
+
+  static async getUserEmployement(user_id: number): Promise<any> {
+    try {
+      console.log(user_id);
+
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/getemployement`, { userId: user_id });
       return data;
     } catch (e:any) {
       errorNotification(e.message);
