@@ -9,11 +9,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public interface UserDao {
     CompletableFuture<CopyOnWriteArrayList<Employee>> getUsers(int company_id);
 
-    CompletableFuture<User> getUserInfo(User user);
+    CompletableFuture<User> addEmployee(UserCompanyDto user);
 
-    CompletableFuture<User> addUser(UserCompanyDto user);
-
-    CompletableFuture<User> changeUserRole(int userId, String role);
+    CompletableFuture<User> updateEmployee(Employee employee);
 
     CompletableFuture<User> updateUser(User user);
 

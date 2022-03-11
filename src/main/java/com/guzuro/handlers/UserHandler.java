@@ -18,12 +18,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class UserHandler {
 
     UserDao dao;
@@ -34,7 +28,7 @@ public class UserHandler {
         this.companyDao = new PostgresCompanyDaoImpl(vertx);
     }
 
-    public void getAllUsers(RoutingContext context) {
+    public void getAllEmployes(RoutingContext context) {
         HttpServerResponse response = context.response();
 
         this.dao.getUsers(context.getBodyAsJson().getInteger("company_id"))
@@ -53,11 +47,23 @@ public class UserHandler {
         });
     }
 
-    public void getUserInfo(RoutingContext context) {
+    public void getEmployement(RoutingContext context) {
+        HttpServerResponse response = context.response();
+        int userId = context.getBodyAsJson().getInteger("userId");
+        this.dao.getUserEmployement(userId).thenAccept(employement -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(200)
+                    .end(JsonObject.mapFrom(employement).encodePrettily());
 
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(throwable.getMessage());
+            return null;
+        });
     }
 
-    public void addUser(RoutingContext context) {
+    public void addEmployee(RoutingContext context) {
         HttpServerResponse response = context.response();
 
         UserCompanyDto userCompanyDto = new UserCompanyDto();
@@ -66,7 +72,7 @@ public class UserHandler {
 
         Employement employement = context.getBodyAsJson().getJsonObject("employment").mapTo(Employement.class);
 
-        this.dao.addUser(userCompanyDto).thenAccept(resUser -> {
+        this.dao.addEmployee(userCompanyDto).thenAccept(resUser -> {
             employement.setUser_id(resUser.getId());
 
             this.dao.setUserEmployement(employement).thenAccept(resEmployement -> {
@@ -97,8 +103,9 @@ public class UserHandler {
         });
     }
 
-    public void changeUserRole(RoutingContext context) {
-        System.out.println(context);
+    public void updateEmployee(RoutingContext context) {
+
+        
     }
 
     public void updateUser(RoutingContext context) {

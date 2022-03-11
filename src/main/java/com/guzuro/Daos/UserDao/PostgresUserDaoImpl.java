@@ -4,6 +4,7 @@ import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import com.guzuro.Dto.UserCompanyDto;
 import com.guzuro.Models.Roles.Employee;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
@@ -18,7 +19,7 @@ public class PostgresUserDaoImpl implements UserDao {
     }
 
     @Override
-    public CompletableFuture<User> addUser(UserCompanyDto userCompanyDto) {
+    public CompletableFuture<User> addEmployee(UserCompanyDto userCompanyDto) {
         CompletableFuture<User> future = new CompletableFuture<>();
         pgClient.preparedQuery("INSERT INTO db_user(email, password, first_name, last_name, phone, role, company_id) " +
                 "VALUES ($1, $2, $3, $4, $5, $6, $7) " +
@@ -43,7 +44,7 @@ public class PostgresUserDaoImpl implements UserDao {
     }
 
     @Override
-    public CompletableFuture<User> changeUserRole(int userId, String role) {
+    public CompletableFuture<User> updateEmployee(Employee employee) {
         return null;
     }
 
@@ -51,7 +52,7 @@ public class PostgresUserDaoImpl implements UserDao {
     public CompletableFuture<CopyOnWriteArrayList<Employee>> getUsers(int company_id) {
         CompletableFuture<CopyOnWriteArrayList<Employee>> fut = new CompletableFuture<>();
         pgClient.preparedQuery(
-                "SELECT id, first_name, last_name, role FROM db_user WHERE role <> $1 AND company_id = $2")
+                "SELECT id, email, password, first_name, last_name, phone, role FROM db_user WHERE role <> $1 AND company_id = $2")
                 .execute(Tuple.of(
                         "Administrator",
                         company_id
@@ -68,11 +69,6 @@ public class PostgresUserDaoImpl implements UserDao {
                     }
                 });
         return fut;
-    }
-
-    @Override
-    public CompletableFuture<User> getUserInfo(User user) {
-        return null;
     }
 
     @Override
