@@ -23,4 +23,6 @@ public interface UserDao {
 
     CompletableFuture<Employement> setUserEmployement(Employement employement);
 
+    CompletableFuture<Employement> updateEmployement(Employement employement);
+
 }

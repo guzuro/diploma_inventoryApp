@@ -104,8 +104,42 @@ public class UserHandler {
     }
 
     public void updateEmployee(RoutingContext context) {
+        HttpServerResponse response = context.response();
+        JsonObject reqData = context.getBodyAsJson();
 
-        
+        User user = reqData.getJsonObject("user").mapTo(User.class);
+        Employement employement = reqData.getJsonObject("employement").mapTo(Employement.class);
+
+        this.dao.updateUser(user).thenAccept(resUser -> {
+            this.dao.updateEmployement(employement).thenAccept(resEmployement -> {
+                Employee employee = new Employee();
+                employee.setEmployement(resEmployement);
+                employee.setEmail(resUser.getEmail());
+                employee.setLast_name(resUser.getLast_name());
+                employee.setFirst_name(resUser.getFirst_name());
+                employee.setRole(resUser.getRole());
+                employee.setId(resUser.getId());
+                employee.setPhone(resUser.getPhone());
+
+                employee.setEmployement(resEmployement);
+
+                response.putHeader("content-type", "application/json; charset=UTF-8")
+                        .setStatusCode(200)
+                        .end(JsonObject.mapFrom(employee).encodePrettily());
+
+            }).exceptionally(throwable -> {
+                response.putHeader("content-type", "application/json; charset=UTF-8").setStatusCode(500).end(throwable.getMessage());
+                return null;
+            });
+
+        }).exceptionally(throwable -> {
+            if (throwable.getMessage().contains("NOT FOUND")) {
+                response.putHeader("content-type", "application/json; charset=UTF-8").setStatusCode(404).end();
+            } else {
+                response.putHeader("content-type", "application/json; charset=UTF-8").setStatusCode(500).end(throwable.getMessage());
+            }
+            return null;
+        });
     }
 
     public void updateUser(RoutingContext context) {

@@ -93,6 +93,28 @@ public class PostgresUserDaoImpl implements UserDao {
     }
 
     @Override
+    public CompletableFuture<Employement> updateEmployement(Employement employement) {
+        CompletableFuture<Employement> fut = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("UPDATE db_employment " +
+                "SET salary = $1, employement_date= $2 WHERE id = $3" +
+                "RETURNING id, user_id, employement_date, salary")
+                .execute(Tuple.of(
+                        employement.getSalary(),
+                        employement.getEmployement_date(),
+                        employement.getId()
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        Employement updatedUser = ar.result().iterator().next().toJson().mapTo(Employement.class);
+                        fut.complete(updatedUser);
+                    } else {
+                        fut.completeExceptionally(ar.cause());
+                    }
+                });
+        return fut;
+    }
+
+    @Override
     public CompletableFuture<Employement> getUserEmployement(int user_id) {
         CompletableFuture<Employement> fut = new CompletableFuture<>();
         pgClient.preparedQuery(
@@ -122,7 +144,7 @@ public class PostgresUserDaoImpl implements UserDao {
         this.pgClient.preparedQuery("UPDATE db_user " +
                 "SET email = $1, first_name= $2, last_name= $3, phone= $4, role= $5 " +
                 "WHERE id = $6" +
-                "RETURNING id, email, first_name, last_name, phone, company, role")
+                "RETURNING id, email, first_name, last_name, phone, role")
                 .execute(Tuple.of(
                         user.getEmail(),
                         user.getFirst_name(),
