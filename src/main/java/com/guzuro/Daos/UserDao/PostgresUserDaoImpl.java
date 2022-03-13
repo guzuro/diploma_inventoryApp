@@ -8,6 +8,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,7 +54,11 @@ public class PostgresUserDaoImpl implements UserDao {
     public CompletableFuture<CopyOnWriteArrayList<Employee>> getUsers(int company_id) {
         CompletableFuture<CopyOnWriteArrayList<Employee>> fut = new CompletableFuture<>();
         pgClient.preparedQuery(
-                "SELECT id, email, password, first_name, last_name, phone, role FROM db_user WHERE role <> $1 AND company_id = $2")
+                "SELECT db_user.id, db_user.email, db_user.password, db_user.first_name, db_user.last_name, db_user.phone, db_user.role, db_employment.employement_date, db_employment.salary, db_employment.id as employment_id " +
+                        "FROM db_user " +
+                        "LEFT JOIN db_employment " +
+                        "ON db_employment.user_id = db_user.id " +
+                        "WHERE role <> $1 AND company_id = $2")
                 .execute(Tuple.of(
                         "Administrator",
                         company_id
@@ -60,7 +66,30 @@ public class PostgresUserDaoImpl implements UserDao {
                     if (ar.succeeded()) {
                         CopyOnWriteArrayList<Employee> usersList = new CopyOnWriteArrayList<>();
                         ar.result().forEach(row -> {
-                            Employee user = row.toJson().mapTo(Employee.class);
+                            JsonObject db = row.toJson();
+
+                            Employee user = new Employee();
+                            user.setId(db.getInteger("id"));
+                            user.setPhone(db.getString("phone"));
+                            user.setEmail(db.getString("email"));
+                            user.setPassword(db.getString("password"));
+                            user.setFirst_name(db.getString("first_name"));
+                            user.setLast_name(db.getString("last_name"));
+                            user.setRole(db.getString("role"));
+
+                            Employement employment = new Employement();
+                            if (db.getInteger("employment_id") != null) {
+
+                                String ldtString = db.getString("employement_date");
+                                LocalDateTime dateTime = LocalDateTime.parse(ldtString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+                                employment.setEmployement_date(dateTime);
+                                employment.setUser_id(user.getId());
+                                employment.setId(db.getInteger("employment_id"));
+                                employment.setSalary(db.getDouble("salary"));
+                                user.setEmployement(employment);
+                            }
+
                             usersList.add(user);
                         });
                         fut.complete(usersList);

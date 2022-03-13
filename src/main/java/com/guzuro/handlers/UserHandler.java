@@ -47,22 +47,6 @@ public class UserHandler {
         });
     }
 
-    public void getEmployement(RoutingContext context) {
-        HttpServerResponse response = context.response();
-        int userId = context.getBodyAsJson().getInteger("userId");
-        this.dao.getUserEmployement(userId).thenAccept(employement -> {
-            response.putHeader("content-type", "application/json; charset=UTF-8")
-                    .setStatusCode(200)
-                    .end(JsonObject.mapFrom(employement).encodePrettily());
-
-        }).exceptionally(throwable -> {
-            response.putHeader("content-type", "application/json; charset=UTF-8")
-                    .setStatusCode(500)
-                    .end(throwable.getMessage());
-            return null;
-        });
-    }
-
     public void addEmployee(RoutingContext context) {
         HttpServerResponse response = context.response();
 
@@ -108,30 +92,28 @@ public class UserHandler {
         JsonObject reqData = context.getBodyAsJson();
 
         User user = reqData.getJsonObject("user").mapTo(User.class);
+
         Employement employement = reqData.getJsonObject("employement").mapTo(Employement.class);
+        employement.setUser_id(user.getId());
 
         this.dao.updateUser(user).thenAccept(resUser -> {
-            this.dao.updateEmployement(employement).thenAccept(resEmployement -> {
-                Employee employee = new Employee();
-                employee.setEmployement(resEmployement);
-                employee.setEmail(resUser.getEmail());
-                employee.setLast_name(resUser.getLast_name());
-                employee.setFirst_name(resUser.getFirst_name());
-                employee.setRole(resUser.getRole());
-                employee.setId(resUser.getId());
-                employee.setPhone(resUser.getPhone());
-
-                employee.setEmployement(resEmployement);
-
-                response.putHeader("content-type", "application/json; charset=UTF-8")
-                        .setStatusCode(200)
-                        .end(JsonObject.mapFrom(employee).encodePrettily());
-
-            }).exceptionally(throwable -> {
-                response.putHeader("content-type", "application/json; charset=UTF-8").setStatusCode(500).end(throwable.getMessage());
-                return null;
-            });
-
+            if (reqData.getJsonObject("employement").getInteger("id") == null) {
+                this.dao.setUserEmployement(employement)
+                        .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
+                        .exceptionally(throwable -> {
+                            response.putHeader("content-type", "application/json; charset=UTF-8")
+                                    .setStatusCode(500).end(throwable.getMessage());
+                            return null;
+                        });
+            } else {
+                this.dao.updateEmployement(employement)
+                        .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
+                        .exceptionally(throwable -> {
+                            response.putHeader("content-type", "application/json; charset=UTF-8")
+                                    .setStatusCode(500).end(throwable.getMessage());
+                            return null;
+                        });
+            }
         }).exceptionally(throwable -> {
             if (throwable.getMessage().contains("NOT FOUND")) {
                 response.putHeader("content-type", "application/json; charset=UTF-8").setStatusCode(404).end();
@@ -176,5 +158,23 @@ public class UserHandler {
 
     public void deleteUser(RoutingContext context) {
         System.out.println(context);
+    }
+
+
+    public void handleEmployeeUpdate(Employement employment, User user, HttpServerResponse response) {
+        Employee employee = new Employee();
+        employee.setEmployement(employment);
+        employee.setEmail(user.getEmail());
+        employee.setLast_name(user.getLast_name());
+        employee.setFirst_name(user.getFirst_name());
+        employee.setRole(user.getRole());
+        employee.setId(user.getId());
+        employee.setPhone(user.getPhone());
+
+        employee.setEmployement(employment);
+
+        response.putHeader("content-type", "application/json; charset=UTF-8")
+                .setStatusCode(200)
+                .end(JsonObject.mapFrom(employee).encodePrettily());
     }
 }

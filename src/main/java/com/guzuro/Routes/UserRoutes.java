@@ -20,7 +20,6 @@ public class UserRoutes {
         Router router = Router.router(this.vertx);
 
         router.post("/getAll").handler(rc -> this.userHandler.getAllEmployes(rc));
-        router.post("/getemployement").handler(rc -> this.userHandler.getEmployement(rc));
         router.post("/add").handler(rc -> this.userHandler.addEmployee(rc));
         router.post("/delete").handler(rc -> this.userHandler.deleteUser(rc));
         router.post("/updateUser").handler(rc -> this.userHandler.updateUser(rc));
