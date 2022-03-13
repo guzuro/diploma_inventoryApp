@@ -33,10 +33,23 @@
               <main-user-info-form v-model="user" /></div
           ></a-tab-pane>
           <a-tab-pane key="employment" tab="Трудоустройство">
-            <field-wrapper :fieldTitle="'Дата устройства'">
-              <a-date-picker format="YYYY-MM-DD" :show-time="false" v-model="date" />
-            </field-wrapper>
-            <field-wrapper class="mt-2" :fieldTitle="'Зарплата'"> <a-input-number class="w-full" v-model="employment.salary" /> </field-wrapper>
+            <div v-if="user.employement">
+              <field-wrapper :fieldTitle="'Дата устройства'">
+                <a-date-picker format="YYYY-MM-DD" :show-time="false" v-model="date" />
+              </field-wrapper>
+              <field-wrapper class="mt-2" :fieldTitle="'Зарплата'"> <a-input-number class="w-full" v-model="user.employement.salary" /> </field-wrapper>
+            </div>
+            <div v-else>
+              <a-button
+                @click="
+                  user.employement = {
+                    employement_date: null,
+                    salary: 0,
+                  }
+                "
+                >Добавить трудоустройство</a-button
+              >
+            </div>
           </a-tab-pane>
         </a-tabs>
 
@@ -53,6 +66,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import moment from 'moment';
+import { Watch } from 'vue-property-decorator';
 import MainUserInfoForm from '@/components/MainUserInfoForm.vue';
 import UserService from '@/services/UserService';
 import FieldWrapper from '@/components/FieldWrapper.vue';
@@ -74,52 +88,72 @@ export default class Employes extends Vue {
     first_name: '',
     last_name: '',
     phone: '',
-  };
-
-  employment = {
-    employement_date: '',
-    salary: 0,
+    employement: {
+      employement_date: null,
+      salary: 0,
+      user_id: null,
+    },
   };
 
   employeModalForm = false;
 
-  employeModel = {};
+  @Watch('employeModalForm')
+  onModalFormChange(state: boolean): void {
+    if (!state) {
+      this.user = {
+        email: '',
+        password: '',
+        first_name: '',
+        last_name: '',
+        phone: '',
+        employement: {
+          employement_date: null,
+          salary: 0,
+        },
+      };
+    }
+  }
 
   modalMode = 'create';
 
   get date(): any {
-    return this.employment.employement_date;
+    return this.user.employement.employement_date;
   }
 
   set date(value: any) {
-    this.employment.employement_date = moment(value).format('YYYY-MM-DDT00:00:00');
+    this.user.employement.employement_date = moment(value).format('YYYY-MM-DDT00:00:00');
   }
 
   // eslint-disable-next-line class-methods-use-this
   getEmployeeInfo(user: any): void {
-    UserService.getUserEmployement(user.id).then((response) => {
-      this.employment = response;
-      this.user = user;
-      this.employeModalForm = true;
-      this.modalMode = 'edit';
-    });
+    this.user = { ...user };
+    this.employeModalForm = true;
+    this.modalMode = 'edit';
   }
 
   getUserName = (item: any): string => `${item.last_name} ${item.first_name}`;
 
   handleOk(): void {
-    if (this.modalMode === 'create') UserService.addUser({ user: this.user, employment: this.employment, company_id: this.$store.getters['companyModule/getCompany'].id });
-    if (this.modalMode === 'edit') UserService.updateEmployee(this.user, this.employment);
+    if (this.modalMode === 'create') {
+      UserService.addUser({ user: this.user, employment: this.user.employement, company_id: this.$store.getters['companyModule/getCompany'].id }).then(this.getEmployees);
+    }
+    if (this.modalMode === 'edit') {
+      UserService.updateEmployee(this.user, this.user.employement).then(this.getEmployees);
+    }
 
     this.employeModalForm = false;
   }
 
   usersList: any[] = [];
 
-  created(): void {
+  getEmployees(): void {
     UserService.getUsers({ company_id: this.$store.getters['companyModule/getCompany'].id }).then((response) => {
       this.usersList = response;
     });
+  }
+
+  created(): void {
+    this.getEmployees();
   }
 }
 </script>

@@ -73,16 +73,4 @@ export default class UserService {
       return e;
     }
   }
-
-  static async getUserEmployement(user_id: number): Promise<any> {
-    try {
-      console.log(user_id);
-
-      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/getemployement`, { userId: user_id });
-      return data;
-    } catch (e:any) {
-      errorNotification(e.message);
-      return e;
-    }
-  }
 }
