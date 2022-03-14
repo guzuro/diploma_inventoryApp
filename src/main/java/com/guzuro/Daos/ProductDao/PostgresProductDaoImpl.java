@@ -15,22 +15,27 @@ public class PostgresProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public CompletableFuture<CopyOnWriteArrayList<Product>> getAllProducts() {
+    public CompletableFuture<CopyOnWriteArrayList<Product>> getAllProducts(int company_id) {
         return null;
     }
 
     @Override
-    public CompletableFuture<Product> createProduct(Product product) {
+    public CompletableFuture<CopyOnWriteArrayList<Product>> getWarehouseProducts(int warehouse_id) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<CopyOnWriteArrayList<Product>> removeProduct(double sku) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Product> addProduct(Product product) {
         return null;
     }
 
     @Override
     public CompletableFuture<Product> updateProduct(Product product) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Boolean> deleteProduct(Number productId) {
         return null;
     }
 }

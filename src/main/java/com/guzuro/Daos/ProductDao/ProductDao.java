@@ -5,11 +5,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface ProductDao {
 
-    CompletableFuture<Product> createProduct(Product todo);
+    CompletableFuture<CopyOnWriteArrayList<Product>> getAllProducts(int company_id);
 
-    CompletableFuture<CopyOnWriteArrayList<Product>> getAllProducts();
+    CompletableFuture<CopyOnWriteArrayList<Product>> getWarehouseProducts(int warehouse_id);
 
-    CompletableFuture<Product> updateProduct(Product todo);
+    CompletableFuture<CopyOnWriteArrayList<Product>> removeProduct(double sku);
 
-    CompletableFuture<Boolean> deleteProduct(Number todoId);
+    CompletableFuture<Product> addProduct(Product product);
+
+    CompletableFuture<Product> updateProduct(Product product);
+
 }
