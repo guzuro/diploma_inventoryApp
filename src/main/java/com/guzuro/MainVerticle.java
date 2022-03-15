@@ -3,6 +3,7 @@ package com.guzuro;
 import com.guzuro.Routes.AuthRoutes;
 import com.guzuro.Routes.CompanyRoutes;
 import com.guzuro.Routes.UserRoutes;
+import com.guzuro.Routes.WarehouseRoutes;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
@@ -49,13 +50,14 @@ public class MainVerticle extends AbstractVerticle {
                         .setCookieSecureFlag(true));
 
         router.route("/api");
-//        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
-        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
-        router.mountSubRouter("/company", new CompanyRoutes(vertx).setRoutes());
-//
         router.mountSubRouter("/auth", new AuthRoutes(vertx).setRoutes(vertx));
-//
-//
+        router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
+
+        router.mountSubRouter("/company", new CompanyRoutes(vertx).setRoutes());
+        router.mountSubRouter("/warehouse", new WarehouseRoutes(vertx).setRoutes());
+//        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
+
+
         router.get("/").handler(routingContext -> {
             routingContext.response()
                     .putHeader("content-type", "text/html")
