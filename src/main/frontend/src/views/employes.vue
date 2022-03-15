@@ -17,7 +17,12 @@
           </div>
           <a-list-item slot="renderItem" slot-scope="item">
             <a slot="actions"><a-icon @click="getEmployeeInfo(item)" type="edit" /></a>
-            <a slot="actions"><a-icon @click="removeEmployee(item)" type="delete" /></a>
+
+            <a slot="actions">
+              <a-popconfirm title="Действительно удалить польователя?" ok-text="Удалить" cancel-text="Отмена" @confirm="removeEmployee(item)">
+                <a-icon type="delete" />
+                </a-popconfirm></a>
+
             <a-list-item-meta :description="item.role">
               <div slot="title">{{ getUserName(item) }}</div>
             </a-list-item-meta>
@@ -37,7 +42,9 @@
               <field-wrapper :fieldTitle="'Дата устройства'">
                 <a-date-picker format="YYYY-MM-DD" :show-time="false" v-model="date" />
               </field-wrapper>
-              <field-wrapper class="mt-2" :fieldTitle="'Зарплата'"> <a-input-number class="w-full" v-model="user.employement.salary" /> </field-wrapper>
+              <field-wrapper class="mt-2" :fieldTitle="'Зарплата'">
+                <a-input-number class="w-full" v-model="user.employement.salary" />
+              </field-wrapper>
             </div>
             <div v-else>
               <a-button
@@ -150,6 +157,11 @@ export default class Employes extends Vue {
     UserService.getUsers({ company_id: this.$store.getters['companyModule/getCompany'].id }).then((response) => {
       this.usersList = response;
     });
+  }
+
+  async removeEmployee(item: any): Promise<void> {
+    await UserService.deleteUser({ user_id: item.id });
+    this.getEmployees();
   }
 
   created(): void {

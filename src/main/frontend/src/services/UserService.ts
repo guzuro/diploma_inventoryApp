@@ -73,4 +73,14 @@ export default class UserService {
       return e;
     }
   }
+
+  static async deleteUser({ user_id }:{user_id: number}): Promise<void> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/delete`, { user_id });
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
 }
