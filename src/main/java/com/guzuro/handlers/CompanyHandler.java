@@ -26,7 +26,9 @@ public class CompanyHandler {
                             .setStatusCode(200)
                             .end(JsonObject.mapFrom(company).encodePrettily());
                 }).exceptionally(throwable -> {
-            response.setStatusCode(500).end(throwable.getMessage());
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(throwable.getMessage());
             return null;
         });
     }
