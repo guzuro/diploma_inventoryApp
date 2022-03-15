@@ -30,16 +30,21 @@ const routes: Array<RouteConfig> = [
         path: '/office/:userId/employes',
         name: 'Employes',
       },
-      // {
-      //   component: () => import('../views/product-list.vue'),
-      //   path: 'products',
-      //   name: 'Products',
-      // },
-      // {
-      //   component: () => import('../views/product.vue'),
-      //   path: 'products/:actionType',
-      //   name: 'Product',
-      // },
+      {
+        component: () => import('../views/warehouses.vue'),
+        path: '/office/:userId/warehouses',
+        name: 'Warehouses',
+      },
+      {
+        component: () => import('../views/product-list.vue'),
+        path: '/office/:userId/products',
+        name: 'Products',
+      },
+      {
+        component: () => import('../views/product.vue'),
+        path: '/office/:userId/products/:actionType',
+        name: 'Product',
+      },
     ],
   },
 ];
