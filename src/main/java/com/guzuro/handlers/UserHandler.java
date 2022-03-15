@@ -157,7 +157,24 @@ public class UserHandler {
     }
 
     public void deleteUser(RoutingContext context) {
-        System.out.println(context);
+        HttpServerResponse response = context.response();
+        int userId = context.getBodyAsJson().getInteger("user_id");
+
+        this.dao.deleteUser(userId).thenAccept(aBoolean -> {
+            if (aBoolean) {
+                response.putHeader("content-type", "application/json; charset=UTF-8")
+                        .setStatusCode(200)
+                        .end();
+            } else {
+                response.putHeader("content-type", "application/json; charset=UTF-8")
+                        .setStatusCode(404)
+                        .end();
+            }
+        }).exceptionally(throwable -> {
+            response.setStatusCode(500).end(throwable.getMessage());
+            return null;
+        });
+
     }
 
 

@@ -194,7 +194,16 @@ public class PostgresUserDaoImpl implements UserDao {
 
     @Override
     public CompletableFuture<Boolean> deleteUser(int userId) {
-        return null;
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.pgClient.preparedQuery("DELETE FROM db_user WHERE id = $1;")
+                .execute(Tuple.of(userId), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(true);
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 
     @Override
