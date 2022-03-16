@@ -50,13 +50,37 @@ export default class NavigationItems extends Vue {
           }).href,
         },
         {
-          name: 'Склады',
-          path: this.$router.resolve({
-            name: 'Warehouses',
-            params: {
-              userId: this.$store.state.userModule.userData.id.toString(),
+          name: 'Продукты',
+          guid: '124',
+          children: [
+            {
+              name: 'Склады',
+              path: this.$router.resolve({
+                name: 'Warehouses',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
             },
-          }).href,
+            {
+              name: 'Категории',
+              path: this.$router.resolve({
+                name: 'Categories',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
+            },
+            {
+              name: 'Скидки',
+              path: this.$router.resolve({
+                name: 'Sales',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
+            },
+          ],
         },
       ];
     }

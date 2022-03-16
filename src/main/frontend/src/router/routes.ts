@@ -36,6 +36,16 @@ const routes: Array<RouteConfig> = [
         name: 'Warehouses',
       },
       {
+        component: () => import('../views/categories.vue'),
+        path: '/office/:userId/categories',
+        name: 'Categories',
+      },
+      {
+        component: () => import('../views/sales.vue'),
+        path: '/office/:userId/sales',
+        name: 'Sales',
+      },
+      {
         component: () => import('../views/product-list.vue'),
         path: '/office/:userId/products',
         name: 'Products',
