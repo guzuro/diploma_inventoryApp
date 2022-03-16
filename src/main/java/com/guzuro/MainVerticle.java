@@ -2,6 +2,7 @@ package com.guzuro;
 
 import com.guzuro.Routes.AuthRoutes;
 import com.guzuro.Routes.CompanyRoutes;
+import com.guzuro.Routes.Config.SaleRoutes;
 import com.guzuro.Routes.UserRoutes;
 import com.guzuro.Routes.WarehouseRoutes;
 import io.vertx.core.AbstractVerticle;
@@ -55,6 +56,11 @@ public class MainVerticle extends AbstractVerticle {
 
         router.mountSubRouter("/company", new CompanyRoutes(vertx).setRoutes());
         router.mountSubRouter("/warehouse", new WarehouseRoutes(vertx).setRoutes());
+
+
+        router.mountSubRouter("/config/sales", new SaleRoutes(vertx).setRoutes(vertx));
+
+
 //        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
 
 
