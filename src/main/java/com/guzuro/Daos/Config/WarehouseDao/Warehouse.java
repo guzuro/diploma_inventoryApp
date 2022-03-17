@@ -1,4 +1,4 @@
-package com.guzuro.Daos.WarehouseDao;
+package com.guzuro.Daos.Config.WarehouseDao;
 
 public class Warehouse {
     private int id;

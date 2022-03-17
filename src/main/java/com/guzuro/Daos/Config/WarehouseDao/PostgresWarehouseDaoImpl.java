@@ -1,4 +1,4 @@
-package com.guzuro.Daos.WarehouseDao;
+package com.guzuro.Daos.Config.WarehouseDao;
 
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import io.vertx.core.Vertx;

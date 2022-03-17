@@ -1,9 +1,8 @@
-package com.guzuro.handlers;
+package com.guzuro.handlers.Config;
 
-import com.guzuro.Daos.CompanyDao.PostgresCompanyDaoImpl;
-import com.guzuro.Daos.WarehouseDao.PostgresWarehouseDaoImpl;
-import com.guzuro.Daos.WarehouseDao.Warehouse;
-import com.guzuro.Daos.WarehouseDao.WarehouseDao;
+import com.guzuro.Daos.Config.WarehouseDao.PostgresWarehouseDaoImpl;
+import com.guzuro.Daos.Config.WarehouseDao.Warehouse;
+import com.guzuro.Daos.Config.WarehouseDao.WarehouseDao;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;

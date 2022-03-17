@@ -1,7 +1,6 @@
-package com.guzuro.Routes;
+package com.guzuro.Routes.Config;
 
-import com.guzuro.handlers.CompanyHandler;
-import com.guzuro.handlers.WarehouseHandler;
+import com.guzuro.handlers.Config.WarehouseHandler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 
