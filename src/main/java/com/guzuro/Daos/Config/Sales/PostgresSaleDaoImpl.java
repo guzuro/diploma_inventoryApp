@@ -1,7 +1,6 @@
 package com.guzuro.Daos.Config.Sales;
 
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
-import com.guzuro.Daos.WarehouseDao.Warehouse;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;

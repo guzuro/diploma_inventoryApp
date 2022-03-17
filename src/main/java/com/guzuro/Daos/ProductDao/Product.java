@@ -1,7 +1,6 @@
 package com.guzuro.Daos.ProductDao;
 
-import com.guzuro.Daos.CompanyDao.Company;
-import com.guzuro.Daos.WarehouseDao.Warehouse;
+import com.guzuro.Daos.Config.WarehouseDao.Warehouse;
 
 public class Product {
     private long sku;

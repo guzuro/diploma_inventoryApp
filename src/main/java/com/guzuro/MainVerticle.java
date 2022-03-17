@@ -2,9 +2,10 @@ package com.guzuro;
 
 import com.guzuro.Routes.AuthRoutes;
 import com.guzuro.Routes.CompanyRoutes;
+import com.guzuro.Routes.Config.CategoryRoutes;
 import com.guzuro.Routes.Config.SaleRoutes;
 import com.guzuro.Routes.UserRoutes;
-import com.guzuro.Routes.WarehouseRoutes;
+import com.guzuro.Routes.Config.WarehouseRoutes;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
@@ -59,6 +60,7 @@ public class MainVerticle extends AbstractVerticle {
 
 
         router.mountSubRouter("/config/sales", new SaleRoutes(vertx).setRoutes(vertx));
+        router.mountSubRouter("/config/category", new CategoryRoutes(vertx).setRoutes(vertx));
 
 
 //        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
