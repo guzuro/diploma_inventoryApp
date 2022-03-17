@@ -40,9 +40,9 @@ public class PostgresSaleDaoImpl implements SaleDao {
 
         this.pgClient.preparedQuery("UPDATE db_sales " +
                 "SET name = $1, type= $2, is_active = $3, value = $4 " +
-                "WHERE id = $3 " +
+                "WHERE id = $5 " +
                 "RETURNING id, name, type, is_active, value").execute(
-                Tuple.of(sale.getName(), sale.getType(), sale.getIs_active(), sale.getValue()),
+                Tuple.of(sale.getName(), sale.getType(), sale.getIs_active(), sale.getValue(), sale.getId()),
                 ar -> {
                     if (ar.succeeded()) {
                         future.complete(ar.result().iterator().next().toJson().mapTo(Sale.class));

@@ -25,7 +25,7 @@ export default class SalesService {
     }
   }
 
-  static async updateWarehouse(reqBody: { sale: Sale }): Promise<Sale> {
+  static async updateSale(reqBody: { sale: Sale }): Promise<Sale> {
     try {
       const { data } = await BaseApi.sendRequest(`${SalesService.BASE_PATH}/update`, reqBody);
       return data;
