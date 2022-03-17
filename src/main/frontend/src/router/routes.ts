@@ -31,11 +31,6 @@ const routes: Array<RouteConfig> = [
         name: 'Employes',
       },
       {
-        component: () => import('../views/employes/employee-roles.vue'),
-        path: '/office/:userId/employee-roles',
-        name: 'EmployeeRoles',
-      },
-      {
         component: () => import('../views/config/warehouses.vue'),
         path: '/office/:userId/warehouses',
         name: 'Warehouses',
@@ -49,6 +44,11 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/config/sales.vue'),
         path: '/office/:userId/sales',
         name: 'Sales',
+      },
+      {
+        component: () => import('../views/config/employee-roles.vue'),
+        path: '/office/:userId/employee-roles',
+        name: 'EmployeeRoles',
       },
       {
         component: () => import('../views/product-list.vue'),

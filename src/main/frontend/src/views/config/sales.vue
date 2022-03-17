@@ -9,7 +9,7 @@
         class="mb-5"
         >Добавить скидку</a-button
       >
-      <div v-if="sales.length" class="flex flex-wrap">
+      <div v-if="sales && sales.length" class="flex flex-wrap">
         <div v-for="(sale, index) in sales" :key="index" class="mb-2 md:mb-0 md:mr-2 w-full md:w-1/3">
           <a-card hoverable :class="{ 'border-green-500': sale.is_active, 'border-red-500': !sale.is_active }">
             <template slot="actions" class="ant-card-actions">
@@ -60,7 +60,7 @@ import SalesService from '@/services/Config/SalesService';
   },
 })
 export default class Sales extends Vue {
-  sales: Array<Sale> = [];
+  sales: Array<Sale> | null = null;
 
   spinning = false;
 

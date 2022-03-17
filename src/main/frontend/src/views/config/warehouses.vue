@@ -9,7 +9,7 @@
         class="mb-5"
         >Добавить склад</a-button
       >
-      <div v-if="warehouses.length" class="flex flex-wrap">
+      <div v-if="warehouses && warehouses.length" class="flex flex-wrap">
         <div v-for="(warehouse, index) in warehouses" :key="index" class="mb-2 md:mb-0 md:mr-2 w-full md:w-1/3">
           <a-card hoverable>
             <template slot="actions" class="ant-card-actions">
@@ -65,7 +65,7 @@ export default class Warehouses extends Vue {
 
   modalMode = 'new';
 
-  warehouses: Array<Warehouse> = [];
+  warehouses: Array<Warehouse> | null = null;
 
   warehouse: Warehouse = {
     title: '',

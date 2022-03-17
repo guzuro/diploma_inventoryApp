@@ -9,13 +9,16 @@
         class="mb-5"
         >Добавить категорию</a-button
       >
-      <div v-if="categories.length" class="flex flex-wrap">
+      <div v-if="categories && categories.length" class="flex flex-wrap">
         <div v-for="(category, index) in categories" :key="index" class="mb-2 md:mb-0 md:mr-2 w-full md:w-1/3">
           <a-card hoverable>
             <template slot="actions" class="ant-card-actions">
               <a-icon key="edit" type="edit" @click="doEdit(category)" />
+              <a-popconfirm title="Действительно удалить категорию?" ok-text="Удалить" cancel-text="Отмена" @confirm="removeRole(category.id)">
+                <a-icon key="remove" type="delete" />
+              </a-popconfirm>
             </template>
-            <a-card-meta :title="category.name"/>
+            <a-card-meta :title="category.name" />
           </a-card>
         </div>
       </div>
@@ -61,7 +64,7 @@ export default class Categories extends Vue {
 
   modalMode = 'new';
 
-  categories: Array<Category> = [];
+  categories: Array<Category> | null = null;
 
   category: Category = {
     name: '',
@@ -69,6 +72,11 @@ export default class Categories extends Vue {
 
   get companyId(): number {
     return this.$store.getters['companyModule/getCompany'].id;
+  }
+
+  async removeRole(id: number): Promise<void> {
+    await categoryService.deleteCategory({ category_id: id });
+    this.getCategories();
   }
 
   doEdit(item: Category): void {

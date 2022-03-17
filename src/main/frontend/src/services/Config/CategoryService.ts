@@ -35,4 +35,12 @@ export default class CategoryService {
       return e;
     }
   }
+
+  static async deleteCategory(reqBody: { category_id:number }): Promise<void> {
+    try {
+      await BaseApi.sendRequest(`${CategoryService.BASE_PATH}/delete`, reqBody);
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
+  }
 }

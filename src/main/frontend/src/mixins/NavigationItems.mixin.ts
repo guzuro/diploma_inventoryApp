@@ -44,36 +44,19 @@ export default class NavigationItems extends Vue {
           ],
         },
         {
-          name: 'Сотрудники и должности',
-          guid: '124',
-          icon: 'folder-open',
-          children: [
-            {
-              name: 'Сотрудники',
-              icon: 'team',
-              path: this.$router.resolve({
-                name: 'Employes',
-                params: {
-                  userId: this.$store.state.userModule.userData.id.toString(),
-                },
-              }).href,
+          name: 'Сотрудники',
+          icon: 'team',
+          path: this.$router.resolve({
+            name: 'Employes',
+            params: {
+              userId: this.$store.state.userModule.userData.id.toString(),
             },
-            {
-              name: 'Должности',
-              icon: 'folder',
-              path: this.$router.resolve({
-                name: 'EmployeeRoles',
-                params: {
-                  userId: this.$store.state.userModule.userData.id.toString(),
-                },
-              }).href,
-            },
-          ],
+          }).href,
         },
         {
-          name: 'Продукты',
+          name: 'Справочник',
           guid: '125',
-          icon: 'database',
+          icon: 'book',
           children: [
             {
               name: 'Склады',
@@ -100,6 +83,16 @@ export default class NavigationItems extends Vue {
               icon: 'gift',
               path: this.$router.resolve({
                 name: 'Sales',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
+            },
+            {
+              name: 'Должности',
+              icon: 'folder',
+              path: this.$router.resolve({
+                name: 'EmployeeRoles',
                 params: {
                   userId: this.$store.state.userModule.userData.id.toString(),
                 },
