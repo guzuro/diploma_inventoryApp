@@ -26,22 +26,27 @@ const routes: Array<RouteConfig> = [
         name: 'CompanyProfile',
       },
       {
-        component: () => import('../views/employes.vue'),
+        component: () => import('../views/employes/employes.vue'),
         path: '/office/:userId/employes',
         name: 'Employes',
       },
       {
-        component: () => import('../views/warehouses.vue'),
+        component: () => import('../views/employes/employee-roles.vue'),
+        path: '/office/:userId/employee-roles',
+        name: 'EmployeeRoles',
+      },
+      {
+        component: () => import('../views/config/warehouses.vue'),
         path: '/office/:userId/warehouses',
         name: 'Warehouses',
       },
       {
-        component: () => import('../views/categories.vue'),
+        component: () => import('../views/config/categories.vue'),
         path: '/office/:userId/categories',
         name: 'Categories',
       },
       {
-        component: () => import('../views/sales.vue'),
+        component: () => import('../views/config/sales.vue'),
         path: '/office/:userId/sales',
         name: 'Sales',
       },

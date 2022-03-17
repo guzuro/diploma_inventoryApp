@@ -14,13 +14,16 @@ export default class NavigationItems extends Vue {
             },
           }).href,
           name: 'Dashboard',
+          icon: 'appstore',
         },
         {
           name: 'Основная информация',
+          icon: 'idcard',
           guid: '123',
           children: [
             {
               name: 'Мой профиль',
+              icon: 'user',
               path: this.$router.resolve({
                 name: 'Profile',
                 params: {
@@ -30,6 +33,7 @@ export default class NavigationItems extends Vue {
             },
             {
               name: 'Профиль компании',
+              icon: 'trademark',
               path: this.$router.resolve({
                 name: 'CompanyProfile',
                 params: {
@@ -39,22 +43,41 @@ export default class NavigationItems extends Vue {
             },
           ],
         },
-
         {
-          name: 'Сотрудники',
-          path: this.$router.resolve({
-            name: 'Employes',
-            params: {
-              userId: this.$store.state.userModule.userData.id.toString(),
+          name: 'Сотрудники и должности',
+          guid: '124',
+          icon: 'folder-open',
+          children: [
+            {
+              name: 'Сотрудники',
+              icon: 'team',
+              path: this.$router.resolve({
+                name: 'Employes',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
             },
-          }).href,
+            {
+              name: 'Должности',
+              icon: 'folder',
+              path: this.$router.resolve({
+                name: 'EmployeeRoles',
+                params: {
+                  userId: this.$store.state.userModule.userData.id.toString(),
+                },
+              }).href,
+            },
+          ],
         },
         {
           name: 'Продукты',
-          guid: '124',
+          guid: '125',
+          icon: 'database',
           children: [
             {
               name: 'Склады',
+              icon: 'shop',
               path: this.$router.resolve({
                 name: 'Warehouses',
                 params: {
@@ -64,6 +87,7 @@ export default class NavigationItems extends Vue {
             },
             {
               name: 'Категории',
+              icon: 'filter',
               path: this.$router.resolve({
                 name: 'Categories',
                 params: {
@@ -73,6 +97,7 @@ export default class NavigationItems extends Vue {
             },
             {
               name: 'Скидки',
+              icon: 'gift',
               path: this.$router.resolve({
                 name: 'Sales',
                 params: {
