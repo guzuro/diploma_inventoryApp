@@ -93,26 +93,32 @@ public class UserHandler {
 
         User user = reqData.getJsonObject("user").mapTo(User.class);
 
-        Employement employement = reqData.getJsonObject("employement").mapTo(Employement.class);
-        employement.setUser_id(user.getId());
 
         this.dao.updateUser(user).thenAccept(resUser -> {
-            if (reqData.getJsonObject("employement").getInteger("id") == null) {
-                this.dao.setUserEmployement(employement)
-                        .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
-                        .exceptionally(throwable -> {
-                            response.putHeader("content-type", "application/json; charset=UTF-8")
-                                    .setStatusCode(500).end(throwable.getMessage());
-                            return null;
-                        });
+            if (reqData.getJsonObject("employement") != null) {
+                Employement employement = reqData.getJsonObject("employement").mapTo(Employement.class);
+                employement.setUser_id(user.getId());
+
+                if (reqData.getJsonObject("employement").getInteger("id") == null) {
+                    this.dao.setUserEmployement(employement)
+                            .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
+                            .exceptionally(throwable -> {
+                                response.putHeader("content-type", "application/json; charset=UTF-8")
+                                        .setStatusCode(500).end(throwable.getMessage());
+                                return null;
+                            });
+                } else {
+                    this.dao.updateEmployement(employement)
+                            .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
+                            .exceptionally(throwable -> {
+                                response.putHeader("content-type", "application/json; charset=UTF-8")
+                                        .setStatusCode(500).end(throwable.getMessage());
+                                return null;
+                            });
+                }
             } else {
-                this.dao.updateEmployement(employement)
-                        .thenAccept(resEmployment -> this.handleEmployeeUpdate(resEmployment, resUser, response))
-                        .exceptionally(throwable -> {
-                            response.putHeader("content-type", "application/json; charset=UTF-8")
-                                    .setStatusCode(500).end(throwable.getMessage());
-                            return null;
-                        });
+                this.handleEmployeeUpdate(null, resUser, response);
+
             }
         }).exceptionally(throwable -> {
             if (throwable.getMessage().contains("NOT FOUND")) {

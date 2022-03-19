@@ -32,7 +32,7 @@ public class PostgresUserDaoImpl implements UserDao {
                         userCompanyDto.user.getFirst_name(),
                         userCompanyDto.user.getLast_name(),
                         userCompanyDto.user.getPhone(),
-                        "salesman",
+                        userCompanyDto.user.getRole(),
                         userCompanyDto.companyId
                 ), ar -> {
                     if (ar.succeeded()) {
