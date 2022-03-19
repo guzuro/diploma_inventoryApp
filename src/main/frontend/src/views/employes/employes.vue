@@ -19,11 +19,10 @@
             <a slot="actions"><a-icon @click="getEmployeeInfo(item)" type="edit" /></a>
 
             <a slot="actions">
-              <a-popconfirm title="Действительно удалить польователя?" ok-text="Удалить" cancel-text="Отмена" @confirm="removeEmployee(item)">
-                <a-icon type="delete" />
-                </a-popconfirm></a>
+              <a-popconfirm title="Действительно удалить польователя?" ok-text="Удалить" cancel-text="Отмена" @confirm="removeEmployee(item)"> <a-icon type="delete" /> </a-popconfirm
+            ></a>
 
-            <a-list-item-meta :description="item.role">
+            <a-list-item-meta v-if="$store.state.configModule.config.employeeRoles" :description="resolveRole(item.role)">
               <div slot="title">{{ getUserName(item) }}</div>
             </a-list-item-meta>
           </a-list-item>
@@ -35,8 +34,17 @@
         <a-tabs>
           <a-tab-pane key="main" tab="Основное"
             ><div class="flex flex-col">
-              <main-user-info-form v-model="user" /></div
-          ></a-tab-pane>
+              <main-user-info-form v-model="user" />
+              {{ employeeRoles }}
+              <field-wrapper class="mt-2" :fieldTitle="'Должность'" v-if="$store.state.configModule.config.employeeRoles !== null">
+                <a-select class="w-full" v-model="user.role" :default-value="Number.parseInt(user.role)" @change="(value) => user.role = value">
+                  <a-select-option v-for="(role, index) in employeeRoles" :key="index" :value="role.value">
+                    {{ role.label }}
+                  </a-select-option>
+                </a-select>
+              </field-wrapper>
+            </div>
+          </a-tab-pane>
           <a-tab-pane key="employment" tab="Трудоустройство">
             <div v-if="user.employement">
               <field-wrapper :fieldTitle="'Дата устройства'">
@@ -77,6 +85,8 @@ import { Watch } from 'vue-property-decorator';
 import MainUserInfoForm from '@/components/MainUserInfoForm.vue';
 import UserService from '@/services/UserService';
 import FieldWrapper from '@/components/FieldWrapper.vue';
+import { EmployeeRole } from '@/types/EmployeeRoles';
+import EmployeeRolesService from '@/services/Config/EmployeeRolesService';
 
 @Component({
   components: {
@@ -95,6 +105,7 @@ export default class Employes extends Vue {
     first_name: '',
     last_name: '',
     phone: '',
+    role: '',
     employement: {
       employement_date: null,
       salary: 0,
@@ -103,6 +114,10 @@ export default class Employes extends Vue {
   };
 
   employeModalForm = false;
+
+  resolveRole(roleId: string): string | undefined {
+    return this.employeeRoles.find((r: any) => r.value === roleId)?.label;
+  }
 
   @Watch('employeModalForm')
   onModalFormChange(state: boolean): void {
@@ -113,12 +128,20 @@ export default class Employes extends Vue {
         first_name: '',
         last_name: '',
         phone: '',
+        role: '',
         employement: {
           employement_date: null,
           salary: 0,
         },
       };
     }
+  }
+
+  get employeeRoles(): Array<{ label: string; value: string }> {
+    return this.$store.state.configModule.config.employeeRoles.slice().map((i: EmployeeRole) => ({
+      label: i.name,
+      value: i.id?.toString(),
+    }));
   }
 
   modalMode = 'create';
@@ -142,9 +165,15 @@ export default class Employes extends Vue {
 
   handleOk(): void {
     if (this.modalMode === 'create') {
-      UserService.addUser({ user: this.user, employment: this.user.employement, company_id: this.$store.getters['companyModule/getCompany'].id }).then(this.getEmployees);
+      UserService.addUser({ user: this.user, employment: this.user.employement, company_id: this.$store.getters['companyModule/getCompany'].id }).then(
+        this.getEmployees,
+      );
     }
     if (this.modalMode === 'edit') {
+      const user = {
+        ...this.user,
+        role: this.user.role.toString(),
+      };
       UserService.updateEmployee(this.user, this.user.employement).then(this.getEmployees);
     }
 
@@ -164,8 +193,10 @@ export default class Employes extends Vue {
     this.getEmployees();
   }
 
-  created(): void {
+  async created(): Promise<void> {
     this.getEmployees();
+    const list = await EmployeeRolesService.getEmployeeRoles({ company_id: this.$store.getters['companyModule/getCompany'].id });
+    await this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'employeeRoles', value: list });
   }
 }
 </script>
