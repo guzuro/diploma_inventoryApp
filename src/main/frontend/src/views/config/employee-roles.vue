@@ -79,6 +79,7 @@ export default class EmployeeRoles extends Vue {
   async getEmployeeRoles(): Promise<void> {
     this.spinning = true;
     this.employeeRolesList = await EmployeeRolesService.getEmployeeRoles({ company_id: this.companyId });
+    this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'employeeRoles', value: this.employeeRolesList });
     this.spinning = false;
   }
 

@@ -102,6 +102,7 @@ export default class Categories extends Vue {
     this.isCategoryModalOpen = false;
     this.spinning = true;
     this.categories = await categoryService.getCategory({ company_id: this.companyId });
+    this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'categorie', value: this.categories });
     this.spinning = false;
   }
 

@@ -40,7 +40,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Watch } from 'vue-property-decorator';
 import { Warehouse } from '@/types/Warehouse';
-import WarehouseService from '@/services/WarehouseService';
+import WarehouseService from '@/services/Config/WarehouseService';
 import FieldWrapper from '@/components/FieldWrapper.vue';
 
 @Component({
@@ -99,6 +99,7 @@ export default class Warehouses extends Vue {
     this.isWarehouseModalOpen = false;
     this.spinning = true;
     this.warehouses = await WarehouseService.getWarehouses({ company_id: this.companyId });
+    this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'warehouse', value: this.warehouses });
     this.spinning = false;
   }
 

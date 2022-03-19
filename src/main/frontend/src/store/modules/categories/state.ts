@@ -30,5 +30,5 @@ export default {
   },
   actions: {
   },
-  getters: {}
+  getters: {},
 };
