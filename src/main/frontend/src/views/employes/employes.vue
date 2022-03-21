@@ -1,9 +1,17 @@
 <template>
   <div class="employes">
     <a-row>
-      <a-col :span="7" class="mr-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam, debitis!</a-col>
+      <a-col :span="7" class="mr-2">
+        Фильтр по должности
+        <div v-if="employeeRoles.length">
+          <div v-for="(role, index) in employeeRoles" :key="index">
+            <a-button @click="doFilter(role.value)" class="w-full mb-2" type="dashed"> {{ role.label }} </a-button>
+          </div>
+          <a-button @click="doFilter('reset')" class="w-full mb-2" type="dashed"> Сброс </a-button>
+        </div>
+      </a-col>
       <a-col :span="16">
-        <a-list :loading="loading" item-layout="horizontal" :data-source="usersList">
+        <a-list :loading="loading" item-layout="horizontal" :data-source="filteredUsers">
           <div slot="header">
             <a-button
               icon="plus"
@@ -35,9 +43,8 @@
           <a-tab-pane key="main" tab="Основное"
             ><div class="flex flex-col">
               <main-user-info-form v-model="user" />
-              {{ employeeRoles }}
               <field-wrapper class="mt-2" :fieldTitle="'Должность'" v-if="$store.state.configModule.config.employeeRoles !== null">
-                <a-select class="w-full" v-model="user.role" :default-value="Number.parseInt(user.role)" @change="(value) => user.role = value">
+                <a-select class="w-full" v-model="user.role" :default-value="Number.parseInt(user.role)" @change="(value) => (user.role = value)">
                   <a-select-option v-for="(role, index) in employeeRoles" :key="index" :value="role.value">
                     {{ role.label }}
                   </a-select-option>
@@ -82,6 +89,7 @@ import Component from 'vue-class-component';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import moment from 'moment';
 import { Watch } from 'vue-property-decorator';
+import { cloneDeep } from 'lodash';
 import MainUserInfoForm from '@/components/MainUserInfoForm.vue';
 import UserService from '@/services/UserService';
 import FieldWrapper from '@/components/FieldWrapper.vue';
@@ -98,6 +106,16 @@ import EmployeeRolesService from '@/services/Config/EmployeeRolesService';
 })
 export default class Employes extends Vue {
   loading = false;
+
+  filteredUsers: any[] = [];
+
+  doFilter(role: string) {
+    if (role === 'reset') {
+      this.filteredUsers = this.originalUsersList;
+    } else {
+      this.filteredUsers = cloneDeep(this.originalUsersList.filter((e) => e.role === role));
+    }
+  }
 
   user: any = {
     email: '',
@@ -138,10 +156,13 @@ export default class Employes extends Vue {
   }
 
   get employeeRoles(): Array<{ label: string; value: string }> {
-    return this.$store.state.configModule.config.employeeRoles.slice().map((i: EmployeeRole) => ({
-      label: i.name,
-      value: i.id?.toString(),
-    }));
+    if (this.$store.state.configModule.config.employeeRoles !== null) {
+      return this.$store.state.configModule.config.employeeRoles.map((i: EmployeeRole) => ({
+        label: i.name,
+        value: i.id?.toString(),
+      }));
+    }
+    return [];
   }
 
   modalMode = 'create';
@@ -165,26 +186,21 @@ export default class Employes extends Vue {
 
   handleOk(): void {
     if (this.modalMode === 'create') {
-      UserService.addUser({ user: this.user, employment: this.user.employement, company_id: this.$store.getters['companyModule/getCompany'].id }).then(
-        this.getEmployees,
-      );
+      UserService.addUser({ user: this.user, employment: this.user.employement, company_id: this.$store.getters['companyModule/getCompany'].id }).then(this.getEmployees);
     }
     if (this.modalMode === 'edit') {
-      const user = {
-        ...this.user,
-        role: this.user.role.toString(),
-      };
       UserService.updateEmployee(this.user, this.user.employement).then(this.getEmployees);
     }
 
     this.employeModalForm = false;
   }
 
-  usersList: any[] = [];
+  originalUsersList: any[] = [];
 
   getEmployees(): void {
     UserService.getUsers({ company_id: this.$store.getters['companyModule/getCompany'].id }).then((response) => {
-      this.usersList = response;
+      this.originalUsersList = response;
+      this.filteredUsers = this.originalUsersList;
     });
   }
 
