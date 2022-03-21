@@ -22,9 +22,7 @@ router.beforeEach((to, from, next) => {
       AuthService.checkLogin()
         .then(() => next())
         .catch((e: any) => {
-          if (e === 401) {
-            next({ name: 'Login' });
-          }
+          next({ name: 'Login' });
         });
     }
   }
