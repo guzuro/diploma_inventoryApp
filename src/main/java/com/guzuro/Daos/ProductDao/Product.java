@@ -13,7 +13,7 @@ public class Product {
     private String photo_main;
     private int warehouse_id;
     private int company_id;
-    private String photos;
+    private String[] photos;
 
 
     public Product() {
@@ -47,7 +47,7 @@ public class Product {
         this.warehouse_id = warehouse_id;
     }
 
-    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, String photo_main, int warehouse_id, String photos) {
+    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, String photo_main, int warehouse_id, String[] photos) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -126,11 +126,11 @@ public class Product {
         this.photo_main = photo_main;
     }
 
-    public String getPhotos() {
+    public String[] getPhotos() {
         return photos;
     }
 
-    public void setPhotos(String photos) {
+    public void setPhotos(String[] photos) {
         this.photos = photos;
     }
 

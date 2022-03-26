@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,39 +27,7 @@ public class ProductsHandler {
 
         this.dao.getAllProducts(context.getBodyAsJson().getInteger("company_id"))
                 .thenAccept(products -> {
-
-                    CopyOnWriteArrayList<Product> newProducts = new CopyOnWriteArrayList<>();
-                    List<Integer> keys = new ArrayList<>();
-                    int key = 0;
-
-                    products.forEach(product -> {
-                        if (!keys.contains(product.getSku())) {
-                            
-                        }
-
-                    });
-
-
-
-//                    $newBookInfo = [];
-//                    $newBookKey = [];
-//                    $newKey = 0;
-//                    foreach($bookInfo as $bookKey => $bookValue){
-//
-//                        if(!in_array($bookValue["bookId"],$newBookKey)){
-//                            ++$newKey;
-//                            $newBookInfo[$newKey]["bookId"] = $bookValue["bookId"];
-//                            $newBookInfo[$newKey]["bookName"] = $bookValue["bookName"];
-//                        }
-//                        $newBookInfo[$newKey]["authorName"][$bookKey] = $bookValue["authorName"];
-//                        $newBookKey[]  = $bookValue["bookId"];
-//                    }
-
-
-
-
                     JsonArray productJson = new JsonArray();
-
                     products.forEach(employee -> productJson.add(JsonObject.mapFrom(employee)));
                     context.response()
                             .setStatusCode(200)
