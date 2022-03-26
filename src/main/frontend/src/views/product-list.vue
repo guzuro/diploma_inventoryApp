@@ -4,58 +4,31 @@
       <h1>
         Все товары
       </h1>
-      <b-button class="is-right" type="is-warning" @click="onAddButtonClick">
+      <a-button class="is-right" @click="onAddButtonClick">
         Добавить
-      </b-button>
+      </a-button>
     </div>
 
-    <b-table
-      :data="data"
-      :checked-rows.sync="checkedRows"
-      checkable
-      :checkbox-position="'left'"
-      :pagination-simple="true"
-      :paginated="true"
-      :per-page="20"
-      :sort-icon="'arrow-up'"
-      :sort-icon-size="'is-small'"
-    >
-      <b-table-column field="code" label="Артикул" width="40" numeric searchable sortable
-                      v-slot="props">
-        {{ props.row.code }}
-      </b-table-column>
+  <a-table :columns="columns" :data-source="data">
+    <a slot="name" slot-scope="text">{{ text }}</a>
+    <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
+    <span slot="tags" slot-scope="tags">
+      <a-tag
+        v-for="tag in tags"
+        :key="tag"
+        :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
+      >
+        {{ tag.toUpperCase() }}
+      </a-tag>
+    </span>
+    <span slot="action" slot-scope="text, record">
+      <a>Invite 一 {{ record }}</a>
+      <a-divider type="vertical" />
+      <a>Delete</a>
+      <a-divider type="vertical" />
+    </span>
+  </a-table>
 
-      <b-table-column field="name" label="Наименование" searchable sortable v-slot="props">
-        {{ props.row.name }}
-      </b-table-column>
-
-      <b-table-column field="category" label="Категория" sortable v-slot="props">
-        {{ props.row.category }}
-      </b-table-column>
-
-      <b-table-column field="quantity" label="Количество" sortable v-slot="props">
-        {{ props.row.quantity }}
-      </b-table-column>
-
-      <b-table-column field="price" label="Стоимость" sortable v-slot="props">
-        {{ props.row.price }}
-      </b-table-column>
-
-      <b-table-column field="action" label="Действие" v-slot="props">
-        <div>
-          <div class="is-inline-block is-clickable" @click="editIconHandler(props.row)">
-            <b-tooltip type="is-warning" label="Изменить">
-              <b-icon icon="pencil" type="is-warning"></b-icon>
-            </b-tooltip>
-          </div>
-          <div class="is-inline-block is-clickable" @click="removeIconHandler(props.row)">
-            <b-tooltip type="is-danger" label="Удалить">
-              <b-icon icon="delete" type="is-danger"></b-icon>
-            </b-tooltip>
-          </div>
-        </div>
-      </b-table-column>
-    </b-table>
     <b-modal v-model="isCardModalActive" :width="350">
       <div class="card">
         <div class="card-content">
@@ -64,8 +37,8 @@
             Действительно удалить номенклатуру {{ selectedProduct.name }} (#{{selectedProduct.code}})?
           </p>
           <div class="has-text-right">
-            <b-button type="is-success" @click="onRemoveButtonClick">Удалить</b-button>
-            <b-button class="ml-2" type="is-danger" @click="isCardModalActive = !isCardModalActive">Отмена</b-button>
+            <a-button type="is-success" @click="onRemoveButtonClick">Удалить</a-button>
+            <a-button class="ml-2" type="is-danger" @click="isCardModalActive = !isCardModalActive">Отмена</a-button>
           </div>
           </div>
         </div>
@@ -80,6 +53,7 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import { Product } from '@/types/Product';
 import { successNotification } from '@/services/NotificationService';
+import ProductApiService from '@/services/ProductApiService';
 
 @Component
 export default class Items extends Vue {
@@ -95,7 +69,7 @@ export default class Items extends Vue {
         actionType: 'edit',
       },
       query: {
-        product: item.code!.toString(),
+        product: item.sku.toString(),
       },
     });
   }
@@ -120,7 +94,8 @@ export default class Items extends Vue {
   }
 
   mounted(): void {
-    this.data = this.$store.getters['productsModule/getProducts'];
+    ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
+    // this.data = this.$store.getters['productsModule/getProducts'];
   }
 
   onAddButtonClick(): void {

@@ -4,7 +4,8 @@
       <a-layout-header>
         <div class="logo" />
         <a-menu theme="dark" mode="horizontal" :default-selected-keys="['2']" :style="{ lineHeight: '42px' }">
-          <a-menu-item key="mail"> <a-icon type="mail" />Navigation One </a-menu-item>
+          <a-menu-item key="dashboard" @click="goto('Dashboard')"> <a-icon type="appstore" />Dashboard </a-menu-item>
+          <a-menu-item key="products" @click="goto('Products')"> <a-icon type="shop" />Продукты </a-menu-item>
           <a-sub-menu>
             <span slot="title" class="submenu-title-wrapper"><a-icon type="setting" />Navigation Three - Submenu</span>
             <a-menu-item-group title="Item 1">
@@ -16,14 +17,15 @@
               <a-menu-item key="setting:4"> Option 4 </a-menu-item>
             </a-menu-item-group>
           </a-sub-menu>
-          <a-menu-item key="alipay">
-            <a href="https://antdv.com" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
-          </a-menu-item>
         </a-menu>
       </a-layout-header>
       <a-layout-content class="mt-5" style="padding: 0 50px">
-        <a-breadcrumb>
-          <a-breadcrumb-item class="mt-5 mb-5">{{ currentTime }}</a-breadcrumb-item>
+        <a-breadcrumb class="mb-5">
+          <a-breadcrumb-item>
+            <span class="text-lg">
+              {{ currentTime }}
+            </span>
+          </a-breadcrumb-item>
         </a-breadcrumb>
         <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }">
           <router-view></router-view>
@@ -41,11 +43,20 @@ import Component from 'vue-class-component';
 
 @Component
 export default class DashboardLayout extends Vue {
-  currentTime = moment().format('YYYY-MM-DD HH:mm');
+  currentTime = moment().format('YYYY-MM-DD, HH:mm');
+
+  goto(name: string): void {
+    this.$router.push({
+      name,
+      params: {
+        userId: this.$store.state.userModule.userData.id.toString(),
+      },
+    });
+  }
 
   created(): void {
     setInterval(() => {
-      this.currentTime = moment().format('YYYY-MM-DD HH:mm');
+      this.currentTime = moment().format('YYYY-MM-DD, HH:mm');
     }, 5000);
   }
 }
