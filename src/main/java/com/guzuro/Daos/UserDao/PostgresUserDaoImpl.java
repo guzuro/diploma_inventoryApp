@@ -54,7 +54,10 @@ public class PostgresUserDaoImpl implements UserDao {
     public CompletableFuture<CopyOnWriteArrayList<Employee>> getUsers(int company_id) {
         CompletableFuture<CopyOnWriteArrayList<Employee>> fut = new CompletableFuture<>();
         pgClient.preparedQuery(
-                "SELECT db_user.id, db_user.email, db_user.password, db_user.first_name, db_user.last_name, db_user.phone, db_user.role, db_employment.employement_date, db_employment.salary, db_employment.id as employment_id " +
+                "SELECT db_user.id, db_user.email, db_user.password, " +
+                        "db_user.first_name, db_user.last_name, " +
+                        "db_user.phone, db_user.role, db_employment.employement_date," +
+                        " db_employment.salary, db_employment.id as employment_id " +
                         "FROM db_user " +
                         "LEFT JOIN db_employment " +
                         "ON db_employment.user_id = db_user.id " +

@@ -1,7 +1,6 @@
 package com.guzuro.Daos.UserDao;
 
 import com.guzuro.Daos.CompanyDao.Company;
-import com.guzuro.Models.Roles.Employee;
 
 public class User {
     private int id;

@@ -5,6 +5,7 @@ import com.guzuro.Routes.CompanyRoutes;
 import com.guzuro.Routes.Config.CategoryRoutes;
 import com.guzuro.Routes.Config.EmployeeRolesRoutes;
 import com.guzuro.Routes.Config.SaleRoutes;
+import com.guzuro.Routes.ProductRoutes;
 import com.guzuro.Routes.UserRoutes;
 import com.guzuro.Routes.Config.WarehouseRoutes;
 import io.vertx.core.AbstractVerticle;
@@ -65,7 +66,7 @@ public class MainVerticle extends AbstractVerticle {
         router.mountSubRouter("/config/employeeroles", new EmployeeRolesRoutes(vertx).setRoutes(vertx));
 
 
-//        router.mountSubRouter("/products", ProductRoutes.setRoutes(vertx));
+        router.mountSubRouter("/products", new ProductRoutes(vertx).setRoutes(vertx));
 
 
         router.get("/").handler(routingContext -> {
