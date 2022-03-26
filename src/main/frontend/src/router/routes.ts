@@ -45,16 +45,6 @@ const routes: Array<RouteConfig> = [
         path: ':userId/employee-roles',
         name: 'EmployeeRoles',
       },
-      {
-        component: () => import('../views/product-list.vue'),
-        path: ':userId/products',
-        name: 'Products',
-      },
-      {
-        component: () => import('../views/product.vue'),
-        path: ':userId/products/:actionType',
-        name: 'Product',
-      },
     ],
   },
   {
@@ -65,6 +55,16 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/dashboard.vue'),
         path: '',
         name: 'Dashboard',
+      },
+      {
+        component: () => import('../views/product-list.vue'),
+        path: '/products',
+        name: 'Products',
+      },
+      {
+        component: () => import('../views/product.vue'),
+        path: '/products/:actionType',
+        name: 'Product',
       },
     ],
   },
