@@ -1,34 +1,28 @@
 package com.guzuro.Routes;
 
+import com.guzuro.handlers.CompanyHandler;
 import com.guzuro.handlers.ProductsHandler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 
 public class ProductRoutes {
+    ProductsHandler productsHandler;
 
-    public static Router setRoutes(Vertx vertx) {
+    Vertx vertx;
+
+    public ProductRoutes(Vertx vertx) {
+        this.productsHandler = new ProductsHandler(vertx);
+        this.vertx = vertx;
+    }
+
+    public Router setRoutes(Vertx vertx) {
         Router router = Router.router(vertx);
 
-        /**
-         * get all products
-         */
-        router.get("/").handler(ProductsHandler::getProducts);
-        /**
-         * add new product
-         */
-        router.post("/").handler(ProductsHandler::addProduct);
-        /**
-         * get product by id
-         */
-        router.get("/product/:id").handler(ProductsHandler::getProductById);
-        /**
-         * update product
-         */
-        router.put("/product/:id").handler(ProductsHandler::updateProduct);
-        /**
-         * remove product
-         */
-        router.delete("/product/:id").handler(ProductsHandler::removeProduct);
+        router.post("/add").handler(rc -> this.productsHandler.addProduct(rc));
+        router.post("/getproducts").handler(rc -> this.productsHandler.getProducts(rc));
+        router.post("/getproduct").handler(rc -> this.productsHandler.getProductById(rc));
+        router.post("/updateproduct").handler(rc -> this.productsHandler.updateProduct(rc));
+        router.post("/removeproduct").handler(rc -> this.productsHandler.removeProduct(rc));
 
         return router;
     }
