@@ -1,107 +1,80 @@
 <template>
   <div class="item-form">
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          Общая информация
-        </p>
-      </header>
-      <div class="card-content">
-        <b-field label="Наименование">
-          <b-input v-model="productCopy.name"></b-input>
-        </b-field>
-        <b-field label="Описание">
-          <b-input v-model="productCopy.description" type="textarea"></b-input>
-        </b-field>
+    <a-card title="Общая информация">
+      <field-wrapper fieldTitle="Наименование">
+        <a-input v-model="productCopy.name"></a-input>
+      </field-wrapper>
+      <field-wrapper class="mt-2" fieldTitle="Описание">
+        <a-input v-model="productCopy.description" type="textarea"></a-input>
+      </field-wrapper>
+    </a-card>
+    <a-card class="mt-5" title="Цена">
+      <div class="flex">
+        <field-wrapper class="mt-2 w-full" fieldTitle="Обычная цена">
+          <a-input v-model="productCopy.price_base" type="number"></a-input>
+        </field-wrapper>
+        <field-wrapper class="mt-2 ml-2 w-full" fieldTitle="Цена со скидкой">
+          <a-input disabled :value="priceSale" type="number"></a-input>
+        </field-wrapper>
       </div>
-    </div>
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          Цена
-        </p>
-      </header>
-      <div class="card-content">
-        <b-field grouped>
-          <b-field label="Текущая цена">
-            <b-input v-model="productCopy.price" type="number"></b-input>
-          </b-field>
-          <b-field label="Старая цена">
-            <b-input v-model="productCopy.price_old" type="number"></b-input>
-          </b-field>
-          <b-field label="Валюта">
-            <b-select placeholder="Валюта"
-                      v-model="productCopy.currency"
-            >
-              <option value="RUB">Рубль</option>
-              <option value="USD">Доллар</option>
-              <option value="EUR">Евро</option>
-            </b-select>
-          </b-field>
-        </b-field>
+      <div class="flex">
+        <field-wrapper class="mt-2 w-full" fieldTitle="Сумма скидки">
+          <a-input v-model="productCopy.sale_value" type="number"></a-input>
+        </field-wrapper>
+        <field-wrapper class="mt-2 ml-2 w-full" fieldTitle="Выбрать скидку">
+          <a-select allowClear placeholder="Выберите скидку к товару" @change="handleSaleSelect">
+            <a-select-option v-for="(sale, index) in salesOptions" :key="index" :value="sale.value">
+              {{ sale.label }}
+            </a-select-option>
+          </a-select>
+        </field-wrapper>
       </div>
-    </div>
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          Учетная информация
-        </p>
-      </header>
-      <div class="card-content">
-        <b-field label="Артикул">
-          <b-input type="number" v-model="productCopy.code"></b-input>
-        </b-field>
-        <b-field grouped>
-          <b-field label="Текущее количество">
-            <b-input v-model="productCopy.quantity" type="number"></b-input>
-          </b-field>
-          <b-field label="ед.">
-            <b-select placeholder="ед."
-                      v-model="productCopy.unit"
-            >
-              <option value="кг">кг</option>
-              <option value="шт">шт</option>
-              <option value="л">л</option>
-            </b-select>
-          </b-field>
-        </b-field>
-      </div>
-    </div>
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          Фотографии товара
-        </p>
-      </header>
-      <div class="card-content">
-        <b-upload v-model="productCopy.images" class="file-label" multiple @input="onFileChange">
-            <span class="file-cta">
-                <b-icon class="file-icon" icon="upload"></b-icon>
-                <span class="file-label">Загрузить изображения</span>
-            </span>
-        </b-upload>
-        <div v-if="previews.length" class="mt-5">
-          <div class="previews"
-               v-for="(preview, index) in previews"
-               :key="index"
-          >
-            <div
-              class="mb-2 preview-wrapper is-flex is-justify-content-space-between is-align-items-center">
-              <img :src="preview.clearBlobUrl ? preview.clearBlobUrl : preview.blobLink" alt="">
-              <div>
-                <div class="is-clickable" @click="onRemoveBgButtonClick(preview.file, index)">
-                  <b-icon icon="eraser-variant"></b-icon>
-                </div>
-                <div class="is-clickable" @click="onDeleteImageButtonClick(index)">
-                  <b-icon icon="delete" type="is-danger"></b-icon>
-                </div>
-              </div>
+      <field-wrapper class="mt-2" fieldTitle="Валюта">
+        <a-select placeholder="Валюта" v-model="productCopy.currency">
+          <a-select-option value="RUB">Рубль</a-select-option>
+          <a-select-option value="USD">Доллар</a-select-option>
+          <a-select-option value="EUR">Евро</a-select-option>
+        </a-select>
+      </field-wrapper>
+    </a-card>
+    <a-card class="mt-5" title="Учетная информация">
+      <field-wrapper fieldTitle="Артикул">
+        <a-input type="number" v-model="productCopy.code"></a-input>
+      </field-wrapper>
+      <field-wrapper class="mt-2" fieldTitle="Текущее количество">
+        <a-input v-model="productCopy.quantity" type="number"></a-input>
+      </field-wrapper>
+      <field-wrapper class="mt-2" fieldTitle="ед.">
+        <a-select placeholder="ед." v-model="productCopy.unit">
+          <a-select-option value="кг">кг</a-select-option>
+          <a-select-option value="шт">шт</a-select-option>
+          <a-select-option value="л">л</a-select-option>
+        </a-select>
+      </field-wrapper>
+    </a-card>
+    <a-upload :showUploadList="false" list-type="picture" :file-list="productCopy.photos" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
+      <a-button> <a-icon type="upload" /> Select File </a-button>
+    </a-upload>
+    <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </a-modal>
+
+    <div v-if="previews.length" class="mt-5">
+      <div class="previews" v-for="(preview, index) in previews" :key="index">
+        <div class="mb-2 preview-wrapper is-flex is-justify-content-space-between is-align-items-center">
+          <img :src="preview.clearBlobUrl ? preview.clearBlobUrl : preview.blobLink" alt="" />
+          <div>
+            <div class="cursor-pointer" @click="onRemoveBgButtonClick(preview.file, index)">
+              <a-icon type="bg-colors" :style="{ fontSize: '18px' }" />
+            </div>
+            <div class="cursor-pointer mt-2" @click="onDeleteImageButtonClick(index)">
+              <a-icon type="delete" :style="{ fontSize: '18px' }" />
             </div>
           </div>
         </div>
-        <p class="has-text-centered mt-2 is-size-4" v-else> Изображения пока не загружены...</p>
       </div>
     </div>
+    <p v-else class="has-text-centered mt-2 is-size-4">Изображения пока не загружены...</p>
   </div>
 </template>
 
@@ -111,21 +84,68 @@ import Vue from 'vue';
 import { Prop, Watch } from 'vue-property-decorator';
 import { cloneDeep } from 'lodash';
 import ProductApiService from '@/services/ProductApiService';
-import { Product } from '@/types/Product';
+import FieldWrapper from './FieldWrapper.vue';
+import { Sale } from '@/types/Sale';
 
-@Component
+@Component({
+  components: {
+    FieldWrapper,
+  },
+})
 export default class ProductForm extends Vue {
   @Prop() product!: any;
 
-  productCopy: Product = {} as Product;
+  productCopy: any = {
+    photos: [],
+    sale_id: 0,
+    sale_value: null,
+    price_base: 0,
+    price_sale: 0,
+  } as any;
+
+  get priceBase(): number {
+    return this.productCopy.price_base;
+  }
+
+  get priceSale(): number | undefined {
+    if (!this.productCopy.sale_id && this.productCopy.sale_value > 0) {
+      this.productCopy.price_sale = this.productCopy.price_base - this.productCopy.sale_value;
+      return this.productCopy.price_base - this.productCopy.sale_value;
+    }
+    if (this.productCopy.sale_id) {
+      this.productCopy.sale_value = null;
+      const sale: Sale = this.$store.state.configModule.config.sale.find((s: Sale) => s.id === this.productCopy.sale_id);
+      if (sale.type === 'procent') {
+        this.productCopy.price_sale = this.productCopy.price_base - (this.productCopy.price_base * sale.value) / 100;
+        return this.productCopy.price_base - (this.productCopy.price_base * sale.value) / 100;
+      }
+      this.productCopy.price_sale = this.productCopy.price_base - sale.value;
+      return this.productCopy.price_base - sale.value;
+    }
+    return undefined;
+  }
+
+  handleSaleSelect(value: number | undefined): void {
+    if (value !== undefined) {
+      this.$set(this.productCopy, 'sale_id', value);
+    } else {
+      this.$set(this.productCopy, 'sale_id', null);
+    }
+  }
 
   previews: any[] = [];
 
-  @Watch('previews') // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,class-methods-use-this
-  onPreviewsChange(value: any[]) {
+  previewVisible = false;
+
+  previewImage = '';
+
+  previewsWithoutBg: any[] = [];
+
+  @Watch('previews')
+  onPreviewsChange(value: any[]): void {
     const valueCopy = cloneDeep(value);
     this.productCopy.images = valueCopy.map((p: any) => {
-    // eslint-disable-next-line no-param-reassign
+      // eslint-disable-next-line no-param-reassign
       delete p.clearBlobUrl;
       // eslint-disable-next-line no-param-reassign
       delete p.blobLink;
@@ -133,39 +153,55 @@ export default class ProductForm extends Vue {
     });
   }
 
-  previewsWithoutBg: any[] = [];
+  handleRemove(file: File): void {
+    const index = this.productCopy.photos.indexOf(file);
+    const newFileList = this.productCopy.photos.slice();
+    newFileList.splice(index, 1);
+    this.productCopy.photos = newFileList;
+  }
 
-  @Watch('productCopy', { deep: true }) onProductCopyChange(itemValue: any): void {
+  beforeUpload = (): boolean => false;
+
+  @Watch('productCopy', { deep: true })
+  onProductCopyChange(itemValue: any): void {
     this.$emit('update', itemValue);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   onRemoveBgButtonClick(image: File, index: number): void {
-    ProductApiService.removeBackground(image)
-      .then(({ data }) => {
-        const urlCreator = window.URL || window.webkitURL;
-        const imageUrl = urlCreator.createObjectURL(data);
-        this.previews = this.previews.map((p: any, idx: number): any => {
-          if (idx === index) {
-            // eslint-disable-next-line no-param-reassign
-            p.clearBlobUrl = imageUrl;
-            // eslint-disable-next-line no-param-reassign
-            p.clearBlob = data;
-          }
-          return p;
-        });
+    ProductApiService.removeBackground(image).then(({ data }) => {
+      const urlCreator = window.URL || window.webkitURL;
+      const imageUrl = urlCreator.createObjectURL(data);
+      this.previews = this.previews.map((p: any, idx: number): any => {
+        if (idx === index) {
+          // eslint-disable-next-line no-param-reassign
+          p.clearBlobUrl = imageUrl;
+          // eslint-disable-next-line no-param-reassign
+          p.clearBlob = data;
+        }
+        return p;
       });
+    });
   }
 
   onDeleteImageButtonClick(index: number): void {
     this.previews.splice(index, 1);
   }
 
-  onFileChange(e: any) {
-    e.forEach((img: File) => {
-      this.previews.push({ file: img, blobLink: URL.createObjectURL(img) });
+  onFileChange({ fileList }: any): boolean {
+    console.log(fileList);
+    // this.productCopy.photos.push();
+    fileList.forEach((img: any) => {
+      this.previews.push({ file: img, blobLink: URL.createObjectURL(img.originFileObj) });
     });
-    this.productCopy.images = [];
+    // this.productCopy.photos = [];
+    return false;
+  }
+
+  get salesOptions(): Array<{ label: string; value: number }> {
+    return this.$store.state.configModule.config.sale.slice().map((s: Sale) => ({
+      label: `${s.name}, ${s.value} ${s.type === 'procent' ? '%' : this.$store.state.companyModule.company.currency}`,
+      value: s.id,
+    }));
   }
 
   created(): void {
@@ -173,7 +209,7 @@ export default class ProductForm extends Vue {
     if (this.productCopy.images) {
       console.log(1);
       const urlCreator = window.URL || window.webkitURL;
-      this.previews = this.productCopy.images.map((i:any):any => {
+      this.previews = this.productCopy.images.map((i: any): any => {
         if (i.file) {
           console.log(2);
           this.$set(i, 'blobLink', urlCreator.createObjectURL(i.file));
@@ -193,13 +229,19 @@ export default class ProductForm extends Vue {
 </script>
 
 <style scoped lang="scss">
-.previews img {
-  height: 150px;
-  width: 150px;
-  transition: 400ms all;
+.preview-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-  &:hover {
-    transform: scale(3);
-  }
+.previews img {
+  width: 100%;
+  max-width: 100px;
+  height: 100px;
+
+  //   &:hover {
+  //     transform: scale(3);
+  //   }
 }
 </style>
