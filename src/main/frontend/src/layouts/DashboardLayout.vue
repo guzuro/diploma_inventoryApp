@@ -1,5 +1,4 @@
 <template>
-  <div class="dashboard-layout">
     <a-layout id="components-layout-demo-top" class="layout">
       <a-layout-header>
         <div class="logo" />
@@ -31,9 +30,7 @@
           <router-view></router-view>
         </div>
       </a-layout-content>
-      <a-layout-footer style="text-align: center"> Per aspera ad astra </a-layout-footer>
     </a-layout>
-  </div>
 </template>
 
 <script lang="ts">
@@ -63,10 +60,10 @@ export default class DashboardLayout extends Vue {
 </script>
 
 <style lang="scss">
-.ant-layout {
-  height: 100vh;
-}
-.ant-layout-header {
-  height: 45px;
-}
+// .ant-layout {
+//   height: 100vh;
+// }
+// .ant-layout-header {
+//   height: 45px;
+// }
 </style>

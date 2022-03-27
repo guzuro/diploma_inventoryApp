@@ -8,7 +8,7 @@ export type Product = {
   currency: string;
   quantity: number;
   unit: string;
-  photo_main: string;
+  photos: string | File;
   warehouse_id: string;
   company_id?: number;
 };

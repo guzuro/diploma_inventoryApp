@@ -95,7 +95,6 @@ export default class Items extends Vue {
 
   mounted(): void {
     ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
-    // this.data = this.$store.getters['productsModule/getProducts'];
   }
 
   onAddButtonClick(): void {
