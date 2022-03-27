@@ -63,7 +63,7 @@ const routes: Array<RouteConfig> = [
       },
       {
         component: () => import('../views/product.vue'),
-        path: '/products/:actionType',
+        path: '/product/:actionType',
         name: 'Product',
       },
     ],
