@@ -1,5 +1,7 @@
 package com.guzuro.Daos.ProductDao;
 
+import java.util.ArrayList;
+
 public class Product {
     private long sku;
     private String category;
@@ -10,16 +12,15 @@ public class Product {
     private String currency;
     private double quantity;
     private String unit;
-    private String photo_main;
     private int warehouse_id;
     private int company_id;
-    private String[] photos;
+    private ArrayList<String> photos;
 
 
     public Product() {
     }
 
-    public Product(String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, String photo_main, int warehouse_id, int company_id) {
+    public Product(String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id, int company_id) {
         this.category = category;
         this.name = name;
         this.description = description;
@@ -28,12 +29,11 @@ public class Product {
         this.currency = currency;
         this.quantity = quantity;
         this.unit = unit;
-        this.photo_main = photo_main;
         this.warehouse_id = warehouse_id;
         this.company_id = company_id;
     }
 
-    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, String photo_main, int warehouse_id) {
+    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -43,11 +43,10 @@ public class Product {
         this.currency = currency;
         this.quantity = quantity;
         this.unit = unit;
-        this.photo_main = photo_main;
         this.warehouse_id = warehouse_id;
     }
 
-    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, String photo_main, int warehouse_id, String[] photos) {
+    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id, ArrayList<String> photos) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -57,7 +56,6 @@ public class Product {
         this.currency = currency;
         this.quantity = quantity;
         this.unit = unit;
-        this.photo_main = photo_main;
         this.warehouse_id = warehouse_id;
         this.photos = photos;
     }
@@ -118,19 +116,11 @@ public class Product {
         this.unit = unit;
     }
 
-    public String getPhoto_main() {
-        return photo_main;
-    }
-
-    public void setPhoto_main(String photo_main) {
-        this.photo_main = photo_main;
-    }
-
-    public String[] getPhotos() {
+    public ArrayList<String> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(String[] photos) {
+    public void setPhotos(ArrayList<String> photos) {
         this.photos = photos;
     }
 

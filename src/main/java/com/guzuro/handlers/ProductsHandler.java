@@ -7,11 +7,15 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +46,39 @@ public class ProductsHandler {
     }
 
     public void addProduct(RoutingContext context) {
-        System.out.println(context);
+        context.response().setChunked(true);
+        HttpServerResponse response = context.response();
+
+        Set<FileUpload> uploads = context.fileUploads();
+
+        Product product = new Product();
+        product.setName(context.request().getParam("name"));
+        product.setCategory(context.request().getParam("category"));
+        product.setCurrency(context.request().getParam("currency"));
+        product.setCompany_id(Integer.parseInt(context.request().getParam("company_id")));
+        product.setDescription(context.request().getParam("description"));
+        product.setPrice_base(Double.parseDouble(context.request().getParam("price_base")));
+        product.setPrice_sale(Double.parseDouble(context.request().getParam("price_sale")));
+        product.setSku(Long.parseLong(context.request().getParam("sku")));
+        product.setUnit(context.request().getParam("unit"));
+        product.setQuantity(Double.parseDouble(context.request().getParam("quantity")));
+        product.setWarehouse_id(Integer.parseInt(context.request().getParam("warehouse_id")));
+
+
+        ArrayList<String> photos = new ArrayList<>();
+
+        uploads.forEach(upload -> {
+            try {
+                File uploadedFile = new File(upload.uploadedFileName());
+                uploadedFile.renameTo(new File("webroot/" + upload.fileName()));
+                uploadedFile.createNewFile();
+                photos.add(upload.fileName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        product.setPhotos(photos);
     }
 
     public void getProductById(RoutingContext context) {

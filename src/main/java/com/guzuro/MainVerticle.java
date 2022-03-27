@@ -12,10 +12,12 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 public class MainVerticle extends AbstractVerticle {
@@ -52,6 +54,14 @@ public class MainVerticle extends AbstractVerticle {
                         .setCookieHttpOnlyFlag(true)
                         .setCookieless(false)
                         .setCookieSecureFlag(true));
+
+        router.route("/assets/*").handler(StaticHandler.create("webroot")).handler(handler -> {
+            String path = handler.request().path();
+            String[] pathSplited = path.split("/");
+            String fileName = pathSplited[3];
+            HttpServerResponse response = handler.response();
+            response.putHeader("Transfer-Encoding", "chunked").sendFile("webroot/" + fileName);
+        });
 
         router.route("/api");
         router.mountSubRouter("/auth", new AuthRoutes(vertx).setRoutes(vertx));
