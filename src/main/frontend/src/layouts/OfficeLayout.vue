@@ -34,7 +34,6 @@
           margin: '24px 16px',
           padding: '24px',
           background: '#fff',
-          minHeight: '280px',
         }"
       >
         <router-view></router-view>
@@ -94,7 +93,5 @@ export default class DashboardLayout extends Mixins<NavigationItems>(NavigationI
 </script>
 
 <style lang="scss">
-.ant-layout {
-  height: 100%;
-}
+
 </style>
