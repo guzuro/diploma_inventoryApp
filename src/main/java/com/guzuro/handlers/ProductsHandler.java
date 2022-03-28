@@ -53,17 +53,18 @@ public class ProductsHandler {
 
         Product product = new Product();
         product.setName(context.request().getParam("name"));
-        product.setCategory(context.request().getParam("category"));
+        product.setCategory(Integer.parseInt(context.request().getParam("category")));
         product.setCurrency(context.request().getParam("currency"));
         product.setCompany_id(Integer.parseInt(context.request().getParam("company_id")));
         product.setDescription(context.request().getParam("description"));
         product.setPrice_base(Double.parseDouble(context.request().getParam("price_base")));
         product.setPrice_sale(Double.parseDouble(context.request().getParam("price_sale")));
+        product.setSale_value(Double.parseDouble(context.request().getParam("sale_value")));
+        product.setSale_id(Integer.parseInt(context.request().getParam("sale_id")));
         product.setSku(Long.parseLong(context.request().getParam("sku")));
         product.setUnit(context.request().getParam("unit"));
         product.setQuantity(Double.parseDouble(context.request().getParam("quantity")));
         product.setWarehouse_id(Integer.parseInt(context.request().getParam("warehouse_id")));
-
 
         ArrayList<String> photos = new ArrayList<>();
 
@@ -79,6 +80,18 @@ public class ProductsHandler {
         });
 
         product.setPhotos(photos);
+
+        this.dao.addProduct(product).thenAccept(resProduct -> {
+            context.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=UTF-8")
+                    .end(JsonObject.mapFrom(resProduct).encodePrettily());
+
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500).end(throwable.getMessage());
+            return null;
+        });
     }
 
     public void getProductById(RoutingContext context) {

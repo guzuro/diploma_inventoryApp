@@ -3,6 +3,7 @@ package com.guzuro.Daos.ProductDao;
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import com.guzuro.Models.Roles.Employee;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
@@ -23,7 +24,7 @@ public class PostgresProductDaoImpl implements ProductDao {
         this.pgClient.preparedQuery("SELECT " +
                 "sku, category, db_product.name, description, " +
                 "price_base, price_sale, currency, quantity, " +
-                "unit, photos, warehouse_id, company_id " +
+                "unit, photos, warehouse_id, company_id, sale_id, sale_value " +
                 "FROM db_product " +
                 "WHERE company_id = $1")
                 .execute(Tuple.of(company_id), ar -> {
@@ -54,7 +55,33 @@ public class PostgresProductDaoImpl implements ProductDao {
 
     @Override
     public CompletableFuture<Product> addProduct(Product product) {
-        return null;
+        CompletableFuture<Product> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("INSERT INTO db_product" +
+                "(sku, category, db_product.name, description, " +
+                "price_base, price_sale, currency, quantity, " +
+                "unit, photos, warehouse_id, company_id, sale_id, sale_value) " +
+                "VALUES (" +
+                "$1, $2, $3, $4, $5, $6, $7, " +
+                "$8, $9, $10, $11, $12, $13, $14" +
+                ") " +
+                "RETURNING sku, category, db_product.name, description," +
+                "price_base, price_sale, currency, quantity, " +
+                "unit, photos, warehouse_id, company_id, sale_id, sale_value")
+                .execute(Tuple.of(
+                        product.getSku(), product.getCategory(), product.getName(),
+                        product.getDescription(), product.getPrice_base(), product.getPrice_sale(),
+                        product.getCurrency(), product.getQuantity(), product.getUnit(),
+                        product.getPhotos(), product.getWarehouse_id(), product.getCompany_id(),
+                        product.getSale_id(), product.getSale_value()
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(ar.result().iterator().next().toJson().mapTo(Product.class));
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 
     @Override

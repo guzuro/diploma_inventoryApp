@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 public class Product {
     private long sku;
-    private String category;
+    private int category;
     private String name;
     private String description;
     private double price_base;
     private double price_sale;
+    private double sale_value;
+    private int sale_id;
     private String currency;
     private double quantity;
     private String unit;
@@ -20,20 +22,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id, int company_id) {
-        this.category = category;
-        this.name = name;
-        this.description = description;
-        this.price_base = price_base;
-        this.price_sale = price_sale;
-        this.currency = currency;
-        this.quantity = quantity;
-        this.unit = unit;
-        this.warehouse_id = warehouse_id;
-        this.company_id = company_id;
-    }
-
-    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id) {
+    public Product(long sku, int category, String name, String description, double price_base,
+                   double price_sale, String currency, double quantity, String unit, int warehouse_id,
+                   double sale_value, int sale_id) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -44,9 +35,13 @@ public class Product {
         this.quantity = quantity;
         this.unit = unit;
         this.warehouse_id = warehouse_id;
+        this.sale_value = sale_value;
+        this.sale_id = sale_id;
     }
 
-    public Product(long sku, String category, String name, String description, double price_base, double price_sale, String currency, double quantity, String unit, int warehouse_id, ArrayList<String> photos) {
+    public Product(long sku, int category, String name, String description, double price_base, double price_sale,
+                   String currency, double quantity, String unit, int warehouse_id,
+                   ArrayList<String> photos, double sale_value, int sale_id) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -58,6 +53,8 @@ public class Product {
         this.unit = unit;
         this.warehouse_id = warehouse_id;
         this.photos = photos;
+        this.sale_value = sale_value;
+        this.sale_id = sale_id;
     }
 
     public long getSku() {
@@ -68,11 +65,11 @@ public class Product {
         this.sku = sku;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category = category;
     }
 
@@ -154,5 +151,21 @@ public class Product {
 
     public void setWarehouse_id(int warehouse_id) {
         this.warehouse_id = warehouse_id;
+    }
+
+    public int getSale_id() {
+        return sale_id;
+    }
+
+    public void setSale_id(int sale_id) {
+        this.sale_id = sale_id;
+    }
+
+    public double getSale_value() {
+        return sale_value;
+    }
+
+    public void setSale_value(double sale_value) {
+        this.sale_value = sale_value;
     }
 }
