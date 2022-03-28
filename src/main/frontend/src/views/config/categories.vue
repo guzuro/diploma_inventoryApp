@@ -98,12 +98,17 @@ export default class Categories extends Vue {
     await this.getCategories();
   }
 
-  async getCategories(): Promise<void> {
+  getCategories(): void {
     this.isCategoryModalOpen = false;
     this.spinning = true;
-    this.categories = await categoryService.getCategory({ company_id: this.companyId });
-    this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'categorie', value: this.categories });
-    this.spinning = false;
+    this.$store
+      .dispatch('configModule/REQUEST_SALES')
+      .then(() => {
+        this.categories = this.$store.state.configModule.category.slice();
+      })
+      .finally(() => {
+        this.spinning = false;
+      });
   }
 
   created(): void {

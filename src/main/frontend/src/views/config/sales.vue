@@ -102,11 +102,17 @@ export default class Sales extends Vue {
     return this.$store.getters['companyModule/getCompany'].id;
   }
 
-  async getSales(): Promise<void> {
+  getSales(): void {
     this.spinning = true;
-    this.sales = await SalesService.getSales({ company_id: this.companyId });
-    this.$store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'sale', value: this.sales });
-    this.spinning = false;
+
+    this.$store
+      .dispatch('configModule/REQUEST_SALES')
+      .then(() => {
+        this.sales = this.$store.state.configModule.sales.slice();
+      })
+      .finally(() => {
+        this.spinning = false;
+      });
   }
 
   addSale(): void {

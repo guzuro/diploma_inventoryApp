@@ -24,27 +24,24 @@ router.beforeEach((to, from, next) => {
       AuthService.checkLogin()
         .then(() => {
           if ((store.state as any).configModule.config.sale === null) {
-            // TODO MOVE TO STORE ACTION
-            SalesService.getSales({ company_id: (store.state as any).companyModule.company.id }).then((response: Array<Sale>) => {
-              store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'sale', value: response });
-              next();
-            });
-          } else {
-            next();
+            store.dispatch('configModule/REQUEST_SALES');
           }
+          if ((store.state as any).configModule.config.category === null) {
+            store.dispatch('configModule/REQUEST_CATEGORIES');
+          }
+          next();
         })
         .catch((e: any) => {
           next({ name: 'Login' });
         });
-    } else if ((store.state as any).configModule.config.sale === null) {
-      // TODO MOVE TO STORE ACTION
-      SalesService.getSales({ company_id: (store.state as any).companyModule.company.id }).then((response: Array<Sale>) => {
-        store.commit('configModule/UPDATE_CONFIG_FIELDS', { field: 'sale', value: response });
-        next();
-      });
-    } else {
-      next();
     }
+    if ((store.state as any).configModule.config.sale === null) {
+      store.dispatch('configModule/REQUEST_SALES');
+    }
+    if ((store.state as any).configModule.config.category === null) {
+      store.dispatch('configModule/REQUEST_CATEGORIES');
+    }
+    next();
   }
   next();
 });
