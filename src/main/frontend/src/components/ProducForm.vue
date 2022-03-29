@@ -39,7 +39,7 @@
     </a-card>
     <a-card class="mt-5" title="Учетная информация">
       <field-wrapper fieldTitle="Артикул">
-        <a-input type="number" v-model="productCopy.code"></a-input>
+        <a-input type="number" v-model="productCopy.sku"></a-input>
       </field-wrapper>
       <field-wrapper class="mt-2" fieldTitle="Текущее количество">
         <a-input v-model="productCopy.quantity" type="number"></a-input>
@@ -52,7 +52,7 @@
         </a-select>
       </field-wrapper>
     </a-card>
-    <a-upload :showUploadList="false" list-type="picture" :file-list="productCopy.photos" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
+    <a-upload :showUploadList="false" list-type="picture" :file-list="list" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
       <a-button> <a-icon type="upload" /> Select File </a-button>
     </a-upload>
     <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
@@ -86,6 +86,7 @@ import { cloneDeep } from 'lodash';
 import ProductApiService from '@/services/ProductApiService';
 import FieldWrapper from './FieldWrapper.vue';
 import { Sale } from '@/types/Sale';
+import { Product } from '@/types/Product';
 
 @Component({
   components: {
@@ -93,27 +94,21 @@ import { Sale } from '@/types/Sale';
   },
 })
 export default class ProductForm extends Vue {
-  @Prop() product!: any;
+  @Prop() product!: Product;
 
-  productCopy: any = {
-    photos: [],
-    sale_id: 0,
-    sale_value: null,
-    price_base: 0,
-    price_sale: 0,
-  } as any;
+  productCopy = {} as Product;
 
   get priceBase(): number {
     return this.productCopy.price_base;
   }
 
   get priceSale(): number | undefined {
-    if (!this.productCopy.sale_id && this.productCopy.sale_value > 0) {
+    if (!this.productCopy.sale_id && this.productCopy.sale_value && this.productCopy.sale_value > 0) {
       this.productCopy.price_sale = this.productCopy.price_base - this.productCopy.sale_value;
       return this.productCopy.price_base - this.productCopy.sale_value;
     }
     if (this.productCopy.sale_id) {
-      this.productCopy.sale_value = null;
+      this.productCopy.sale_value = 0;
       const sale: Sale = this.$store.state.configModule.config.sale.find((s: Sale) => s.id === this.productCopy.sale_id);
       if (sale.type === 'procent') {
         this.productCopy.price_sale = this.productCopy.price_base - (this.productCopy.price_base * sale.value) / 100;
@@ -141,21 +136,16 @@ export default class ProductForm extends Vue {
 
   previewsWithoutBg: any[] = [];
 
-  @Watch('previews')
-  onPreviewsChange(value: any[]): void {
-    const valueCopy = cloneDeep(value);
-    this.productCopy.images = valueCopy.map((p: any) => {
-      // eslint-disable-next-line no-param-reassign
-      delete p.clearBlobUrl;
-      // eslint-disable-next-line no-param-reassign
-      delete p.blobLink;
-      return p;
-    });
+  list = [];
+
+  @Watch('previews', { deep: true })
+  onPreviewsChange(): void {
+    this.list.forEach((f: any) => this.productCopy.photos!.push(f));
   }
 
   handleRemove(file: File): void {
-    const index = this.productCopy.photos.indexOf(file);
-    const newFileList = this.productCopy.photos.slice();
+    const index = this.productCopy.photos!.indexOf(file);
+    const newFileList = this.productCopy.photos!.slice();
     newFileList.splice(index, 1);
     this.productCopy.photos = newFileList;
   }
@@ -167,8 +157,8 @@ export default class ProductForm extends Vue {
     this.$emit('update', itemValue);
   }
 
-  onRemoveBgButtonClick(image: File, index: number): void {
-    ProductApiService.removeBackground(image).then(({ data }) => {
+  onRemoveBgButtonClick(image: any, index: number): void {
+    ProductApiService.removeBackground(image.originFileObj).then(({ data }) => {
       const urlCreator = window.URL || window.webkitURL;
       const imageUrl = urlCreator.createObjectURL(data);
       this.previews = this.previews.map((p: any, idx: number): any => {
@@ -189,11 +179,10 @@ export default class ProductForm extends Vue {
 
   onFileChange({ fileList }: any): boolean {
     console.log(fileList);
-    // this.productCopy.photos.push();
+    this.list = fileList;
     fileList.forEach((img: any) => {
       this.previews.push({ file: img, blobLink: URL.createObjectURL(img.originFileObj) });
     });
-    // this.productCopy.photos = [];
     return false;
   }
 
@@ -206,24 +195,21 @@ export default class ProductForm extends Vue {
 
   created(): void {
     this.productCopy = this.product;
-    if (this.productCopy.images) {
-      console.log(1);
-      const urlCreator = window.URL || window.webkitURL;
-      this.previews = this.productCopy.images.map((i: any): any => {
-        if (i.file) {
-          console.log(2);
-          this.$set(i, 'blobLink', urlCreator.createObjectURL(i.file));
-        }
-        if (i.clearBlob) {
-          console.log(3);
-          // eslint-disable-next-line no-param-reassign
-          this.$set(i, 'clearBlobUrl', urlCreator.createObjectURL(i.clearBlob));
-          // i.clearBlobUrl = urlCreator.createObjectURL(i.clearBlob);
-        }
-        return i;
-      });
-      console.log(this.productCopy);
-    }
+    // if (this.productCopy.photos) {
+    //   const urlCreator = window.URL || window.webkitURL;
+    //   this.previews = this.productCopy.photos.map((i: any): any => {
+    //     if (i.file) {
+    //       this.$set(i, 'blobLink', urlCreator.createObjectURL(i.file));
+    //     }
+    //     if (i.clearBlob) {
+    //       // eslint-disable-next-line no-param-reassign
+    //       this.$set(i, 'clearBlobUrl', urlCreator.createObjectURL(i.clearBlob));
+    //       // i.clearBlobUrl = urlCreator.createObjectURL(i.clearBlob);
+    //     }
+    //     return i;
+    //   });
+    //   console.log(this.productCopy);
+    // }
   }
 }
 </script>
