@@ -41,6 +41,13 @@
       <field-wrapper fieldTitle="Артикул">
         <a-input type="number" v-model="productCopy.sku"></a-input>
       </field-wrapper>
+      <field-wrapper class="mt-2 w-full" fieldTitle="Выбрать категорию">
+        <a-select placeholder="Выберите категорию товара" @change="(value) => (productCopy.category = value)">
+          <a-select-option v-for="(category, index) in categoryOptions" :key="index" :value="category.value">
+            {{ category.label }}
+          </a-select-option>
+        </a-select>
+      </field-wrapper>
       <field-wrapper class="mt-2" fieldTitle="Текущее количество">
         <a-input v-model="productCopy.quantity" type="number"></a-input>
       </field-wrapper>
@@ -53,7 +60,7 @@
       </field-wrapper>
     </a-card>
     <a-upload :showUploadList="false" list-type="picture" :file-list="list" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
-      <a-button> <a-icon type="upload" /> Select File </a-button>
+      <a-button> <a-icon type="upload" /> Выбрать файл </a-button>
     </a-upload>
     <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
       <img alt="example" style="width: 100%" :src="previewImage" />
@@ -82,11 +89,11 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { Prop, Watch } from 'vue-property-decorator';
-import { cloneDeep } from 'lodash';
 import ProductApiService from '@/services/ProductApiService';
 import FieldWrapper from './FieldWrapper.vue';
 import { Sale } from '@/types/Sale';
 import { Product } from '@/types/Product';
+import { Category } from '@/types/Category';
 
 @Component({
   components: {
@@ -186,8 +193,15 @@ export default class ProductForm extends Vue {
     return false;
   }
 
+  get categoryOptions(): Array<{ label: string; value: number }> {
+    return this.$store.state.configModule.config.category.map((c: Category) => ({
+      label: c.name,
+      value: c.id,
+    }));
+  }
+
   get salesOptions(): Array<{ label: string; value: number }> {
-    return this.$store.state.configModule.config.sale.slice().map((s: Sale) => ({
+    return this.$store.state.configModule.config.sale.map((s: Sale) => ({
       label: `${s.name}, ${s.value} ${s.type === 'procent' ? '%' : this.$store.state.companyModule.company.currency}`,
       value: s.id,
     }));

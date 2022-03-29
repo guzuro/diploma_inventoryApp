@@ -29,8 +29,8 @@ router.beforeEach((to, from, next) => {
           if ((store.state as any).configModule.config.category === null) {
             store.dispatch('configModule/REQUEST_CATEGORIES');
           }
-          next();
         })
+        .then(next)
         .catch((e: any) => {
           next({ name: 'Login' });
         });
@@ -42,8 +42,9 @@ router.beforeEach((to, from, next) => {
       store.dispatch('configModule/REQUEST_CATEGORIES');
     }
     next();
+  } else {
+    next();
   }
-  next();
 });
 
 export default router;

@@ -1,7 +1,7 @@
 <template>
   <div class="item p-2">
-    <h1 class="page-title"> {{ pageTitle }} </h1>
-    <product-form :product="product" @update="updateProduct"/>
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    <product-form :product="product" @update="updateProduct" />
     <div class="mt-5 has-text-right">
       <a-button class="mr-2" type="is-success" @click="onSaveButtonClick">Сохранить</a-button>
       <a-button type="is-danger" @click="onCancelButtonClick">Отмена</a-button>
@@ -23,8 +23,21 @@ import { successNotification } from '@/services/NotificationService';
 export default class Item extends Vue {
   productActionType = '';
 
-  product: any = {
-    name: '', currency: 'RUB', category: '', quantity: 0, price_base: 0, description: '', photos: [], imagesRemoved: [], unit: 'шт', price_old: 0,
+  product: Product = {
+    sku: 0,
+    category: 0,
+    name: '',
+    description: '',
+    price_base: 0,
+    price_sale: 0,
+    sale_value: 0,
+    sale_id: 0,
+    currency: 'RUB',
+    quantity: 0,
+    unit: 'кг',
+    warehouse_id: 0,
+    company_id: this.$store.state.companyModule.company.id,
+    photos: [],
   };
 
   updateProduct(product: Product): void {
@@ -37,16 +50,17 @@ export default class Item extends Vue {
 
   onSaveButtonClick(): void {
     if (this.productActionType === 'new') {
-      this.$store.dispatch('productsModule/addProduct', this.product)
-        .then(() => {
-          successNotification('Номенклатура добавлена');
+      this.$store.dispatch('productsModule/addProduct', this.product).then(() => {
+        successNotification('Номенклатура добавлена');
+        this.$router.push({
+          name: 'Products',
         });
+      });
     }
     if (this.productActionType === 'edit') {
-      this.$store.dispatch('productsModule/updateProduct', this.product)
-        .then(() => {
-          successNotification('Номенклатура обновлена');
-        });
+      this.$store.dispatch('productsModule/updateProduct', this.product).then(() => {
+        successNotification('Номенклатура обновлена');
+      });
     }
   }
 
@@ -55,7 +69,7 @@ export default class Item extends Vue {
     if (this.productActionType === 'new') {
       return 'Добавить номенклатуру';
     }
-    return `Редактировать номенклатуру #${this.product.code}`;
+    return `Редактировать номенклатуру #${this.product.sku}`;
   }
 
   created(): void {

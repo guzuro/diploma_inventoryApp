@@ -34,19 +34,12 @@ export default {
     setProductsFromApiToStore: (context: { commit: Commit }, value: any): void => {
       context.commit('SET_PRODUCTS_FROM_API_TO_STORE', value);
     },
-    addProduct: (context: { commit: Commit }, product: Product): void => {
-      // console.log('add prouct to db logic later');
-      // console.log('......');
-      // console.log('add to store...');
-
+    addProduct: (context: { commit: Commit }, product: Product): Promise<void> => new Promise((resolve, reject) => {
       const fd = new FormData();
-      console.log(product);
 
       Object.entries(product).forEach(([key, value]) => {
-        if (key === 'photos') {
-          // fd.append('photos[]', value);
-          // }
-          value!.forEach((element: any) => {
+        if (key === 'photos' && Array.isArray(value)) {
+          value.forEach((element: any) => {
             fd.append('photos[]', element.originFileObj);
           });
         }
@@ -55,12 +48,10 @@ export default {
         }
       });
 
-      console.log(fd);
-
-      ProductApiService.addProduct(fd);
-
-      context.commit('ADD_PRODUCT', product);
-    },
+      ProductApiService.addProduct(fd)
+        .then(resolve)
+        .catch(reject);
+    }),
     updateProduct: (context: { commit: Commit }, product: Product): void => {
       console.log('update product in db logic later');
       console.log('......');
@@ -80,7 +71,7 @@ export default {
     },
     getProductByCode: (state: State) => (productCode: string): Product | null => {
       const pCode = Number.parseInt(productCode, 10);
-      const product = state.products.find((p: Product) => p.code === pCode);
+      const product = state.products.find((p: Product) => p.sku === pCode);
       return product !== undefined ? product : null;
     },
   },
