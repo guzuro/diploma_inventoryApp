@@ -59,10 +59,13 @@ public class ProductsHandler {
         product.setDescription(context.request().getParam("description"));
         product.setPrice_base(Double.parseDouble(context.request().getParam("price_base")));
         product.setPrice_sale(Double.parseDouble(context.request().getParam("price_sale")));
+
         product.setSale_value(Double.parseDouble(context.request().getParam("sale_value")));
+
         product.setSale_id(Integer.parseInt(context.request().getParam("sale_id")));
         product.setSku(Long.parseLong(context.request().getParam("sku")));
         product.setUnit(context.request().getParam("unit"));
+
         product.setQuantity(Double.parseDouble(context.request().getParam("quantity")));
         product.setWarehouse_id(Integer.parseInt(context.request().getParam("warehouse_id")));
 

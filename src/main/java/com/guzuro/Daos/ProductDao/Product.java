@@ -1,6 +1,7 @@
 package com.guzuro.Daos.ProductDao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Product {
     private long sku;
@@ -16,7 +17,7 @@ public class Product {
     private String unit;
     private int warehouse_id;
     private int company_id;
-    private ArrayList<String> photos;
+    private List<String> photos;
 
 
     public Product() {
@@ -41,7 +42,7 @@ public class Product {
 
     public Product(long sku, int category, String name, String description, double price_base, double price_sale,
                    String currency, double quantity, String unit, int warehouse_id,
-                   ArrayList<String> photos, double sale_value, int sale_id) {
+                   List<String> photos, double sale_value, int sale_id) {
         this.sku = sku;
         this.category = category;
         this.name = name;
@@ -113,11 +114,11 @@ public class Product {
         this.unit = unit;
     }
 
-    public ArrayList<String> getPhotos() {
+    public List<String> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(ArrayList<String> photos) {
+    public void setPhotos(List<String> photos) {
         this.photos = photos;
     }
 

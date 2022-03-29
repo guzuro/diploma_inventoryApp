@@ -56,23 +56,24 @@ public class PostgresProductDaoImpl implements ProductDao {
     @Override
     public CompletableFuture<Product> addProduct(Product product) {
         CompletableFuture<Product> future = new CompletableFuture<>();
-
+        String[] p = new String[product.getPhotos().size()];
+        product.getPhotos().toArray(p);
         this.pgClient.preparedQuery("INSERT INTO db_product" +
-                "(sku, category, db_product.name, description, " +
+                "(sku, category, name, description, " +
                 "price_base, price_sale, currency, quantity, " +
                 "unit, photos, warehouse_id, company_id, sale_id, sale_value) " +
                 "VALUES (" +
                 "$1, $2, $3, $4, $5, $6, $7, " +
                 "$8, $9, $10, $11, $12, $13, $14" +
                 ") " +
-                "RETURNING sku, category, db_product.name, description," +
+                "RETURNING sku, category, name, description," +
                 "price_base, price_sale, currency, quantity, " +
                 "unit, photos, warehouse_id, company_id, sale_id, sale_value")
                 .execute(Tuple.of(
                         product.getSku(), product.getCategory(), product.getName(),
                         product.getDescription(), product.getPrice_base(), product.getPrice_sale(),
                         product.getCurrency(), product.getQuantity(), product.getUnit(),
-                        product.getPhotos(), product.getWarehouse_id(), product.getCompany_id(),
+                        p, product.getWarehouse_id(), product.getCompany_id(),
                         product.getSale_id(), product.getSale_value()
                 ), ar -> {
                     if (ar.succeeded()) {
@@ -81,6 +82,7 @@ public class PostgresProductDaoImpl implements ProductDao {
                         future.completeExceptionally(ar.cause());
                     }
                 });
+
         return future;
     }
 
