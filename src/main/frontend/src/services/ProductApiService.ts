@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Product } from '@/types/Product';
 import BaseApi from './BaseApi';
 import { errorNotification } from './NotificationService';
 
@@ -23,12 +24,13 @@ export default class ProductApiService {
     });
   }
 
-  static async getProducts(company_id: number): Promise<void> {
+  static async getProducts(company_id: number): Promise<Array<Product>> {
     try {
       const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/getproducts`, { company_id });
-      console.log(data);
+      return data;
     } catch (e:any) {
       errorNotification(e.message);
+      return e;
     }
   }
 

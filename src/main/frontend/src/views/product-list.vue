@@ -1,50 +1,32 @@
 <template>
   <div class="items p-2">
     <div class="is-flex is-justify-content-space-between">
-      <h1>
-        Все товары
-      </h1>
-      <a-button class="is-right" @click="onAddButtonClick">
-        Добавить
-      </a-button>
+      <h1>Все товары</h1>
+      <a-button class="is-right" @click="onAddButtonClick"> Добавить </a-button>
     </div>
 
-  <a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
-    <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
-    <span slot="tags" slot-scope="tags">
-      <a-tag
-        v-for="tag in tags"
-        :key="tag"
-        :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-      >
-        {{ tag.toUpperCase() }}
-      </a-tag>
-    </span>
-    <span slot="action" slot-scope="text, record">
-      <a>Invite 一 {{ record }}</a>
-      <a-divider type="vertical" />
-      <a>Delete</a>
-      <a-divider type="vertical" />
-    </span>
-  </a-table>
+    <a-table :columns="columns" :data-source="data">
+      <span slot="action" slot-scope="text, record">
+        <a>Invite 一 {{ record }}</a>
+        <a-divider type="vertical" />
+        <a>Delete</a>
+        <a-divider type="vertical" />
+      </span>
+    </a-table>
 
-    <b-modal v-model="isCardModalActive" :width="350">
+    <a-modal v-model="isCardModalActive">
       <div class="card">
         <div class="card-content">
           <div class="content">
-          <p>
-            Действительно удалить номенклатуру {{ selectedProduct.name }} (#{{selectedProduct.code}})?
-          </p>
-          <div class="has-text-right">
-            <a-button type="is-success" @click="onRemoveButtonClick">Удалить</a-button>
-            <a-button class="ml-2" type="is-danger" @click="isCardModalActive = !isCardModalActive">Отмена</a-button>
-          </div>
+            <p>Действительно удалить номенклатуру {{ selectedProduct.name }} (#{{ selectedProduct.code }})?</p>
+            <div class="has-text-right">
+              <a-button type="is-success" @click="onRemoveButtonClick">Удалить</a-button>
+              <a-button class="ml-2" type="is-danger" @click="isCardModalActive = !isCardModalActive">Отмена</a-button>
+            </div>
           </div>
         </div>
       </div>
-    </b-modal>
-
+    </a-modal>
   </div>
 </template>
 
@@ -55,9 +37,18 @@ import { Product } from '@/types/Product';
 import { successNotification } from '@/services/NotificationService';
 import ProductApiService from '@/services/ProductApiService';
 
-@Component
+const columns = [
+  { title: 'ШК', dataIndex: 'sku', key: 'sku' },
+  { title: 'Наименование', dataIndex: 'name', key: 'name' },
+];
+
+@Component({
+  data() {
+    return { columns };
+  },
+})
 export default class Items extends Vue {
-  data = [];
+  data: Array<Product> = [];
 
   checkedRows = [];
 
@@ -76,7 +67,7 @@ export default class Items extends Vue {
 
   isCardModalActive = false;
 
-  selectedProduct:Product = {} as Product;
+  selectedProduct: Product = {} as Product;
 
   // eslint-disable-next-line class-methods-use-this
   removeIconHandler(item: any): void {
@@ -85,16 +76,15 @@ export default class Items extends Vue {
     console.log(item, 'remove');
   }
 
-  onRemoveButtonClick():void {
-    this.$store.dispatch('productsModule/removeProduct', this.selectedProduct)
-      .then(() => {
-        this.isCardModalActive = false;
-        successNotification('Удалено');
-      });
+  onRemoveButtonClick(): void {
+    this.$store.dispatch('productsModule/removeProduct', this.selectedProduct).then(() => {
+      this.isCardModalActive = false;
+      successNotification('Удалено');
+    });
   }
 
-  mounted(): void {
-    ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
+  async mounted(): Promise<void> {
+    this.data = await ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
   }
 
   onAddButtonClick(): void {
@@ -109,5 +99,4 @@ export default class Items extends Vue {
 </script>
 
 <style scoped>
-
 </style>
