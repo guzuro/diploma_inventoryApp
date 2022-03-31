@@ -82,9 +82,18 @@ export default class Items extends Vue {
     });
   }
 
-  deleteProduct = async (sku: number): Promise<void> => {
-    await ProductApiService.deleteProduct(sku);
-  };
+  deleteProduct(sku: number): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    this.$confirm({
+      title: 'Удалить позицию?',
+      content: 'Вы Действительно хотите удалить номенклатуру?',
+      async onOk() {
+        await ProductApiService.deleteProduct(sku);
+        await self.getProducts();
+      },
+    });
+  }
 
   // eslint-disable-next-line class-methods-use-this
   editIconHandler(item: Product): void {
@@ -117,8 +126,12 @@ export default class Items extends Vue {
     });
   }
 
-  async mounted(): Promise<void> {
+  async getProducts(): Promise<void> {
     this.data = await ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
+  }
+
+  mounted(): void {
+    this.getProducts();
   }
 
   onAddButtonClick(): void {
