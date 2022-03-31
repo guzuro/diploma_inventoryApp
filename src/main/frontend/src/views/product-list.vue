@@ -6,11 +6,13 @@
     </div>
 
     <a-table :columns="columns" :data-source="data">
-      <span slot="action" slot-scope="text, record">
-        <a>Invite 一 {{ record }}</a>
-        <a-divider type="vertical" />
-        <a>Delete</a>
-        <a-divider type="vertical" />
+      <div style="width: 100px" slot="product-image" slot-scope="record">
+        <img v-if="record.photos[0]" :src="`http://localhost:8888/assets/static/${record.photos[0]}`" />
+      </div>
+      <span slot="action" slot-scope="record">
+        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-pink-900" type="eye" @click="watchProduct(record.sku)"></a-icon>
+        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editProduct(record.sku)"></a-icon>
+        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-red-900" type="delete" @click="deleteProduct(record.sku)"></a-icon>
       </span>
     </a-table>
 
@@ -38,8 +40,12 @@ import { successNotification } from '@/services/NotificationService';
 import ProductApiService from '@/services/ProductApiService';
 
 const columns = [
+  { key: 'image', scopedSlots: { customRender: 'product-image' } },
   { title: 'ШК', dataIndex: 'sku', key: 'sku' },
   { title: 'Наименование', dataIndex: 'name', key: 'name' },
+  { title: 'Количество', dataIndex: 'quantity', key: 'quantity' },
+  { title: 'Склад', dataIndex: 'warehouse_id', key: 'warehouse_id' },
+  { title: 'Действия', key: 'action', scopedSlots: { customRender: 'action' } },
 ];
 
 @Component({
@@ -51,6 +57,34 @@ export default class Items extends Vue {
   data: Array<Product> = [];
 
   checkedRows = [];
+
+  watchProduct(sku: number): void {
+    this.$router.push({
+      name: 'Product',
+      params: {
+        actionType: 'watch',
+      },
+      query: {
+        sku: sku.toString(),
+      },
+    });
+  }
+
+  editProduct(sku: number): void {
+    this.$router.push({
+      name: 'Product',
+      params: {
+        actionType: 'edit',
+      },
+      query: {
+        sku: sku.toString(),
+      },
+    });
+  }
+
+  deleteProduct = async (sku: number): Promise<void> => {
+    await ProductApiService.deleteProduct(sku);
+  };
 
   // eslint-disable-next-line class-methods-use-this
   editIconHandler(item: Product): void {

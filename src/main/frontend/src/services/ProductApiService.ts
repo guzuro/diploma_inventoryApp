@@ -34,20 +34,31 @@ export default class ProductApiService {
     }
   }
 
-  static async addProduct(product:any): Promise<void> {
-    const response = await axios.post(`http://localhost:8888${ProductApiService.BASE_PATH}/add`, product, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  static async addProduct(product: any): Promise<void> {
+    try {
+      await axios.post(`http://localhost:8888${ProductApiService.BASE_PATH}/add`, product, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
+  }
 
-    console.log(response);
+  static async deleteProduct(sku:number): Promise<void> {
+    try {
+      await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/removeproduct`, { sku });
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
+  }
 
-    // try {
-    //   const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/add`, product);
-    //   console.log(data);
-    // } catch (e:any) {
-    //   errorNotification(e.message);
-    // }
+  static async getProduct(sku:number): Promise<void> {
+    try {
+      await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/getproduct`, { sku });
+    } catch (e:any) {
+      errorNotification(e.message);
+    }
   }
 }
