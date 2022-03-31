@@ -46,7 +46,7 @@ export default class ProductApiService {
     }
   }
 
-  static async deleteProduct(sku:number): Promise<void> {
+  static async deleteProduct(sku: number): Promise<void> {
     try {
       await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/removeproduct`, { sku });
     } catch (e:any) {
@@ -54,11 +54,13 @@ export default class ProductApiService {
     }
   }
 
-  static async getProduct(sku:number): Promise<void> {
+  static async getProduct(sku: number): Promise<Product> {
     try {
-      await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/getproduct`, { sku });
+      const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/getproduct`, { sku });
+      return data;
     } catch (e:any) {
       errorNotification(e.message);
+      return e;
     }
   }
 }

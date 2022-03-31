@@ -2,16 +2,16 @@
   <div class="item-form">
     <a-card title="Общая информация">
       <field-wrapper fieldTitle="Наименование">
-        <a-input v-model="productCopy.name"></a-input>
+        <a-input :disabled="disabled" v-model="productCopy.name"></a-input>
       </field-wrapper>
       <field-wrapper class="mt-2" fieldTitle="Описание">
-        <a-input v-model="productCopy.description" type="textarea"></a-input>
+        <a-input :disabled="disabled" v-model="productCopy.description" type="textarea"></a-input>
       </field-wrapper>
     </a-card>
     <a-card class="mt-5" title="Цена">
       <div class="flex">
         <field-wrapper class="mt-2 w-full" fieldTitle="Обычная цена">
-          <a-input v-model="productCopy.price_base" type="number"></a-input>
+          <a-input :disabled="disabled" v-model="productCopy.price_base" type="number"></a-input>
         </field-wrapper>
         <field-wrapper class="mt-2 ml-2 w-full" fieldTitle="Цена со скидкой">
           <a-input disabled :value="priceSale" type="number"></a-input>
@@ -19,10 +19,10 @@
       </div>
       <div class="flex">
         <field-wrapper class="mt-2 w-full" fieldTitle="Сумма скидки">
-          <a-input v-model="productCopy.sale_value" type="number"></a-input>
+          <a-input :disabled="disabled" v-model="productCopy.sale_value" type="number"></a-input>
         </field-wrapper>
         <field-wrapper class="mt-2 ml-2 w-full" fieldTitle="Выбрать скидку">
-          <a-select allowClear placeholder="Выберите скидку к товару" @change="handleSaleSelect">
+          <a-select :disabled="disabled" :defaultValue="productCopy.sale_id" allowClear placeholder="Выберите скидку к товару" @change="handleSaleSelect">
             <a-select-option v-for="(sale, index) in salesOptions" :key="index" :value="sale.value">
               {{ sale.label }}
             </a-select-option>
@@ -30,7 +30,7 @@
         </field-wrapper>
       </div>
       <field-wrapper class="mt-2" fieldTitle="Валюта">
-        <a-select placeholder="Валюта" v-model="productCopy.currency">
+        <a-select :disabled="disabled" placeholder="Валюта" v-model="productCopy.currency">
           <a-select-option value="RUB">Рубль</a-select-option>
           <a-select-option value="USD">Доллар</a-select-option>
           <a-select-option value="EUR">Евро</a-select-option>
@@ -39,20 +39,20 @@
     </a-card>
     <a-card class="mt-5" title="Учетная информация">
       <field-wrapper fieldTitle="Артикул">
-        <a-input type="number" v-model="productCopy.sku"></a-input>
+        <a-input :disabled="disabled" type="number" v-model="productCopy.sku"></a-input>
       </field-wrapper>
       <field-wrapper class="mt-2 w-full" fieldTitle="Выбрать категорию">
-        <a-select placeholder="Выберите категорию товара" @change="(value) => (productCopy.category = value)">
+        <a-select :disabled="disabled" :defaultValue="productCopy.category" placeholder="Выберите категорию товара" @change="(value) => (productCopy.category = value)">
           <a-select-option v-for="(category, index) in categoryOptions" :key="index" :value="category.value">
             {{ category.label }}
           </a-select-option>
         </a-select>
       </field-wrapper>
       <field-wrapper class="mt-2" fieldTitle="Текущее количество">
-        <a-input v-model="productCopy.quantity" type="number"></a-input>
+        <a-input :disabled="disabled" v-model="productCopy.quantity" type="number"></a-input>
       </field-wrapper>
       <field-wrapper class="mt-2" fieldTitle="ед.">
-        <a-select placeholder="ед." v-model="productCopy.unit">
+        <a-select :disabled="disabled" placeholder="ед." v-model="productCopy.unit">
           <a-select-option value="кг">кг</a-select-option>
           <a-select-option value="шт">шт</a-select-option>
           <a-select-option value="л">л</a-select-option>
@@ -60,7 +60,7 @@
       </field-wrapper>
     </a-card>
     <a-upload :showUploadList="false" list-type="picture" :file-list="list" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
-      <a-button> <a-icon type="upload" /> Выбрать файл </a-button>
+      <a-button :disabled="disabled"> <a-icon type="upload" /> Выбрать файл </a-button>
     </a-upload>
     <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
       <img alt="example" style="width: 100%" :src="previewImage" />
@@ -69,13 +69,13 @@
     <div v-if="previews.length" class="mt-5">
       <div class="previews" v-for="(preview, index) in previews" :key="index">
         <div class="mb-2 preview-wrapper is-flex is-justify-content-space-between is-align-items-center">
-          <img :src="preview.clearBlobUrl ? preview.clearBlobUrl : preview.blobLink" alt="" />
+          <img :src="preview.blobLink ? preview.blobLink : `http://localhost:8888/assets/static/${preview}`" alt="" />
           <div>
             <div class="cursor-pointer" @click="onRemoveBgButtonClick(preview.file, index)">
-              <a-icon type="bg-colors" :style="{ fontSize: '18px' }" />
+              <a-icon :disabled="disabled" type="bg-colors" :style="{ fontSize: '18px' }" />
             </div>
             <div class="cursor-pointer mt-2" @click="onDeleteImageButtonClick(index)">
-              <a-icon type="delete" :style="{ fontSize: '18px' }" />
+              <a-icon :disabled="disabled" type="delete" :style="{ fontSize: '18px' }" />
             </div>
           </div>
         </div>
@@ -89,6 +89,7 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { Prop, Watch } from 'vue-property-decorator';
+import { cloneDeep } from 'lodash';
 import ProductApiService from '@/services/ProductApiService';
 import FieldWrapper from './FieldWrapper.vue';
 import { Sale } from '@/types/Sale';
@@ -102,6 +103,8 @@ import { Category } from '@/types/Category';
 })
 export default class ProductForm extends Vue {
   @Prop() product!: Product;
+
+  @Prop({ default: false }) disabled!: boolean;
 
   productCopy = {} as Product;
 
@@ -185,7 +188,6 @@ export default class ProductForm extends Vue {
   }
 
   onFileChange({ fileList }: any): boolean {
-    console.log(fileList);
     this.list = fileList;
     fileList.forEach((img: any) => {
       this.previews.push({ file: img, blobLink: URL.createObjectURL(img.originFileObj) });
@@ -209,21 +211,10 @@ export default class ProductForm extends Vue {
 
   created(): void {
     this.productCopy = this.product;
-    // if (this.productCopy.photos) {
-    //   const urlCreator = window.URL || window.webkitURL;
-    //   this.previews = this.productCopy.photos.map((i: any): any => {
-    //     if (i.file) {
-    //       this.$set(i, 'blobLink', urlCreator.createObjectURL(i.file));
-    //     }
-    //     if (i.clearBlob) {
-    //       // eslint-disable-next-line no-param-reassign
-    //       this.$set(i, 'clearBlobUrl', urlCreator.createObjectURL(i.clearBlob));
-    //       // i.clearBlobUrl = urlCreator.createObjectURL(i.clearBlob);
-    //     }
-    //     return i;
-    //   });
-    //   console.log(this.productCopy);
-    // }
+    if (this.productCopy.photos) {
+      // const urlCreator = window.URL || window.webkitURL;
+      this.previews = cloneDeep(this.productCopy.photos);
+    }
   }
 }
 </script>
