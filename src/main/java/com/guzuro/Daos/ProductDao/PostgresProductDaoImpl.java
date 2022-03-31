@@ -49,8 +49,19 @@ public class PostgresProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public CompletableFuture<CopyOnWriteArrayList<Product>> removeProduct(double sku) {
-        return null;
+    public CompletableFuture<Boolean> removeProduct(long sku) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("DELETE FROM db_product WHERE sku = $1")
+                .execute(Tuple.of(sku), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(true);
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
+
     }
 
     @Override
@@ -89,5 +100,25 @@ public class PostgresProductDaoImpl implements ProductDao {
     @Override
     public CompletableFuture<Product> updateProduct(Product product) {
         return null;
+    }
+
+    @Override
+    public CompletableFuture<Product> getProductBySku(long sku) {
+        CompletableFuture<Product> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("SELECT " +
+                "sku, category, db_product.name, description, " +
+                "price_base, price_sale, currency, quantity, " +
+                "unit, photos, warehouse_id, company_id, sale_id, sale_value " +
+                "FROM db_product " +
+                "WHERE sku = $1")
+                .execute(Tuple.of(sku), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(ar.result().iterator().next().toJson().mapTo(Product.class));
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 }

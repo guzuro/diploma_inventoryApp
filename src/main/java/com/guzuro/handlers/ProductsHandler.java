@@ -97,12 +97,38 @@ public class ProductsHandler {
         });
     }
 
-    public void getProductById(RoutingContext context) {
-        System.out.println(context);
+    public void getProductBySku(RoutingContext context) {
+        HttpServerResponse response = context.response();
+
+        long sku = context.getBodyAsJson().getLong("sku");
+
+        this.dao.getProductBySku(sku).thenAccept(product -> {
+            context.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=UTF-8")
+                    .end(JsonObject.mapFrom(product).encodePrettily());
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500).end(throwable.getMessage());
+            return null;
+        });
     }
 
     public void removeProduct(RoutingContext context) {
-        System.out.println(context);
+        HttpServerResponse response = context.response();
+
+        long sku = context.getBodyAsJson().getLong("sku");
+
+        this.dao.removeProduct(sku).thenAccept(product -> {
+            context.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=UTF-8")
+                    .end();
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500).end(throwable.getMessage());
+            return null;
+        });
     }
 
     public void updateProduct(RoutingContext context) {

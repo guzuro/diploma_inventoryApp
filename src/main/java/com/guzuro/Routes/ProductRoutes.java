@@ -20,7 +20,7 @@ public class ProductRoutes {
 
         router.post("/add").handler(rc -> this.productsHandler.addProduct(rc));
         router.post("/getproducts").handler(rc -> this.productsHandler.getProducts(rc));
-        router.post("/getproduct").handler(rc -> this.productsHandler.getProductById(rc));
+        router.post("/getproduct").handler(rc -> this.productsHandler.getProductBySku(rc));
         router.post("/updateproduct").handler(rc -> this.productsHandler.updateProduct(rc));
         router.post("/removeproduct").handler(rc -> this.productsHandler.removeProduct(rc));
 

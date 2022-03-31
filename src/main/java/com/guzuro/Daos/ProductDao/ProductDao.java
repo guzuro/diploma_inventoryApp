@@ -9,10 +9,11 @@ public interface ProductDao {
 
     CompletableFuture<CopyOnWriteArrayList<Product>> getWarehouseProducts(int warehouse_id);
 
-    CompletableFuture<CopyOnWriteArrayList<Product>> removeProduct(double sku);
+    CompletableFuture<Boolean> removeProduct(long sku);
 
     CompletableFuture<Product> addProduct(Product product);
 
     CompletableFuture<Product> updateProduct(Product product);
 
+    CompletableFuture<Product> getProductBySku(long sku);
 }
