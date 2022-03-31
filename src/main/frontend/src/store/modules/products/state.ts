@@ -53,15 +53,9 @@ export default {
         .catch(reject);
     }),
     updateProduct: (context: { commit: Commit }, product: Product): void => {
-      console.log('update product in db logic later');
-      console.log('......');
-      console.log('updating product in store...');
       context.commit('UPDATE_PRODUCT', product);
     },
     removeProduct: (context: { commit: Commit }, product: Product): void => {
-      console.log('remove product in db logic later');
-      console.log('......');
-      console.log('removing product in store...');
       context.commit('REMOVE_PRODUCT', product);
     },
   },

@@ -43,7 +43,6 @@ export default class RegistrationForm extends Vue {
 
   async register(): Promise<void> {
     const res = await AuthService.register({ user: this.user, company: this.company });
-    console.log(res);
   }
 }
 </script>

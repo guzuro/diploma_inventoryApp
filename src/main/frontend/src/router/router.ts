@@ -3,8 +3,6 @@ import VueRouter from 'vue-router';
 import routes from '@/router/routes';
 import store from '@/store';
 import AuthService from '@/services/AuthService';
-import SalesService from '@/services/Config/SalesService';
-import { Sale } from '@/types/Sale';
 
 Vue.use(VueRouter);
 
@@ -13,9 +11,6 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
-});
-router.afterEach((to, from) => {
-  console.log(to);
 });
 
 router.beforeEach((to, from, next) => {

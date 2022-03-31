@@ -55,7 +55,6 @@ export default class UserService {
 
   static async addUser(user: any): Promise<void> {
     try {
-      console.log(user);
       const { data } = await BaseApi.sendRequest(`${UserService.BASE_PATH}/add`, user);
       await store.dispatch('userModule/setUserToStore', data);
       await successNotification('Успешно');
