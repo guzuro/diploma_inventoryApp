@@ -93,5 +93,7 @@ export default class DashboardLayout extends Mixins<NavigationItems>(NavigationI
 </script>
 
 <style lang="scss">
-
+// .ant-layout {
+//   height: 100%;
+// }
 </style>
