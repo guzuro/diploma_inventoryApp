@@ -22,7 +22,7 @@
           </a-card>
         </div>
       </div>
-      <div v-else>'empty '</div>
+      <a-empty v-else></a-empty>
       <a-modal v-model="isEmployeeRolesModalOpen" :title="modalMode === 'new' ? 'Добавить' : 'Редактировать'">
         <field-wrapper fieldTitle="Название">
           <a-input v-model="employeeRole.name" />

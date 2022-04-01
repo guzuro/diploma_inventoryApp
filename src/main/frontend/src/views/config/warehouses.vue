@@ -19,7 +19,7 @@
           </a-card>
         </div>
       </div>
-      <div v-else>'empty blyat`'</div>
+      <a-empty v-else></a-empty>
       <a-modal v-model="isWarehouseModalOpen" :title="modalMode === 'new' ? 'Добавить' : 'Редактировать'">
         <field-wrapper fieldTitle="Название склада">
           <a-input v-model="warehouse.title" />
