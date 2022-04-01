@@ -1,16 +1,16 @@
 export type Product = {
-  sku:number
-  category: number
-  name: string
-  description: string
-  price_base: number
-  price_sale: number
-  sale_value: number
-  sale_id: number
-  currency: string
-  quantity: number
-  unit: string
-  warehouse_id: number
-  company_id: number
-  photos: Array<string|File>
+  sku: number;
+  category: number | null;
+  name: string;
+  description: string;
+  price_base: number;
+  price_sale: number;
+  sale_value: number;
+  sale_id: number | null;
+  currency: string;
+  quantity: number;
+  unit: string;
+  warehouse_id: number | null;
+  company_id: number;
+  photos: Array<string | File>;
 };
