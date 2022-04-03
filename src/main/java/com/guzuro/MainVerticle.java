@@ -8,17 +8,23 @@ import com.guzuro.Routes.Config.SaleRoutes;
 import com.guzuro.Routes.ProductRoutes;
 import com.guzuro.Routes.UserRoutes;
 import com.guzuro.Routes.Config.WarehouseRoutes;
+import com.guzuro.handlers.UploadFileHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.net.impl.URIDecoder;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -56,11 +62,21 @@ public class MainVerticle extends AbstractVerticle {
                         .setCookieSecureFlag(true));
 
         router.route("/assets/*").handler(StaticHandler.create("webroot")).handler(handler -> {
-            String path = handler.request().path();
-            String[] pathSplited = path.split("/");
-            String fileName = pathSplited[3];
-            HttpServerResponse response = handler.response();
-            response.putHeader("Transfer-Encoding", "chunked").sendFile("webroot/" + fileName);
+            try {
+                String path = handler.request().path();
+
+                String result = java.net.URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+                String[] pathSplited = result.split("/");
+                String fileName = pathSplited[3];
+
+                HttpServerResponse response = handler.response();
+                response.putHeader("Transfer-Encoding", "chunked")
+                        .sendFile("webroot/" + fileName);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
         });
 
         router.route("/api");
@@ -74,7 +90,7 @@ public class MainVerticle extends AbstractVerticle {
         router.mountSubRouter("/config/sales", new SaleRoutes(vertx).setRoutes(vertx));
         router.mountSubRouter("/config/category", new CategoryRoutes(vertx).setRoutes(vertx));
         router.mountSubRouter("/config/employeeroles", new EmployeeRolesRoutes(vertx).setRoutes(vertx));
-
+        router.post("/uploadfile").handler(UploadFileHandler::uploadFile);
 
         router.mountSubRouter("/products", new ProductRoutes(vertx).setRoutes(vertx));
 

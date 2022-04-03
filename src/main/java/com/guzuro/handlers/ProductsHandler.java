@@ -46,43 +46,9 @@ public class ProductsHandler {
     }
 
     public void addProduct(RoutingContext context) {
-        context.response().setChunked(true);
         HttpServerResponse response = context.response();
 
-        Set<FileUpload> uploads = context.fileUploads();
-
-        Product product = new Product();
-        product.setName(context.request().getParam("name"));
-        product.setCategory(Integer.parseInt(context.request().getParam("category")));
-        product.setCurrency(context.request().getParam("currency"));
-        product.setCompany_id(Integer.parseInt(context.request().getParam("company_id")));
-        product.setDescription(context.request().getParam("description"));
-        product.setPrice_base(Double.parseDouble(context.request().getParam("price_base")));
-        product.setPrice_sale(Double.parseDouble(context.request().getParam("price_sale")));
-
-        product.setSale_value(Double.parseDouble(context.request().getParam("sale_value")));
-
-        product.setSale_id(Integer.parseInt(context.request().getParam("sale_id")));
-        product.setSku(Long.parseLong(context.request().getParam("sku")));
-        product.setUnit(context.request().getParam("unit"));
-
-        product.setQuantity(Double.parseDouble(context.request().getParam("quantity")));
-        product.setWarehouse_id(Integer.parseInt(context.request().getParam("warehouse_id")));
-
-        ArrayList<String> photos = new ArrayList<>();
-
-        uploads.forEach(upload -> {
-            try {
-                File uploadedFile = new File(upload.uploadedFileName());
-                uploadedFile.renameTo(new File("webroot/" + upload.fileName()));
-                uploadedFile.createNewFile();
-                photos.add(upload.fileName());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        product.setPhotos(photos);
+        Product product = context.getBodyAsJson().mapTo(Product.class);
 
         this.dao.addProduct(product).thenAccept(resProduct -> {
             context.response()
@@ -132,6 +98,21 @@ public class ProductsHandler {
     }
 
     public void updateProduct(RoutingContext context) {
-        System.out.println(context);
+        HttpServerResponse response = context.response();
+
+        Product product = context.getBodyAsJson().mapTo(Product.class);
+
+        this.dao.updateProduct(product).thenAccept(resProduct -> {
+            context.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=UTF-8")
+                    .end(JsonObject.mapFrom(resProduct).encodePrettily());
+
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500).end(throwable.getMessage());
+            return null;
+        });
+
     }
 }

@@ -99,7 +99,32 @@ public class PostgresProductDaoImpl implements ProductDao {
 
     @Override
     public CompletableFuture<Product> updateProduct(Product product) {
-        return null;
+        CompletableFuture<Product> future = new CompletableFuture<>();
+
+        String[] p = new String[product.getPhotos().size()];
+        product.getPhotos().toArray(p);
+        this.pgClient.preparedQuery("" +
+                "UPDATE db_product " +
+                "SET category = $2, name= $3, description= $4, " +
+                "price_base= $5, price_sale= $6, currency= $7, quantity= $8, " +
+                "unit= $9, photos= $10, warehouse_id= $11, sale_id= $12, sale_value= $13 " +
+                "WHERE sku = $1 RETURNING sku, category, name, description," +
+                "price_base, price_sale, currency, quantity, " +
+                "unit, photos, warehouse_id, company_id, sale_id, sale_value;")
+                .execute(Tuple.of(
+                        product.getSku(), product.getCategory(), product.getName(),
+                        product.getDescription(), product.getPrice_base(), product.getPrice_sale(),
+                        product.getCurrency(), product.getQuantity(), product.getUnit(),
+                        p, product.getWarehouse_id(), product.getSale_id(), product.getSale_value()
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(ar.result().iterator().next().toJson().mapTo(Product.class));
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+
+        return future;
     }
 
     @Override
