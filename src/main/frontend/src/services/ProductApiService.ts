@@ -34,7 +34,7 @@ export default class ProductApiService {
     }
   }
 
-  static async addProduct(product: any): Promise<void> {
+  static async addProduct(product: Product): Promise<void> {
     try {
       const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/add`, product);
       return data;
@@ -62,7 +62,7 @@ export default class ProductApiService {
     }
   }
 
-  static async updateProduct(product: any): Promise<void> {
+  static async updateProduct(product: Product): Promise<void> {
     try {
       const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/updateproduct`, product);
       return data;

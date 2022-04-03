@@ -41,31 +41,31 @@
       <field-wrapper fieldTitle="Артикул">
         <a-input :disabled="disabled" type="number" v-model="productCopy.sku"></a-input>
       </field-wrapper>
-      <field-wrapper class="mt-2 w-full" fieldTitle="Выбрать категорию">
+      <field-wrapper v-if="!!productCopy.category" class="mt-2 w-full" fieldTitle="Выбрать категорию">
         <a-select :disabled="disabled" :defaultValue="productCopy.category" placeholder="Выберите категорию товара" @change="(value) => (productCopy.category = value)">
           <a-select-option v-for="(category, index) in categoryOptions" :key="index" :value="category.value">
             {{ category.label }}
           </a-select-option>
         </a-select>
       </field-wrapper>
-      <field-wrapper v-if="productCopy.warehouse_id !== null" class="mt-2 w-full" fieldTitle="Хранение (склад)">
-        <a-select :disabled="disabled" :defaultValue="productCopy.category" placeholder="Выберите склад" @change="(value) => (productCopy.warehouse_id = value)">
+      <field-wrapper v-if="!!productCopy.warehouse_id" class="mt-2 w-full" fieldTitle="Хранение (склад)">
+        <a-select :disabled="disabled" :defaultValue="productCopy.warehouse_id" placeholder="Выберите склад" @change="(value) => (productCopy.warehouse_id = value)">
           <a-select-option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse.value">
             {{ warehouse.label }}
           </a-select-option>
         </a-select>
       </field-wrapper>
-      <field-wrapper v-if="productCopy.quantity !== null" class="mt-2" fieldTitle="Текущее количество">
+      <field-wrapper v-if="!!productCopy.quantity" class="mt-2" fieldTitle="Текущее количество">
         <a-input :disabled="disabled" v-model="productCopy.quantity" type="number"></a-input>
       </field-wrapper>
-      <field-wrapper v-if="productCopy.unit !== null" class="mt-2" fieldTitle="ед.">
+      <field-wrapper v-if="!!productCopy.unit" class="mt-2" fieldTitle="ед.">
         <a-select :disabled="disabled" placeholder="ед." v-model="productCopy.unit">
           <a-select-option value="кг">кг</a-select-option>
           <a-select-option value="шт">шт</a-select-option>
           <a-select-option value="л">л</a-select-option>
         </a-select>
       </field-wrapper>
-      <a-button @click="visible = true">Дополнительные параметры</a-button>
+      <a-button :disabled="disabled" class="mt-2" @click="visible = true">Дополнительные параметры</a-button>
     </a-card>
     <a-upload :showUploadList="false" :action="uploadFile" list-type="picture" :file-list="productCopy.photos" :remove="handleRemove">
       <a-button class="mt-5" :disabled="disabled"> <a-icon type="upload" /> Выбрать файл </a-button>
@@ -89,14 +89,11 @@
       </div>
     </div>
     <a-empty v-else class="mt-2"><span slot="description">Изображения пока не загружены...</span></a-empty>
-
-    <a-drawer title="Basic Drawer" placement="right" :closable="true" :visible="visible" @close="visible = false">
-      <p>Добавить дополнительные поля:</p>
-
-      <a-checkbox @change="handleCategoryAvailabilityChange"  :checked="productCopy.category !== null"> Категория </a-checkbox>
-      <a-checkbox @change="handleQuantityAvailabilityChange"  :checked="productCopy.quantity !== null"> Количество </a-checkbox>
-      <a-checkbox @change="handleUnitAvailabilityChange"      :checked="productCopy.unit !== null"> Ед. измерения </a-checkbox>
-      <a-checkbox @change="handleWarehouseAvailabilityChange" :checked="productCopy.warehouse_id !== null"> Склад хранения </a-checkbox>
+    <a-drawer title="Дополнительные поля" placement="right" :closable="true" :visible="visible" @close="visible = false">
+      <a-checkbox @change="handleCategoryAvailabilityChange" :checked="!!productCopy.category"> Категория </a-checkbox>
+      <a-checkbox @change="handleQuantityAvailabilityChange" :checked="!!productCopy.quantity"> Количество </a-checkbox>
+      <a-checkbox @change="handleUnitAvailabilityChange" :checked="!!productCopy.unit"> Ед. измерения </a-checkbox>
+      <a-checkbox @change="handleWarehouseAvailabilityChange" :checked="!!productCopy.warehouse_id"> Склад хранения </a-checkbox>
     </a-drawer>
   </div>
 </template>
@@ -120,47 +117,6 @@ import UploadFileService from '@/services/UploadFileService';
   },
 })
 export default class ProductForm extends Vue {
-  handleCategoryAvailabilityChange(value: boolean): void {
-    if (value && this.categoryOptions.length) {
-      this.productCopy.category = this.categoryOptions[0].value;
-    }
-    if (value) {
-      this.productCopy.category = 0;
-    }
-    if (!value) {
-      this.productCopy.category = null;
-    }
-  }
-
-  handleQuantityAvailabilityChange(value: boolean): void {
-    if (value) {
-      this.productCopy.quantity = 0;
-    } else {
-      this.productCopy.quantity = null;
-    }
-  }
-
-  handleUnitAvailabilityChange(value: boolean): void {
-    if (value) {
-      this.productCopy.unit = 'шт.';
-    } else {
-      this.productCopy.unit = null;
-    }
-  }
-
-  handleWarehouseAvailabilityChange(value: boolean): void {
-    console.log(value);
-    if (value && this.warehouseOptions.length) {
-      this.productCopy.warehouse_id = this.warehouseOptions[0].value;
-    }
-    if (value) {
-      this.productCopy.warehouse_id = 0;
-    }
-    if (!value) {
-      this.productCopy.warehouse_id = null;
-    }
-  }
-
   @Prop() product!: Product;
 
   @Prop({ default: false }) disabled!: boolean;
@@ -258,6 +214,43 @@ export default class ProductForm extends Vue {
 
   onDeleteImageButtonClick(index: number): void {
     this.productCopy.photos.splice(index, 1);
+  }
+
+  handleCategoryAvailabilityChange(value: Event): void {
+    if ((value.target as HTMLInputElement).checked && this.categoryOptions.length) {
+      this.productCopy.category = this.categoryOptions[0].value;
+    }
+    if (!(value.target as HTMLInputElement).checked) {
+      this.productCopy.category = null;
+    }
+  }
+
+  handleQuantityAvailabilityChange(value: Event): void {
+    if ((value.target as HTMLInputElement).checked) {
+      this.productCopy.quantity = 0;
+    } else {
+      this.productCopy.quantity = null;
+    }
+  }
+
+  handleUnitAvailabilityChange(value: Event): void {
+    if ((value.target as HTMLInputElement).checked) {
+      this.productCopy.unit = 'шт';
+    } else {
+      this.productCopy.unit = null;
+    }
+  }
+
+  handleWarehouseAvailabilityChange(value: Event): void {
+    if ((value.target as HTMLInputElement).checked && this.warehouseOptions.length) {
+      this.productCopy.warehouse_id = this.warehouseOptions[0].value;
+    }
+    if ((value.target as HTMLInputElement).checked) {
+      this.productCopy.warehouse_id = 0;
+    }
+    if (!(value.target as HTMLInputElement).checked) {
+      this.productCopy.warehouse_id = null;
+    }
   }
 
   created(): void {
