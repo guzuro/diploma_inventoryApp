@@ -48,40 +48,56 @@
           </a-select-option>
         </a-select>
       </field-wrapper>
-      <field-wrapper class="mt-2" fieldTitle="Текущее количество">
+      <field-wrapper v-if="productCopy.warehouse_id !== null" class="mt-2 w-full" fieldTitle="Хранение (склад)">
+        <a-select :disabled="disabled" :defaultValue="productCopy.category" placeholder="Выберите склад" @change="(value) => (productCopy.warehouse_id = value)">
+          <a-select-option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse.value">
+            {{ warehouse.label }}
+          </a-select-option>
+        </a-select>
+      </field-wrapper>
+      <field-wrapper v-if="productCopy.quantity !== null" class="mt-2" fieldTitle="Текущее количество">
         <a-input :disabled="disabled" v-model="productCopy.quantity" type="number"></a-input>
       </field-wrapper>
-      <field-wrapper class="mt-2" fieldTitle="ед.">
+      <field-wrapper v-if="productCopy.unit !== null" class="mt-2" fieldTitle="ед.">
         <a-select :disabled="disabled" placeholder="ед." v-model="productCopy.unit">
           <a-select-option value="кг">кг</a-select-option>
           <a-select-option value="шт">шт</a-select-option>
           <a-select-option value="л">л</a-select-option>
         </a-select>
       </field-wrapper>
+      <a-button @click="visible = true">Дополнительные параметры</a-button>
     </a-card>
-    <a-upload :showUploadList="false" list-type="picture" :file-list="list" :before-upload="beforeUpload" :remove="handleRemove" @change="onFileChange">
-      <a-button :disabled="disabled"> <a-icon type="upload" /> Выбрать файл </a-button>
+    <a-upload :showUploadList="false" :action="uploadFile" list-type="picture" :file-list="productCopy.photos" :remove="handleRemove">
+      <a-button class="mt-5" :disabled="disabled"> <a-icon type="upload" /> Выбрать файл </a-button>
     </a-upload>
-    <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
+    <!-- <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
       <img alt="example" style="width: 100%" :src="previewImage" />
-    </a-modal>
-
-    <div v-if="previews.length" class="mt-5">
-      <div class="previews" v-for="(preview, index) in previews" :key="index">
+    </a-modal> -->
+    <div v-if="productCopy.photos.length" class="mt-5">
+      <div class="previews" v-for="(preview, index) in productCopy.photos" :key="index">
         <div class="mb-2 preview-wrapper is-flex is-justify-content-space-between is-align-items-center">
-          <img :src="preview.blobLink ? preview.blobLink : `http://localhost:8888/assets/static/${preview}`" alt="" />
+          <img :src="`http://localhost:8888/assets/static/${preview}`" alt="" />
           <div>
             <div class="cursor-pointer" @click="onRemoveBgButtonClick(preview.file, index)">
-              <a-icon :disabled="disabled" type="bg-colors" :style="{ fontSize: '18px' }" />
+              <a-button :disabled="disabled" icon="bg-colors" :style="{ fontSize: '18px' }" />
             </div>
             <div class="cursor-pointer mt-2" @click="onDeleteImageButtonClick(index)">
-              <a-icon :disabled="disabled" type="delete" :style="{ fontSize: '18px' }" />
+              <a-button :disabled="disabled" icon="delete" :style="{ fontSize: '18px' }" />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <p v-else class="has-text-centered mt-2 is-size-4">Изображения пока не загружены...</p>
+    <a-empty v-else class="mt-2"><span slot="description">Изображения пока не загружены...</span></a-empty>
+
+    <a-drawer title="Basic Drawer" placement="right" :closable="true" :visible="visible" @close="visible = false">
+      <p>Добавить дополнительные поля:</p>
+
+      <a-checkbox @change="handleCategoryAvailabilityChange"  :checked="productCopy.category !== null"> Категория </a-checkbox>
+      <a-checkbox @change="handleQuantityAvailabilityChange"  :checked="productCopy.quantity !== null"> Количество </a-checkbox>
+      <a-checkbox @change="handleUnitAvailabilityChange"      :checked="productCopy.unit !== null"> Ед. измерения </a-checkbox>
+      <a-checkbox @change="handleWarehouseAvailabilityChange" :checked="productCopy.warehouse_id !== null"> Склад хранения </a-checkbox>
+    </a-drawer>
   </div>
 </template>
 
@@ -95,6 +111,8 @@ import FieldWrapper from './FieldWrapper.vue';
 import { Sale } from '@/types/Sale';
 import { Product } from '@/types/Product';
 import { Category } from '@/types/Category';
+import { Warehouse } from '@/types/Warehouse';
+import UploadFileService from '@/services/UploadFileService';
 
 @Component({
   components: {
@@ -102,14 +120,91 @@ import { Category } from '@/types/Category';
   },
 })
 export default class ProductForm extends Vue {
+  handleCategoryAvailabilityChange(value: boolean): void {
+    if (value && this.categoryOptions.length) {
+      this.productCopy.category = this.categoryOptions[0].value;
+    }
+    if (value) {
+      this.productCopy.category = 0;
+    }
+    if (!value) {
+      this.productCopy.category = null;
+    }
+  }
+
+  handleQuantityAvailabilityChange(value: boolean): void {
+    if (value) {
+      this.productCopy.quantity = 0;
+    } else {
+      this.productCopy.quantity = null;
+    }
+  }
+
+  handleUnitAvailabilityChange(value: boolean): void {
+    if (value) {
+      this.productCopy.unit = 'шт.';
+    } else {
+      this.productCopy.unit = null;
+    }
+  }
+
+  handleWarehouseAvailabilityChange(value: boolean): void {
+    console.log(value);
+    if (value && this.warehouseOptions.length) {
+      this.productCopy.warehouse_id = this.warehouseOptions[0].value;
+    }
+    if (value) {
+      this.productCopy.warehouse_id = 0;
+    }
+    if (!value) {
+      this.productCopy.warehouse_id = null;
+    }
+  }
+
   @Prop() product!: Product;
 
   @Prop({ default: false }) disabled!: boolean;
 
+  visible = false;
+
   productCopy = {} as Product;
+
+  @Watch('productCopy', { deep: true })
+  onProductCopyChange(itemValue: Product): void {
+    this.$emit('update', itemValue);
+  }
+
+  uploadFile(file: File): void {
+    const fd = new FormData();
+    fd.append('photos[]', file);
+    UploadFileService.uploadFile(fd).then((response) => {
+      this.productCopy.photos.push(...response);
+    });
+  }
 
   get priceBase(): number {
     return this.productCopy.price_base;
+  }
+
+  get categoryOptions(): Array<{ label: string; value: number }> {
+    return this.$store.state.configModule.config.category.map((c: Category) => ({
+      label: c.name,
+      value: c.id,
+    }));
+  }
+
+  get salesOptions(): Array<{ label: string; value: number }> {
+    return this.$store.state.configModule.config.sale.map((s: Sale) => ({
+      label: `${s.name}, ${s.value} ${s.type === 'procent' ? '%' : this.$store.state.companyModule.company.currency}`,
+      value: s.id,
+    }));
+  }
+
+  get warehouseOptions(): Array<{ label: string; value: number }> {
+    return this.$store.state.configModule.config.warehouse.map((w: Warehouse) => ({
+      label: w.title,
+      value: w.id,
+    }));
   }
 
   get priceSale(): number | undefined {
@@ -138,83 +233,35 @@ export default class ProductForm extends Vue {
     }
   }
 
-  previews: any[] = [];
-
-  previewVisible = false;
-
-  previewImage = '';
-
-  previewsWithoutBg: any[] = [];
-
-  list = [];
-
-  @Watch('previews', { deep: true })
-  onPreviewsChange(): void {
-    this.list.forEach((f: any) => this.productCopy.photos!.push(f));
-  }
-
-  handleRemove(file: File): void {
+  handleRemove(file: string): void {
     const index = this.productCopy.photos!.indexOf(file);
-    const newFileList = this.productCopy.photos!.slice();
-    newFileList.splice(index, 1);
-    this.productCopy.photos = newFileList;
-  }
-
-  beforeUpload = (): boolean => false;
-
-  @Watch('productCopy', { deep: true })
-  onProductCopyChange(itemValue: any): void {
-    this.$emit('update', itemValue);
+    this.productCopy.photos.splice(index, 1);
   }
 
   onRemoveBgButtonClick(image: any, index: number): void {
     ProductApiService.removeBackground(image.originFileObj).then(({ data }) => {
       const urlCreator = window.URL || window.webkitURL;
       const imageUrl = urlCreator.createObjectURL(data);
-      this.previews = this.previews.map((p: any, idx: number): any => {
-        if (idx === index) {
-          // eslint-disable-next-line no-param-reassign
-          p.clearBlobUrl = imageUrl;
-          // eslint-disable-next-line no-param-reassign
-          p.clearBlob = data;
-        }
-        return p;
-      });
+      console.log(this.product);
+
+      // this.previews = this.previews.map((p: any, idx: number): any => {
+      //   if (idx === index) {
+      //     // eslint-disable-next-line no-param-reassign
+      //     p.clearBlobUrl = imageUrl;
+      //     // eslint-disable-next-line no-param-reassign
+      //     p.clearBlob = data;
+      //   }
+      //   return p;
+      // });
     });
   }
 
   onDeleteImageButtonClick(index: number): void {
-    this.previews.splice(index, 1);
-  }
-
-  onFileChange({ fileList }: any): boolean {
-    this.list = fileList;
-    fileList.forEach((img: any) => {
-      this.previews.push({ file: img, blobLink: URL.createObjectURL(img.originFileObj) });
-    });
-    return false;
-  }
-
-  get categoryOptions(): Array<{ label: string; value: number }> {
-    return this.$store.state.configModule.config.category.map((c: Category) => ({
-      label: c.name,
-      value: c.id,
-    }));
-  }
-
-  get salesOptions(): Array<{ label: string; value: number }> {
-    return this.$store.state.configModule.config.sale.map((s: Sale) => ({
-      label: `${s.name}, ${s.value} ${s.type === 'procent' ? '%' : this.$store.state.companyModule.company.currency}`,
-      value: s.id,
-    }));
+    this.productCopy.photos.splice(index, 1);
   }
 
   created(): void {
-    this.productCopy = this.product;
-    if (this.productCopy.photos) {
-      // const urlCreator = window.URL || window.webkitURL;
-      this.previews = cloneDeep(this.productCopy.photos);
-    }
+    this.productCopy = cloneDeep(this.product);
   }
 }
 </script>
@@ -230,9 +277,5 @@ export default class ProductForm extends Vue {
   width: 100%;
   max-width: 100px;
   height: 100px;
-
-  //   &:hover {
-  //     transform: scale(3);
-  //   }
 }
 </style>

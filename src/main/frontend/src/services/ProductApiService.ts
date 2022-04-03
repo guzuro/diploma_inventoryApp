@@ -36,13 +36,11 @@ export default class ProductApiService {
 
   static async addProduct(product: any): Promise<void> {
     try {
-      await axios.post(`http://localhost:8888${ProductApiService.BASE_PATH}/add`, product, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/add`, product);
+      return data;
     } catch (e:any) {
       errorNotification(e.message);
+      return e;
     }
   }
 
@@ -57,6 +55,16 @@ export default class ProductApiService {
   static async getProduct(sku: number): Promise<Product> {
     try {
       const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/getproduct`, { sku });
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
+
+  static async updateProduct(product: any): Promise<void> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${ProductApiService.BASE_PATH}/updateproduct`, product);
       return data;
     } catch (e:any) {
       errorNotification(e.message);

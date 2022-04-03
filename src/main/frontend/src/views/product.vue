@@ -1,6 +1,6 @@
 <template>
   <div class="item p-2" v-if="product">
-    <h1 class="page-title">{{ pageTitle }}</h1>
+    <h1 class="page-title mb-5">{{ pageTitle }}</h1>
     <product-form :product="product" @update="updateProduct" :disabled="disabled" />
     <div class="mt-5 has-text-right">
       <a-button :disabled="disabled" class="mr-2" type="is-success" @click="onSaveButtonClick">Сохранить</a-button>
@@ -26,6 +26,8 @@ export default class Item extends Vue {
 
   product: Product | null = null;
 
+  disabled = false;
+
   updateProduct(product: Product): void {
     this.product = product;
   }
@@ -46,18 +48,24 @@ export default class Item extends Vue {
     if (this.productActionType === 'edit') {
       this.$store.dispatch('productsModule/updateProduct', this.product).then(() => {
         successNotification('Номенклатура обновлена');
+        this.$router.push({
+          name: 'Products',
+        });
       });
     }
   }
 
   get pageTitle(): string {
+    const productSku = this.product!.sku;
+
     if (this.productActionType === 'new') {
       return 'Добавить номенклатуру';
     }
-    return `Редактировать номенклатуру #${this.product!.sku}`;
+    if (this.productActionType === 'watch') {
+      return `Просмотр номенклатуры #${productSku}`;
+    }
+    return `Редактировать номенклатуру #${productSku}`;
   }
-
-  disabled = false;
 
   created(): void {
     this.productActionType = this.$route.params.actionType;
@@ -72,17 +80,17 @@ export default class Item extends Vue {
     if (this.productActionType === 'new') {
       this.product = {
         sku: 0,
-        category: 0,
         name: '',
         description: '',
         price_base: 0,
         price_sale: 0,
         sale_value: 0,
-        sale_id: 0,
+        sale_id: null,
         currency: 'RUB',
-        quantity: 0,
-        unit: 'кг',
-        warehouse_id: 0,
+        category: null,
+        quantity: null,
+        unit: null,
+        warehouse_id: null,
         company_id: this.$store.state.companyModule.company.id,
         photos: [],
       };

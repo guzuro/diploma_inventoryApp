@@ -1,18 +1,24 @@
 <template>
   <div class="items p-2">
-    <div class="is-flex is-justify-content-space-between">
+    <div class="mb-5 flex justify-between">
       <h1>Все товары</h1>
-      <a-button class="is-right" @click="onAddButtonClick"> Добавить </a-button>
+      <a-button @click="onAddButtonClick"> Добавить </a-button>
     </div>
 
-    <a-table :columns="columns" :data-source="data">
+    <a-table :row-key="(record) => record.sku" :columns="columns" :data-source="data" :loading="loading">
       <div style="width: 100px" slot="product-image" slot-scope="record">
         <img v-if="record.photos[0]" :src="`http://localhost:8888/assets/static/${record.photos[0]}`" />
       </div>
       <span slot="action" slot-scope="record">
-        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-pink-900" type="eye" @click="watchProduct(record.sku)"></a-icon>
-        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editProduct(record.sku)"></a-icon>
-        <a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-red-900" type="delete" @click="deleteProduct(record.sku)"></a-icon>
+        <a-tooltip
+          ><template #title>Просмотр</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-pink-900" type="eye" @click="watchProduct(record.sku)"></a-icon
+        ></a-tooltip>
+        <a-tooltip
+          ><template #title>Редактировать</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editProduct(record.sku)"></a-icon
+        ></a-tooltip>
+        <a-tooltip
+          ><template #title>Удалить</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-red-900" type="delete" @click="deleteProduct(record.sku)"></a-icon
+        ></a-tooltip>
       </span>
     </a-table>
 
@@ -57,6 +63,8 @@ export default class Items extends Vue {
   data: Array<Product> = [];
 
   checkedRows = [];
+
+  loading = false;
 
   watchProduct(sku: number): void {
     this.$router.push({
@@ -127,7 +135,9 @@ export default class Items extends Vue {
   }
 
   async getProducts(): Promise<void> {
+    this.loading = true;
     this.data = await ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
+    this.loading = false;
   }
 
   mounted(): void {
