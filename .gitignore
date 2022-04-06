@@ -189,3 +189,4 @@ nbdist/
 
 
 webroot/
+src/main/frontend/.firebaserc
