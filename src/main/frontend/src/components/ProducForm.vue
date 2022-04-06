@@ -245,9 +245,6 @@ export default class ProductForm extends Vue {
     if ((value.target as HTMLInputElement).checked && this.warehouseOptions.length) {
       this.productCopy.warehouse_id = this.warehouseOptions[0].value;
     }
-    if ((value.target as HTMLInputElement).checked) {
-      this.productCopy.warehouse_id = 0;
-    }
     if (!(value.target as HTMLInputElement).checked) {
       this.productCopy.warehouse_id = null;
     }

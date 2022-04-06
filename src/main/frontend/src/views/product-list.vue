@@ -9,6 +9,8 @@
       <div style="width: 100px" slot="product-image" slot-scope="record">
         <img v-if="record.photos[0]" :src="`http://localhost:8888/assets/static/${record.photos[0]}`" />
       </div>
+      <span slot="quantity" slot-scope="quantity"> {{ !!quantity ? quantity : '-' }} </span>
+      <span slot="warehouse_id" slot-scope="warehouse_id">{{ !!warehouse_id ? warehouseName(warehouse_id) : '-' }} </span>
       <span slot="action" slot-scope="record">
         <a-tooltip
           ><template #title>Просмотр</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-pink-900" type="eye" @click="watchProduct(record.sku)"></a-icon
@@ -44,13 +46,24 @@ import Vue from 'vue';
 import { Product } from '@/types/Product';
 import { successNotification } from '@/services/NotificationService';
 import ProductApiService from '@/services/ProductApiService';
+import { Warehouse } from '@/types/Warehouse';
 
 const columns = [
   { key: 'image', scopedSlots: { customRender: 'product-image' } },
   { title: 'ШК', dataIndex: 'sku', key: 'sku' },
   { title: 'Наименование', dataIndex: 'name', key: 'name' },
-  { title: 'Количество', dataIndex: 'quantity', key: 'quantity' },
-  { title: 'Склад', dataIndex: 'warehouse_id', key: 'warehouse_id' },
+  {
+    title: 'Количество',
+    dataIndex: 'quantity',
+    key: 'quantity',
+    scopedSlots: { customRender: 'quantity' },
+  },
+  {
+    title: 'Склад',
+    dataIndex: 'warehouse_id',
+    key: 'warehouse_id',
+    scopedSlots: { customRender: 'warehouse_id' },
+  },
   { title: 'Действия', key: 'action', scopedSlots: { customRender: 'action' } },
 ];
 
@@ -138,6 +151,10 @@ export default class Items extends Vue {
     this.loading = true;
     this.data = await ProductApiService.getProducts(this.$store.getters['companyModule/getCompany'].id);
     this.loading = false;
+  }
+
+  warehouseName(id: number): string {
+    return this.$store.state.configModule.config.warehouse.find((w: Warehouse) => w.id === id).title;
   }
 
   mounted(): void {
