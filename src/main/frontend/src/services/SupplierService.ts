@@ -1,13 +1,11 @@
-import { Category } from '@/types/Category';
-import { Sale } from '@/types/Sale';
-import { Supplier } from '@/types/Supplier';
+import { ISupplier } from '@/types/Supplier';
 import BaseApi from './BaseApi';
 import { errorNotification } from './NotificationService';
 
 export default class SupplierService {
   static BASE_PATH = '/suppliers';
 
-  static async addSupplier(reqBody: { supplier: Omit<Supplier, 'id'>; company_id: number }): Promise<Supplier> {
+  static async addSupplier(reqBody: { supplier: Omit<ISupplier, 'id'>; company_id: number }): Promise<ISupplier> {
     try {
       const { data } = await BaseApi.sendRequest(`${SupplierService.BASE_PATH}/add`, reqBody);
       return data;
@@ -17,7 +15,7 @@ export default class SupplierService {
     }
   }
 
-  static async updateSupplier(reqBody: { supplier: Supplier;}): Promise<Supplier> {
+  static async updateSupplier(reqBody: { supplier: ISupplier;}): Promise<ISupplier> {
     try {
       const { data } = await BaseApi.sendRequest(`${SupplierService.BASE_PATH}/update`, reqBody);
       return data;
@@ -27,7 +25,7 @@ export default class SupplierService {
     }
   }
 
-  static async getSuppliers(reqBody: { company_id: number }): Promise<Array<Supplier>> {
+  static async getSuppliers(reqBody: { company_id: number }): Promise<Array<ISupplier>> {
     try {
       const { data } = await BaseApi.sendRequest(`${SupplierService.BASE_PATH}/getSuppliers`, reqBody);
       return data;
@@ -37,7 +35,7 @@ export default class SupplierService {
     }
   }
 
-  static async getSupplier(reqBody: { supplier_id: number }): Promise<Sale> {
+  static async getSupplier(reqBody: { supplier_id: number }): Promise<ISupplier> {
     try {
       const { data } = await BaseApi.sendRequest(`${SupplierService.BASE_PATH}/getSupplier`, reqBody);
       return data;

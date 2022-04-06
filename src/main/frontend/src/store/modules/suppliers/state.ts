@@ -1,20 +1,17 @@
 /* eslint-disable no-shadow */
 
 import { Commit } from 'vuex';
-import SalesService from '@/services/Config/SalesService';
 import { Category } from '@/types/Category';
 import { EmployeeRole } from '@/types/EmployeeRoles';
 import { Sale } from '@/types/Sale';
 import { Warehouse } from '@/types/Warehouse';
-import CategoryService from '@/services/Config/CategoryService';
-import WarehouseService from '@/services/Config/WarehouseService';
-import { Supplier } from '@/types/Supplier';
+import { ISupplier } from '@/types/Supplier';
 import SupplierService from '@/services/SupplierService';
 
 export type ConfigField = Array<Sale> | Array<Category> | Array<Warehouse> | Array<EmployeeRole>;
 
 export type SupplierState = {
-  suppliers: Array<Supplier> | null;
+  suppliers: Array<ISupplier> | null;
 };
 
 const state: SupplierState = {
@@ -25,7 +22,7 @@ export default {
   namespaced: true,
   state,
   mutations: {
-    UPDATE_SUPPLIERS: (state: SupplierState, payload: Array<Supplier>): void => {
+    UPDATE_SUPPLIERS: (state: SupplierState, payload: Array<ISupplier>): void => {
       state.suppliers = [...payload];
     },
   },
@@ -33,7 +30,7 @@ export default {
     REQUEST_SUPPLIERS(context: { commit: Commit; state: SupplierState; rootState: any }): Promise<void> {
       return new Promise((resolve, reject) => {
         SupplierService.getSuppliers({ company_id: context.rootState.companyModule.company.id })
-          .then((response: Array<Supplier>) => {
+          .then((response: Array<ISupplier>) => {
             context.commit('UPDATE_SUPPLIERS', response);
             resolve();
           })
