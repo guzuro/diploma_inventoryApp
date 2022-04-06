@@ -1,17 +1,15 @@
 package com.guzuro;
 
-import com.guzuro.Routes.AuthRoutes;
-import com.guzuro.Routes.CompanyRoutes;
+import com.guzuro.Routes.*;
 import com.guzuro.Routes.Config.CategoryRoutes;
 import com.guzuro.Routes.Config.EmployeeRolesRoutes;
 import com.guzuro.Routes.Config.SaleRoutes;
-import com.guzuro.Routes.ProductRoutes;
-import com.guzuro.Routes.UserRoutes;
 import com.guzuro.Routes.Config.WarehouseRoutes;
 import com.guzuro.handlers.UploadFileHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.CookieSameSite;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.net.impl.URIDecoder;
@@ -25,6 +23,8 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -33,21 +33,30 @@ public class MainVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
 
+        Set<String> allowedHeaders = new HashSet<>();
+        allowedHeaders.add("origin");
+
+        allowedHeaders.add("Access-Control-Allow-Headers");
+        allowedHeaders.add("Access-Control-Allow-Method");
+        allowedHeaders.add("Access-Control-Allow-Credentials");
+        allowedHeaders.add("Content-Type");
+
+        Set<HttpMethod> allowedMethods = new HashSet<>();
+        allowedMethods.add(HttpMethod.GET);
+        allowedMethods.add(HttpMethod.POST);
+        allowedMethods.add(HttpMethod.OPTIONS);
+
+
+        router
+                .route()
+                .handler(
+                        CorsHandler.create("*")
+                                .allowCredentials(true)
+                                .allowedHeaders(allowedHeaders)
+                                .allowedMethods(allowedMethods)
+                );
 
         router.route()
-                .handler(
-                        CorsHandler.create()
-//                                .allowedMethod(HttpMethod.GET)
-//                                .allowedMethod(HttpMethod.POST)
-//                                .allowedMethod(HttpMethod.PUT)
-//                                .allowedMethod(HttpMethod.OPTIONS)
-                                .allowCredentials(true)
-                                .allowedHeader("Access-Control-Allow-Headers")
-                                .allowedHeader("Access-Control-Allow-Method")
-                                .allowedHeader("Access-Control-Allow-Origin")
-                                .allowedHeader("Access-Control-Allow-Credentials")
-                                .allowedHeader("Content-Type")
-                )
                 .handler(
                         BodyHandler
                                 .create()
@@ -84,15 +93,17 @@ public class MainVerticle extends AbstractVerticle {
         router.mountSubRouter("/user", new UserRoutes(vertx).setRoutes());
 
         router.mountSubRouter("/company", new CompanyRoutes(vertx).setRoutes());
+
         router.mountSubRouter("/warehouse", new WarehouseRoutes(vertx).setRoutes());
-
-
         router.mountSubRouter("/config/sales", new SaleRoutes(vertx).setRoutes(vertx));
         router.mountSubRouter("/config/category", new CategoryRoutes(vertx).setRoutes(vertx));
         router.mountSubRouter("/config/employeeroles", new EmployeeRolesRoutes(vertx).setRoutes(vertx));
+
         router.post("/uploadfile").handler(UploadFileHandler::uploadFile);
 
         router.mountSubRouter("/products", new ProductRoutes(vertx).setRoutes(vertx));
+
+        router.mountSubRouter("/suppliers", new SupplierRoutes(vertx).setRoutes(vertx));
 
 
         router.get("/").handler(routingContext -> {
