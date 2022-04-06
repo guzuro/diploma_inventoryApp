@@ -38,7 +38,6 @@
       >
         <router-view></router-view>
       </a-layout-content>
-      <a-layout-footer>Per aspera ad astra</a-layout-footer>
     </a-layout>
   </a-layout>
 </template>

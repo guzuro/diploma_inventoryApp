@@ -5,16 +5,17 @@
       <a-menu theme="dark" mode="horizontal" :default-selected-keys="activeKey" :style="{ lineHeight: '42px' }">
         <a-menu-item key="Dashboard" @click="goto('Dashboard')"> <a-icon type="appstore" />Dashboard </a-menu-item>
         <a-menu-item key="Products" @click="goto('Products')"> <a-icon type="shop" />Продукты </a-menu-item>
+        <!-- <a-menu-item key="Products" @click="goto('Suppliers')"> <a-icon type="shop" />Поставщики </a-menu-item> -->
         <a-sub-menu>
-          <span slot="title" class="submenu-title-wrapper"><a-icon type="setting" />Navigation Three - Submenu</span>
-          <a-menu-item-group title="Item 1">
-            <a-menu-item key="setting:1"> Option 1 </a-menu-item>
-            <a-menu-item key="setting:2"> Option 2 </a-menu-item>
+          <span slot="title" class="submenu-title-wrapper"><a-icon type="setting" />Закупки</span>
+          <a-menu-item-group>
+            <a-menu-item key="setting:1" @click="goto('Suppliers')"> Поставщики </a-menu-item>
+            <a-menu-item key="setting:2"> Приходные накладные </a-menu-item>
           </a-menu-item-group>
-          <a-menu-item-group title="Item 2">
+          <!-- <a-menu-item-group title="Item 2">
             <a-menu-item key="setting:3"> Option 3 </a-menu-item>
             <a-menu-item key="setting:4"> Option 4 </a-menu-item>
-          </a-menu-item-group>
+          </a-menu-item-group> -->
         </a-sub-menu>
       </a-menu>
     </a-layout-header>
