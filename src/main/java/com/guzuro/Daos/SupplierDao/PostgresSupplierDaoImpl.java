@@ -110,7 +110,7 @@ public class PostgresSupplierDaoImpl implements SupplierDao {
                 "RETURNING id, name, phone, address, inn;")
                 .execute(
                         Tuple.of(supplier.getName(), supplier.getPhone(), supplier.getAddress(),
-                                supplier.getInn()),
+                                supplier.getInn(), supplier.getId()),
                         ar -> {
                             if (ar.succeeded()) {
                                 future.complete(ar.result().iterator().next().toJson().mapTo(Supplier.class));
