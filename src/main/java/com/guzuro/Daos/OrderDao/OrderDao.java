@@ -10,8 +10,6 @@ public interface OrderDao {
 
     CompletableFuture<CopyOnWriteArrayList<Order>> getOrders(int incomeDoc_id);
 
-    CompletableFuture<CopyOnWriteArrayList<Order>> getOrdersBySupplier(int supplier_id);
-
     CompletableFuture<Boolean> deleteOrder(int order_id);
 
     CompletableFuture<Order> updateOrder(Order order);
