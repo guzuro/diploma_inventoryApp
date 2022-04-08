@@ -53,8 +53,8 @@ import { errorNotification } from '@/services/NotificationService';
 })
 export default class LoginForm extends Vue {
   loginUser = {
-    email: 'guzurogmn@gmail.com',
-    password: 'fynjif0506212',
+    email: '',
+    password: '',
   };
 
   async login(): Promise<void> {

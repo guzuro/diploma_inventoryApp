@@ -13,9 +13,14 @@
             <a-icon key="eye" type="eye" @click="supplierPage(supplier.id, 'watch')" />
             <a-icon key="delete" type="delete" @click="deleteSupplier(supplier.id)" />
           </template>
+          <b>Наименование: </b>
           <p class="supplier_name">{{ supplier.name }}</p>
+          <b>Адрес: </b>
           <p class="supplier_address">{{ supplier.address }}</p>
+          <b>ИНН: </b>
           <p class="supplier_inn">{{ supplier.inn }}</p>
+          <b>Номер: </b>
+          <p class="supplier_inn">{{ supplier.phone }}</p>
         </a-card>
       </div>
     </div>
