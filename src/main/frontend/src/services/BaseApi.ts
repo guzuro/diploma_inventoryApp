@@ -1,8 +1,7 @@
 import Vue from 'vue';
-import { errorNotification } from './NotificationService';
 
 export default class BaseApi {
-  static BASE_API = 'http://localhost:8888';
+  static BASE_API = process.env.NODE_ENV === 'development' ? 'http://localhost:8888' : 'https://api.pc-advice.ru';
 
   static async sendRequest(method: string, body: any = {}, headers: any = {}): Promise<any> {
     try {

@@ -14,6 +14,16 @@ export default class IncomeDocumentService {
     }
   }
 
+  static async getDocument(reqBody: { company_id: number }): Promise<any> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/getAll`, reqBody);
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
+
   //   static async updateSupplier(reqBody: { supplier: ISupplier;}): Promise<ISupplier> {
   //     try {
   //       const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/update`, reqBody);

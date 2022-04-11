@@ -76,6 +76,16 @@ const routes: Array<RouteConfig> = [
         path: '/supplier/:actionType',
         name: 'Supplier',
       },
+      {
+        component: () => import('../views/income-docs.vue'),
+        path: '/income-docs',
+        name: 'IncomeDocs',
+      },
+      {
+        component: () => import('../views/income-doc.vue'),
+        path: '/income-doc/:actionType',
+        name: 'IncomeDoc',
+      },
     ],
   },
 ];
