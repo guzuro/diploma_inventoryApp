@@ -7,6 +7,7 @@ import com.guzuro.Daos.IncomeDocDao.PostgresIncomeDocDaoImpl;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
@@ -55,19 +56,19 @@ public class IncomeDocHandler {
 //        });
     }
 
-    public void get(RoutingContext routingContext) {
+    public void getAll(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
 
         int company_id = routingContext.getBodyAsJson().getInteger("company_id");
 
-        this.incomeDocDao.getIncomeDocs(company_id).thenAccept(categories -> {
-            JsonArray categoriesJson = new JsonArray();
-            if (categories.size() > 0)
-                categories.forEach(warehouse -> categoriesJson.add(JsonObject.mapFrom(warehouse)));
+        this.incomeDocDao.getIncomeDocs(company_id).thenAccept(incomeDocuments -> {
+            JsonArray incomeDocumentsJson = new JsonArray();
+            if (incomeDocuments.size() > 0)
+                incomeDocuments.forEach(doc -> incomeDocumentsJson.add(JsonObject.mapFrom(doc)));
 
             response.putHeader("content-type", "application/json; charset=UTF-8")
                     .setStatusCode(200)
-                    .end(categoriesJson.encodePrettily());
+                    .end(incomeDocumentsJson.encodePrettily());
 
         }).exceptionally(throwable -> {
             response.putHeader("content-type", "application/json; charset=UTF-8")

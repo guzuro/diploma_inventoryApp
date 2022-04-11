@@ -17,7 +17,7 @@ public class IncomeDocRoutes {
     public Router setRoutes(Vertx vertx) {
         Router router = Router.router(vertx);
         router.post("/add").handler(rc -> this.incomeDocHandler.addIncomeDocument(rc));
-//        router.post("/add").handler(rc -> this.categoryHandler.add(rc));
+        router.post("/getAll").handler(rc -> this.incomeDocHandler.getAll(rc));
 //        router.post("/update").handler(rc -> this.categoryHandler.update(rc));
 //        router.post("/delete").handler(rc -> this.categoryHandler.delete(rc));
 
