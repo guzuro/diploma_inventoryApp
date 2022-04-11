@@ -10,7 +10,7 @@
           <span slot="title" class="submenu-title-wrapper"><a-icon type="setting" />Закупки</span>
           <a-menu-item-group>
             <a-menu-item key="setting:1" @click="goto('Suppliers')"> Поставщики </a-menu-item>
-            <a-menu-item key="setting:2"> Приходные накладные </a-menu-item>
+            <a-menu-item key="setting:2" @click="goto('IncomeDocs')"> Приходные накладные </a-menu-item>
           </a-menu-item-group>
           <!-- <a-menu-item-group title="Item 2">
             <a-menu-item key="setting:3"> Option 3 </a-menu-item>
