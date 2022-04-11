@@ -8,6 +8,8 @@ public class IncomeDocumentDto {
     private double total;
     private String name;
 
+    public IncomeDocumentDto() {}
+
     public IncomeDocumentDto(int id, String created_at, int company_id, boolean is_payed, double total, String name) {
         this.id = id;
         this.created_at = created_at;

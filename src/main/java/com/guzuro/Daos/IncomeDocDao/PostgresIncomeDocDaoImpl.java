@@ -1,13 +1,10 @@
 package com.guzuro.Daos.IncomeDocDao;
 
-import com.guzuro.Daos.Config.Category.Category;
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
-import com.guzuro.Daos.OrderDao.Order;
 import com.guzuro.Daos.OrderDao.OrderDao;
 import com.guzuro.Daos.OrderDao.PostgresOrderDaoImpl;
 import com.guzuro.Dto.IncomeDocumentDto;
 import io.vertx.core.Vertx;
-import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
@@ -52,8 +49,8 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     }
 
     @Override
-    public CompletableFuture<CopyOnWriteArrayList<IncomeDoc>> getIncomeDocs(int company_id) {
-        CompletableFuture<CopyOnWriteArrayList<IncomeDoc>> future = new CompletableFuture<>();
+    public CompletableFuture<CopyOnWriteArrayList<IncomeDocumentDto>> getIncomeDocs(int company_id) {
+        CompletableFuture<CopyOnWriteArrayList<IncomeDocumentDto>> future = new CompletableFuture<>();
 
         this.pgClient.preparedQuery("" +
                 "SELECT db_income_document.id, db_income_document.created_at, " +
@@ -74,11 +71,9 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                                     ar.result().forEach(row -> incomeDocumentDtos.add(row.toJson().mapTo(IncomeDocumentDto.class)));
                                 }
 
-                                for (Row row : ar.result()) {
-                                    System.out.println(row.toJson());
-                                }
+                                future.complete(incomeDocumentDtos);
                             } else {
-                                System.out.println(ar.cause().getMessage());
+                               future.completeExceptionally(ar.cause());
                             }
                         });
 
