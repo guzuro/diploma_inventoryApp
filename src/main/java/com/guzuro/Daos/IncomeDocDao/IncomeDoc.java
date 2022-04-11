@@ -8,24 +8,28 @@ public class IncomeDoc {
     private int id;
     private Supplier supplier;
     private Order order;
-    private int company_id;
     private String created_at;
+    private Boolean is_payed;
 
     public IncomeDoc() {
     }
 
-    public IncomeDoc(int id, Supplier supplier, Order order, int company_id, String created_at) {
+    public IncomeDoc(int id, Boolean is_payed) {
+        this.id = id;
+        this.is_payed = is_payed;
+    }
+
+    public IncomeDoc(int id, Supplier supplier, Order order, String created_at, Boolean is_payed) {
         this.id = id;
         this.supplier = supplier;
         this.order = order;
-        this.company_id = company_id;
         this.created_at = created_at;
+        this.is_payed = is_payed;
     }
 
-    public IncomeDoc(Supplier supplier, Order order, int company_id, String created_at) {
+    public IncomeDoc(Supplier supplier, Order order, String created_at) {
         this.supplier = supplier;
         this.order = order;
-        this.company_id = company_id;
         this.created_at = created_at;
     }
 
@@ -53,19 +57,19 @@ public class IncomeDoc {
         this.order = order;
     }
 
-    public int getCompany_id() {
-        return company_id;
-    }
-
-    public void setCompany_id(int company_id) {
-        this.company_id = company_id;
-    }
-
     public String getCreated_at() {
         return created_at;
     }
 
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
+    }
+
+    public Boolean getIs_payed() {
+        return is_payed;
+    }
+
+    public void setIs_payed(Boolean is_payed) {
+        this.is_payed = is_payed;
     }
 }
