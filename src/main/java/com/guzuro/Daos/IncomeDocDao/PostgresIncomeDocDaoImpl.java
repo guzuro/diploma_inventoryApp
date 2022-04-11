@@ -57,9 +57,9 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                 "db_income_document.company_id, db_income_document.is_payed, db_order.total, " +
                 "db_supplier.name " +
                 "FROM db_income_document " +
-                "inner JOIN db_order " +
+                "LEFT JOIN db_order " +
                 "ON db_order.order_id = db_income_document.order_id " +
-                "inner JOIN db_supplier " +
+                "LEFT JOIN db_supplier " +
                 "ON db_supplier.id = db_income_document.supplier_id " +
                 "WHERE db_income_document.company_id = $1")
                 .execute(Tuple.of(company_id),
@@ -73,7 +73,7 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
 
                                 future.complete(incomeDocumentDtos);
                             } else {
-                               future.completeExceptionally(ar.cause());
+                                future.completeExceptionally(ar.cause());
                             }
                         });
 
