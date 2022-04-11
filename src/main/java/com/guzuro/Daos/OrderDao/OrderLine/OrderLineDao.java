@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface OrderLineDao {
-    CompletableFuture<CopyOnWriteArrayList<OrderLine>> addOrderLines(CopyOnWriteArrayList<OrderLine> orderLines);
+    CompletableFuture<OrderLine> addOrderLines(OrderLine orderLine, int order_id);
 
     CompletableFuture<CopyOnWriteArrayList<OrderLine>> getOrderLines(int order_id);
 

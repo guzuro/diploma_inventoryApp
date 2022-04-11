@@ -1,11 +1,13 @@
 package com.guzuro.handlers;
 
+import com.guzuro.Daos.IncomeDocDao.IncomeDoc;
 import com.guzuro.Daos.IncomeDocDao.IncomeDocDao;
 import com.guzuro.Daos.IncomeDocDao.PostgresIncomeDocDaoImpl;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 
@@ -16,10 +18,32 @@ public class IncomeDocHandler {
         this.incomeDocDao = new PostgresIncomeDocDaoImpl(vertx);
     }
 
-    public void addOrder(RoutingContext routingContext) {
+    public void addIncomeDocument(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
+        try {
+            IncomeDoc incomeDoc = routingContext.getBodyAsJson().getJsonObject("doc").mapTo(IncomeDoc.class);
+            int companyId = routingContext.getBodyAsJson().getInteger("company_id");
+
+            this.incomeDocDao.addIncomeDoc(incomeDoc, companyId)
+                    .thenAccept(doc -> {
+                        response.putHeader("content-type", "application/json; charset=UTF-8")
+                                .setStatusCode(200)
+                                .end(JsonObject.mapFrom(doc).encodePrettily());
+
+                    }).exceptionally(throwable -> {
+                response.putHeader("content-type", "application/json; charset=UTF-8")
+                        .setStatusCode(500)
+                        .end(throwable.getMessage());
+                return null;
+            });
 
 
+        } catch (Exception e) {
+            System.out.println(e);
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(e.toString());
+        }
 //            response.putHeader("content-type", "application/json; charset=UTF-8")
 //                    .setStatusCode(200)
 //                    .end(JsonObject.mapFrom(resCategory).encodePrettily());
@@ -31,27 +55,27 @@ public class IncomeDocHandler {
 //        });
     }
 
-//    public void get(RoutingContext routingContext) {
-//        HttpServerResponse response = routingContext.response();
-//
-//        int company_id = routingContext.getBodyAsJson().getInteger("company_id");
-//
-//        this.categoryDao.getCategories(company_id).thenAccept(categories -> {
-//            JsonArray categoriesJson = new JsonArray();
-//            if (categories.size() > 0)
-//                categories.forEach(warehouse -> categoriesJson.add(JsonObject.mapFrom(warehouse)));
-//
-//            response.putHeader("content-type", "application/json; charset=UTF-8")
-//                    .setStatusCode(200)
-//                    .end(categoriesJson.encodePrettily());
-//
-//        }).exceptionally(throwable -> {
-//            response.putHeader("content-type", "application/json; charset=UTF-8")
-//                    .setStatusCode(500)
-//                    .end(throwable.getMessage());
-//            return null;
-//        });
-//    }
+    public void get(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+
+        int company_id = routingContext.getBodyAsJson().getInteger("company_id");
+
+        this.incomeDocDao.getIncomeDocs(company_id).thenAccept(categories -> {
+            JsonArray categoriesJson = new JsonArray();
+            if (categories.size() > 0)
+                categories.forEach(warehouse -> categoriesJson.add(JsonObject.mapFrom(warehouse)));
+
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(200)
+                    .end(categoriesJson.encodePrettily());
+
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(throwable.getMessage());
+            return null;
+        });
+    }
 //
 //    public void update(RoutingContext routingContext) {
 //        HttpServerResponse response = routingContext.response();
