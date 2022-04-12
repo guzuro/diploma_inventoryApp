@@ -27,6 +27,9 @@ router.beforeEach((to, from, next) => {
           if ((store.state as any).configModule.config.warehouse === null) {
             store.dispatch('configModule/REQUEST_WAREHOUSE');
           }
+          if ((store.state as any).suppliersModule.suppliers === null) {
+            store.dispatch('suppliersModule/REQUEST_SUPPLIERS');
+          }
         })
         .then(next)
         .catch((e: any) => {
@@ -41,6 +44,9 @@ router.beforeEach((to, from, next) => {
       }
       if ((store.state as any).configModule.config.warehouse === null) {
         store.dispatch('configModule/REQUEST_WAREHOUSE');
+      }
+      if ((store.state as any).suppliersModule.suppliers === null) {
+        store.dispatch('suppliersModule/REQUEST_SUPPLIERS');
       }
     }
     next();

@@ -4,6 +4,16 @@ import { errorNotification } from './NotificationService';
 export default class IncomeDocumentService {
   static BASE_PATH = '/incomedoc';
 
+  static async add(reqBody: { doc: any, company_id: number }): Promise<any> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/getAll`, reqBody);
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
+
   static async getAll(reqBody: { company_id: number }): Promise<any> {
     try {
       const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/getAll`, reqBody);
@@ -14,9 +24,9 @@ export default class IncomeDocumentService {
     }
   }
 
-  static async getDocument(reqBody: { company_id: number }): Promise<any> {
+  static async getIncomeDocument(reqBody: { incomeDocId: number }): Promise<any> {
     try {
-      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/getAll`, reqBody);
+      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/get`, reqBody);
       return data;
     } catch (e:any) {
       errorNotification(e.message);

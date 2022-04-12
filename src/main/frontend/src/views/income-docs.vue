@@ -31,7 +31,7 @@ import IncomeDocumentService from '@/services/IncomeDocumentService';
 
 const columns = [
   { title: '№', dataIndex: 'id', key: 'id' },
-  { title: 'Поставщик', dataIndex: 'supplier_name', key: 'supplier_name' },
+  { title: 'Поставщик', dataIndex: 'name', key: 'name' },
   { title: 'Дата форм-я', dataIndex: 'created_at', key: 'created_at' },
   {
     title: 'Статус оплаты',
@@ -74,7 +74,7 @@ export default class IncomeDocs extends Vue {
     this.$router.push({
       name: 'IncomeDoc',
       params: {
-        actionType: '',
+        actionType: 'edit',
       },
       query: {
         docId: docId.toString(),
@@ -95,7 +95,12 @@ export default class IncomeDocs extends Vue {
   }
 
   onAddButtonClick(): void {
-    console.log(this);
+    this.$router.push({
+      name: 'IncomeDoc',
+      params: {
+        actionType: 'new',
+      },
+    });
   }
 
   created(): void {
