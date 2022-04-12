@@ -15,11 +15,13 @@ public class Order {
 
     public Order(double total, CopyOnWriteArrayList<OrderLine> orderLines) {
         this.orderLines = orderLines;
+        this.total = total;
     }
 
     public Order(int order_id, double total, CopyOnWriteArrayList<OrderLine> orderLines) {
         this.order_id = order_id;
         this.orderLines = orderLines;
+        this.total = total;
     }
 
     public int getOrder_id() {

@@ -5,6 +5,7 @@ import com.guzuro.Daos.OrderDao.OrderLine.OrderLine;
 import com.guzuro.Daos.OrderDao.OrderLine.OrderLineDao;
 import com.guzuro.Daos.OrderDao.OrderLine.PostgresOrderLineDaoImpl;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
@@ -76,7 +77,35 @@ public class PostgresOrderDaoImpl implements OrderDao {
 
     @Override
     public CompletableFuture<Order> getOrder(int order_id) {
-        return null;
+
+        CompletableFuture<Order> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("" +
+                "SELECT order_id, total FROM db_order WHERE order_id = $1;")
+                .execute(Tuple.of(order_id),
+                        ar -> {
+                            if (ar.succeeded()) {
+                                JsonObject jsonObject = ar.result().iterator().next().toJson();
+
+                                Order order = new Order();
+                                order.setOrder_id(jsonObject.getInteger("order_id"));
+                                order.setTotal(jsonObject.getDouble("total"));
+
+                                this.orderLineDao.getOrderLines(order.getOrder_id())
+                                        .thenAccept(orderLines -> {
+                                            order.setOrderLines(orderLines);
+                                            future.complete(order);
+                                        }).exceptionally(throwable -> {
+                                    future.completeExceptionally(throwable);
+                                    return null;
+                                });
+                            } else {
+                                future.completeExceptionally(ar.cause());
+                            }
+                        });
+
+        return future;
+
     }
 }
 
