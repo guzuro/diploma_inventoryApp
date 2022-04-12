@@ -59,7 +59,7 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
 
         this.pgClient.preparedQuery("" +
                 "SELECT db_income_document.id, db_income_document.created_at, " +
-                "db_income_document.company_id, db_income_document.is_payed, db_order.total, " +
+                "db_income_document.is_payed, db_order.total, " +
                 "db_supplier.name " +
                 "FROM db_income_document " +
                 "LEFT JOIN db_order " +

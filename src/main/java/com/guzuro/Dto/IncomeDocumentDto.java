@@ -5,7 +5,7 @@ public class IncomeDocumentDto {
     private String created_at;
     private boolean is_payed;
     private double total;
-    private String supplier_name;
+    private String name;
 
     public IncomeDocumentDto() {}
 
@@ -14,7 +14,7 @@ public class IncomeDocumentDto {
         this.created_at = created_at;
         this.is_payed = is_payed;
         this.total = total;
-        this.supplier_name = supplier_name;
+        this.name = supplier_name;
     }
 
     public int getId() {
@@ -49,11 +49,11 @@ public class IncomeDocumentDto {
         this.total = total;
     }
 
-    public String getSupplier_name() {
-        return supplier_name;
+    public String getName() {
+        return name;
     }
 
-    public void setSupplier_name(String supplier_name) {
-        this.supplier_name = supplier_name;
+    public void setName(String supplier_name) {
+        this.name = supplier_name;
     }
 }
