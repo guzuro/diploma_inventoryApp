@@ -16,4 +16,7 @@ public interface IncomeDocDao {
     CompletableFuture<IncomeDoc> updateIncomeDoc(IncomeDoc incomeDoc);
 
     CompletableFuture<CopyOnWriteArrayList<IncomeDocumentDto>> getIncomeDocs(int company_id);
+
+    CompletableFuture<IncomeDoc> getIncomeDoc(int incomeDocId);
+
 }

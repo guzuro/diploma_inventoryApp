@@ -3,8 +3,11 @@ package com.guzuro.Daos.IncomeDocDao;
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import com.guzuro.Daos.OrderDao.OrderDao;
 import com.guzuro.Daos.OrderDao.PostgresOrderDaoImpl;
+import com.guzuro.Daos.SupplierDao.PostgresSupplierDaoImpl;
+import com.guzuro.Daos.SupplierDao.SupplierDao;
 import com.guzuro.Dto.IncomeDocumentDto;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
@@ -14,10 +17,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     SqlClient pgClient;
     OrderDao orderDao;
+    SupplierDao supplierDao;
 
     public PostgresIncomeDocDaoImpl(Vertx vertx) {
         pgClient = PostgresDAOFactory.createConnection(vertx);
         this.orderDao = new PostgresOrderDaoImpl(vertx);
+        this.supplierDao = new PostgresSupplierDaoImpl(vertx);
     }
 
     @Override
@@ -77,6 +82,47 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                             }
                         });
 
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<IncomeDoc> getIncomeDoc(int incomeDocId) {
+        CompletableFuture<IncomeDoc> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("" +
+                "SELECT id, created_at, company_id, is_payed, supplier_id, order_id " +
+                "FROM db_income_document " +
+                "WHERE id = $1;")
+                .execute(Tuple.of(incomeDocId),
+                        ar -> {
+                            if (ar.succeeded()) {
+                                JsonObject jsonObject = ar.result().iterator().next().toJson();
+                                IncomeDoc incomeDoc = new IncomeDoc();
+
+                                incomeDoc.setId(jsonObject.getInteger("id"));
+                                incomeDoc.setCreated_at(jsonObject.getString("created_at"));
+                                incomeDoc.setIs_payed(jsonObject.getBoolean("is_payed"));
+
+                                this.orderDao.getOrder(jsonObject.getInteger("order_id"))
+                                        .thenAccept(order -> {
+                                            incomeDoc.setOrder(order);
+                                            this.supplierDao.getSupplier(jsonObject.getInteger("supplier_id"))
+                                                    .thenAccept(supplier -> {
+                                                        incomeDoc.setSupplier(supplier);
+                                                        future.complete(incomeDoc);
+                                                    }).exceptionally(throwable -> {
+                                                future.completeExceptionally(throwable);
+                                                return null;
+                                            });
+                                        })
+                                        .exceptionally(throwable -> {
+                                            future.completeExceptionally(throwable);
+                                            return null;
+                                        });
+                            } else {
+                                future.completeExceptionally(ar.cause());
+                            }
+                        });
         return future;
     }
 

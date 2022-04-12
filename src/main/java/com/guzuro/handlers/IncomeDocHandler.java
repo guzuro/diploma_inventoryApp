@@ -21,39 +21,22 @@ public class IncomeDocHandler {
 
     public void addIncomeDocument(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
-        try {
-            IncomeDoc incomeDoc = routingContext.getBodyAsJson().getJsonObject("doc").mapTo(IncomeDoc.class);
-            int companyId = routingContext.getBodyAsJson().getInteger("company_id");
 
-            this.incomeDocDao.addIncomeDoc(incomeDoc, companyId)
-                    .thenAccept(doc -> {
-                        response.putHeader("content-type", "application/json; charset=UTF-8")
-                                .setStatusCode(200)
-                                .end(JsonObject.mapFrom(doc).encodePrettily());
+        IncomeDoc incomeDoc = routingContext.getBodyAsJson().getJsonObject("doc").mapTo(IncomeDoc.class);
+        int companyId = routingContext.getBodyAsJson().getInteger("company_id");
 
-                    }).exceptionally(throwable -> {
-                response.putHeader("content-type", "application/json; charset=UTF-8")
-                        .setStatusCode(500)
-                        .end(throwable.getMessage());
-                return null;
-            });
+        this.incomeDocDao.addIncomeDoc(incomeDoc, companyId)
+                .thenAccept(doc -> {
+                    response.putHeader("content-type", "application/json; charset=UTF-8")
+                            .setStatusCode(200)
+                            .end(JsonObject.mapFrom(doc).encodePrettily());
 
-
-        } catch (Exception e) {
-            System.out.println(e);
+                }).exceptionally(throwable -> {
             response.putHeader("content-type", "application/json; charset=UTF-8")
                     .setStatusCode(500)
-                    .end(e.toString());
-        }
-//            response.putHeader("content-type", "application/json; charset=UTF-8")
-//                    .setStatusCode(200)
-//                    .end(JsonObject.mapFrom(resCategory).encodePrettily());
-//        }).exceptionally(throwable -> {
-//            response.putHeader("content-type", "application/json; charset=UTF-8")
-//                    .setStatusCode(500)
-//                    .end(throwable.getMessage());
-//            return null;
-//        });
+                    .end(throwable.getMessage());
+            return null;
+        });
     }
 
     public void getAll(RoutingContext routingContext) {
@@ -77,7 +60,25 @@ public class IncomeDocHandler {
             return null;
         });
     }
-//
+
+    public void get(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+
+        int incomeDocId = routingContext.getBodyAsJson().getInteger("incomeDocId");
+
+        this.incomeDocDao.getIncomeDoc(incomeDocId).thenAccept(resDoc -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(200)
+                    .end(JsonObject.mapFrom(resDoc).encodePrettily());
+
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(throwable.getMessage());
+            return null;
+        });
+    }
+
 //    public void update(RoutingContext routingContext) {
 //        HttpServerResponse response = routingContext.response();
 //
