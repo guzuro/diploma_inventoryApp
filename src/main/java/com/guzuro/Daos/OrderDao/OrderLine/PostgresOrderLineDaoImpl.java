@@ -1,6 +1,8 @@
 package com.guzuro.Daos.OrderDao.OrderLine;
 
+import com.guzuro.Daos.Config.Category.Category;
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
+import com.guzuro.Daos.OrderDao.Order;
 import com.guzuro.Daos.ProductDao.PostgresProductDaoImpl;
 import com.guzuro.Daos.ProductDao.Product;
 import com.guzuro.Daos.ProductDao.ProductDao;
@@ -60,7 +62,58 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
 
     @Override
     public CompletableFuture<CopyOnWriteArrayList<OrderLine>> getOrderLines(int order_id) {
-        return null;
+        CompletableFuture<CopyOnWriteArrayList<OrderLine>> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery(
+                "SELECT db_order_line.id, db_order_line.quantity, db_order_line.line_total, db_order_line.product_id, " +
+                        "db_product.sku, db_product.category, db_product.name, db_product.description, db_product.price_base, " +
+                        "db_product.price_sale, db_product.currency, db_product.quantity," +
+                        "db_product.unit, db_product.photos, db_product.warehouse_id, db_product.company_id, db_product.sale_id, db_product.sale_value " +
+                        "FROM db_order_line " +
+                        "LEFT JOIN db_product " +
+                        "ON db_product.sku = db_order_line.product_id " +
+                        "WHERE db_order_line.order_id = $1;")
+                .execute(Tuple.of(order_id), ar -> {
+                    if (ar.succeeded()) {
+                        CopyOnWriteArrayList<OrderLine> orderLines = new CopyOnWriteArrayList<>();
+
+                        if (ar.result().rowCount() > 0) {
+                            ar.result().forEach(row -> {
+                                JsonObject jsonObject = row.toJson();
+                                OrderLine orderLine = new OrderLine();
+
+                                orderLine.setId(jsonObject.getInteger("id"));
+                                orderLine.setQuantity(jsonObject.getDouble("quantity"));
+                                orderLine.setLine_total(jsonObject.getDouble("line_total"));
+
+                                Product product = new Product();
+                                product.setSku(jsonObject.getLong("sku"));
+                                product.setCategory(jsonObject.getInteger("category"));
+                                product.setName(jsonObject.getString("name"));
+                                product.setDescription(jsonObject.getString("description"));
+                                product.setPrice_base(jsonObject.getDouble("price_base"));
+                                product.setPrice_sale(jsonObject.getDouble("price_sale"));
+                                product.setCurrency(jsonObject.getString("currency"));
+                                product.setQuantity(jsonObject.getDouble("quantity"));
+                                product.setUnit(jsonObject.getString("unit"));
+                                product.setPhotos(jsonObject.getJsonArray("photos").getList());
+                                product.setWarehouse_id(jsonObject.getInteger("warehouse_id"));
+                                product.setCompany_id(jsonObject.getInteger("company_id"));
+                                product.setSale_id(jsonObject.getInteger("sale_id"));
+                                product.setSale_value(jsonObject.getDouble("sale_value"));
+
+                                orderLine.setProduct(product);
+
+                                orderLines.add(orderLine);
+                            });
+                        }
+
+                        future.complete(orderLines);
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 
     @Override
