@@ -53,7 +53,7 @@ public class PostgresOrderDaoImpl implements OrderDao {
                         CopyOnWriteArrayList<OrderLine> lines = new CopyOnWriteArrayList<>();
 
                         order.getOrderLines().forEach(orderLine -> {
-                            list.add(this.orderLineDao.addOrderLines(orderLine, order.getOrder_id()));
+                            list.add(this.orderLineDao.addOrderLines(orderLine, resOrder.getOrder_id()));
                         });
 
                         CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]))
