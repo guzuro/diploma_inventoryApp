@@ -6,7 +6,7 @@ export default class IncomeDocumentService {
 
   static async add(reqBody: { doc: any, company_id: number }): Promise<any> {
     try {
-      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/getAll`, reqBody);
+      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/add`, reqBody);
       return data;
     } catch (e:any) {
       errorNotification(e.message);
