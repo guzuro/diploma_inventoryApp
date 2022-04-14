@@ -14,10 +14,12 @@
           ><template #title>Просмотр</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-pink-900" type="eye" @click="watchIncomeDoc(record.id)"></a-icon
         ></a-tooltip>
         <a-tooltip
-          ><template #title>Редактировать</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editIncomeDoc(record.id)"></a-icon
+          ><template #title>Редактировать</template
+          ><a-icon v-if="!record.is_payed" :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editIncomeDoc(record.id)"></a-icon
         ></a-tooltip>
         <a-tooltip
-          ><template #title>Удалить</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-red-900" type="delete" @click="deleteIncomeDoc(record.id)"></a-icon
+          ><template #title>Оплатить</template>
+          <a-icon v-if="!record.is_payed" :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-green-900" type="dollar" @click="payIncomeDoc(record.id)"></a-icon
         ></a-tooltip>
       </span>
     </a-table>
@@ -57,18 +59,23 @@ export default class IncomeDocs extends Vue {
     return this.$store.getters['companyModule/getCompany'].id;
   }
 
-  //   deleteIncomeDoc(docId: number): void {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  // const self = this;
-  // this.$confirm({
-  //   title: 'Удалить позицию?',
-  //   content: 'Вы Действительно хотите удалить номенклатуру?',
-  //   async onOk() {
-  //     await ProductApiService.deleteProduct(docId);
-  //     await self.getProducts();
-  //   },
-  // });
-  //   }
+  payIncomeDoc(docId: number): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    this.$confirm({
+      title: 'Оплатить приходную номенклатуру?',
+      content: 'Вы Действительно хотите Оплатить приходную номенклатуру?',
+      async onOk() {
+        await IncomeDocumentService.paytIncomeDocument({ incomeDocId: docId });
+        self.$notification.success({
+          message: 'Оплата прошла успешно',
+          description: 'Оплата прошла успешно, единицы товара обновлены в соответствии с накладной.',
+        });
+
+        await self.getAllIncomeDocs();
+      },
+    });
+  }
 
   editIncomeDoc(docId: number): void {
     this.$router.push({
@@ -103,8 +110,7 @@ export default class IncomeDocs extends Vue {
     });
   }
 
-  created(): void {
-    this.loading = true;
+  getAllIncomeDocs(): void {
     IncomeDocumentService.getAll({ company_id: this.companyId })
       .then((response) => {
         this.docs = response;
@@ -112,6 +118,11 @@ export default class IncomeDocs extends Vue {
       .finally(() => {
         this.loading = false;
       });
+  }
+
+  created(): void {
+    this.loading = true;
+    this.getAllIncomeDocs();
   }
 }
 </script>

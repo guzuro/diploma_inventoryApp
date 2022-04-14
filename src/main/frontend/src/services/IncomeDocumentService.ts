@@ -34,6 +34,16 @@ export default class IncomeDocumentService {
     }
   }
 
+  static async paytIncomeDocument(reqBody: { incomeDocId: number }): Promise<any> {
+    try {
+      const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/pay`, reqBody);
+      return data;
+    } catch (e:any) {
+      errorNotification(e.message);
+      return e;
+    }
+  }
+
   //   static async updateSupplier(reqBody: { supplier: ISupplier;}): Promise<ISupplier> {
   //     try {
   //       const { data } = await BaseApi.sendRequest(`${IncomeDocumentService.BASE_PATH}/update`, reqBody);
