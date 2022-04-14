@@ -7,7 +7,7 @@
 
     <a-table :row-key="(record) => record.sku" :columns="columns" :data-source="data" :loading="loading">
       <div style="width: 100px" slot="product-image" slot-scope="record">
-        <img v-if="record.photos[0]" :src="`http://localhost:8888/assets/static/${record.photos[0]}`" />
+        <img v-if="record.photos[0]" :src="`${BaseApi.BASE_API}/assets/static/${record.photos[0]}`" />
       </div>
       <span slot="quantity" slot-scope="quantity"> {{ !!quantity ? quantity : '-' }} </span>
       <span slot="warehouse_id" slot-scope="warehouse_id">{{ !!warehouse_id ? warehouseName(warehouse_id) : '-' }} </span>
@@ -47,6 +47,7 @@ import { Product } from '@/types/Product';
 import { successNotification } from '@/services/NotificationService';
 import ProductApiService from '@/services/ProductApiService';
 import { Warehouse } from '@/types/Warehouse';
+import BaseApi from '@/services/BaseApi';
 
 const columns = [
   { key: 'image', scopedSlots: { customRender: 'product-image' } },
@@ -69,7 +70,7 @@ const columns = [
 
 @Component({
   data() {
-    return { columns };
+    return { columns, BaseApi };
   },
 })
 export default class Items extends Vue {

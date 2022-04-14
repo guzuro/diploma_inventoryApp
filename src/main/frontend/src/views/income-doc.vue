@@ -1,7 +1,7 @@
 <template>
   <div class="income-doc">
     <field-wrapper fieldTitle="Поставшик">
-      <a-select @change="handleChange">
+      <a-select :disabled="disabled" v-model="selectedSupplier" @change="handleChange">
         <a-select-option v-for="(supplier, index) in suppliersOptions" :key="index" :value="supplier.value">
           {{ supplier.label }}
         </a-select-option>
@@ -14,20 +14,20 @@
       <div class="mt-2 supplier-info__phone"><b>Номер телефона: </b> {{ supplier.phone }}</div>
     </div>
     <a-card class="order mt-5" title="Позиции к заказу">
-      <span slot="extra"> <a-button @click="addOrderLine" shape="circle" icon="plus" /> <b class="ml-5">Итого:</b> {{ orderTotal }}</span>
+      <span slot="extra"> <a-button :disabled="disabled" @click="addOrderLine" shape="circle" icon="plus" /> <b class="ml-5">Итого:</b> {{ orderTotal }}</span>
 
       <a-empty v-if="!order.orderLines.length" />
       <div v-else class="order__lines">
-        <a-table :columns="columns" :data-source="order.orderLines">
+        <a-table :disabled="disabled" :columns="columns" :data-source="order.orderLines">
           <div slot="product-select" slot-scope="record">
-            <a-select class="w-full" @change="(value) => handleProductChange(value, record.id)">
+            <a-select :disabled="disabled" v-model="record.product.sku" class="w-full" @change="(value) => handleProductChange(value, record.id)">
               <a-select-option v-for="(product, index) in products" :key="index" :value="product.sku">
                 {{ product.name }}
               </a-select-option>
             </a-select>
           </div>
           <span slot="quantity-select" slot-scope="record">
-            <a-input-number v-model="record.quantity" :min="1" />
+            <a-input-number :disabled="disabled" v-model="record.quantity" :min="1" />
           </span>
           <span slot="price_base" slot-scope="record">
             <div :class="{ 'line-through': record.product.price_sale > 0 }" class="price_base" v-if="record.product.price_base">{{ record.product.price_base }}</div>
@@ -36,17 +36,18 @@
             <div class="price_sale" v-if="record.product.price_sale && record.product.price_sale > 0">{{ record.product.price_sale }}</div>
           </span>
           <span slot="total" slot-scope="record">
-            <a-input-number disabled :value="lineTotal(record, record.id)" :min="1" />
+            <a-input-number :disabled="disabled" :value="lineTotal(record, record.id)" :min="1" />
           </span>
           <span slot="action" slot-scope="text, record">
-            <a-tooltip
-              ><template #title>Удалить</template><a-icon :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-red-900" type="delete" @click="deleteRow(record.id)"></a-icon
-            ></a-tooltip>
+            <a-tooltip><template #title>Удалить</template><a-button type="danger" :disabled="disabled" icon="delete" @click="deleteRow(record.id)"></a-button></a-tooltip>
           </span>
         </a-table>
       </div>
     </a-card>
-    <a-button @click="saveOrder">Сохранить</a-button>
+    <div class="flex mt-5">
+      <a-button v-if="$route.params.actionType !== 'watch'" @click="saveOrder">Сохранить</a-button>
+      <a-button class="ml-2" @click="$router.back()">Назад</a-button>
+    </div>
   </div>
 </template>
 
@@ -110,6 +111,8 @@ export default class IncomeDoc extends Vue {
     if (this.order.orderLines.length) {
       const total = this.order.orderLines.reduce((accumulator, currentValue) => accumulator + (currentValue as any).line_total, 0);
       this.order.total = total;
+      console.log(total, 'total');
+
       return total;
     }
     return 0.0;
@@ -169,12 +172,10 @@ export default class IncomeDoc extends Vue {
     const doc = {
       order: orderCopy,
       supplier: this.supplier,
-      ...this.doc
+      ...this.doc,
     };
 
     IncomeDocumentService.add({ doc, company_id: this.$store.state.companyModule.company.id });
-
-    console.log(orderCopy);
   }
 
   get productsOptions(): Array<any> {
@@ -201,16 +202,20 @@ export default class IncomeDoc extends Vue {
     if (this.$route.params.actionType === 'watch') {
       this.disabled = true;
       IncomeDocumentService.getIncomeDocument({ incomeDocId: Number.parseInt(this.$route.query.docId.toString(), 10) }).then((res) => {
-        this.order = res.data.order;
-        this.supplier = res.data.supplier;
-        this.doc.created_at = res.data.created_at;
+        this.order = res.order;
+        this.order.total = res.order.total;
+        this.supplier = res.supplier;
+        this.doc.created_at = res.created_at;
+        this.selectedSupplier = res.supplier.id;
       });
     }
     if (this.$route.params.actionType === 'edit') {
       IncomeDocumentService.getIncomeDocument({ incomeDocId: Number.parseInt(this.$route.query.docId.toString(), 10) }).then((res) => {
-        this.order = res.data.order;
-        this.supplier = res.data.supplier;
-        this.doc.created_at = res.data.created_at;
+        this.order = res.order;
+        this.supplier = res.supplier;
+        this.doc.created_at = res.created_at;
+        this.selectedSupplier = res.supplier.id;
+        this.supplier = res.supplier;
       });
     }
   }
