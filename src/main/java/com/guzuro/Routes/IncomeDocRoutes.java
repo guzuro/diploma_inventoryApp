@@ -19,6 +19,7 @@ public class IncomeDocRoutes {
         router.post("/add").handler(rc -> this.incomeDocHandler.addIncomeDocument(rc));
         router.post("/getAll").handler(rc -> this.incomeDocHandler.getAll(rc));
         router.post("/get").handler(rc -> this.incomeDocHandler.get(rc));
+        router.post("/pay").handler(rc -> this.incomeDocHandler.pay(rc));
 //        router.post("/update").handler(rc -> this.incomeDocHandler.update(rc));
 //        router.post("/delete").handler(rc -> this.categoryHandler.delete(rc));
 

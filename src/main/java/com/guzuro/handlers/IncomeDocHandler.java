@@ -79,6 +79,25 @@ public class IncomeDocHandler {
         });
     }
 
+    public void pay(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+
+        int incomeDocId = routingContext.getBodyAsJson().getInteger("incomeDocId");
+
+        this.incomeDocDao.payIncomeDoc(incomeDocId).thenAccept(aBoolean -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(200)
+                    .end();
+
+        }).exceptionally(throwable -> {
+            response.putHeader("content-type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end(throwable.getMessage());
+            return null;
+        });
+    }
+
+
 //    public void update(RoutingContext routingContext) {
 //        HttpServerResponse response = routingContext.response();
 //

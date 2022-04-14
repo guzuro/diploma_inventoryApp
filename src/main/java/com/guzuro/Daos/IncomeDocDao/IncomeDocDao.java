@@ -19,4 +19,6 @@ public interface IncomeDocDao {
 
     CompletableFuture<IncomeDoc> getIncomeDoc(int incomeDocId);
 
+    CompletableFuture<Boolean> payIncomeDoc(int incomeDocId);
+
 }

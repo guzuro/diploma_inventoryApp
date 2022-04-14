@@ -16,4 +16,8 @@ public interface ProductDao {
     CompletableFuture<Product> updateProduct(Product product);
 
     CompletableFuture<Product> getProductBySku(long sku);
+
+    CompletableFuture<Boolean> incrementProductQuantity(long sku, int value);
+    CompletableFuture<Boolean> decrementProductQuantity(long sku, int value);
+
 }

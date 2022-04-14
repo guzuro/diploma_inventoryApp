@@ -81,7 +81,7 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
                             ar.result().forEach(row -> {
                                 JsonObject jsonObject = row.toJson();
                                 OrderLine orderLine = new OrderLine();
-                                
+
                                 orderLine.setId(jsonObject.getInteger("id"));
                                 orderLine.setQuantity(jsonObject.getInteger("line_quantity"));
                                 orderLine.setLine_total(jsonObject.getDouble("line_total"));

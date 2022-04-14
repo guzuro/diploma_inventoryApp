@@ -2,7 +2,10 @@ package com.guzuro.Daos.IncomeDocDao;
 
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import com.guzuro.Daos.OrderDao.OrderDao;
+import com.guzuro.Daos.OrderDao.OrderLine.OrderLine;
 import com.guzuro.Daos.OrderDao.PostgresOrderDaoImpl;
+import com.guzuro.Daos.ProductDao.PostgresProductDaoImpl;
+import com.guzuro.Daos.ProductDao.ProductDao;
 import com.guzuro.Daos.SupplierDao.PostgresSupplierDaoImpl;
 import com.guzuro.Daos.SupplierDao.SupplierDao;
 import com.guzuro.Dto.IncomeDocumentDto;
@@ -13,16 +16,19 @@ import io.vertx.sqlclient.Tuple;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     SqlClient pgClient;
     OrderDao orderDao;
     SupplierDao supplierDao;
+    ProductDao productDao;
 
     public PostgresIncomeDocDaoImpl(Vertx vertx) {
         pgClient = PostgresDAOFactory.createConnection(vertx);
         this.orderDao = new PostgresOrderDaoImpl(vertx);
         this.supplierDao = new PostgresSupplierDaoImpl(vertx);
+        this.productDao = new PostgresProductDaoImpl(vertx);
     }
 
     @Override
@@ -127,9 +133,50 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     }
 
     @Override
+    public CompletableFuture<Boolean> payIncomeDoc(int incomeDocId) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        Boolean is_payed = true;
+        this.pgClient.preparedQuery("" +
+                "UPDATE db_income_document " +
+                "SET is_payed = $1 " +
+                "WHERE id = $2;")
+                .execute(Tuple.of(
+                        is_payed, incomeDocId
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        this.getIncomeDoc(incomeDocId)
+                                .thenAccept(incomeDoc -> {
+                                    CopyOnWriteArrayList<OrderLine> lines = incomeDoc.getOrder().getOrderLines();
+                                    CopyOnWriteArrayList<CompletableFuture<Boolean>> list = new CopyOnWriteArrayList<>();
+
+                                    lines.forEach(orderLine -> {
+                                        list.add(this.productDao.incrementProductQuantity(orderLine.getProduct().getSku(), orderLine.getQuantity()));
+                                    });
+
+                                    CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]))
+                                            .thenAccept(aVoid -> future.complete(true))
+                                            .exceptionally(throwable -> {
+                                                future.completeExceptionally(throwable);
+                                                return null;
+                                            });
+                                })
+                                .exceptionally(throwable -> {
+                                    future.completeExceptionally(throwable);
+                                    return null;
+                                });
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+
+        return future;
+    }
+
+    @Override
     public CompletableFuture<CopyOnWriteArrayList<IncomeDoc>> getIncomeDocBySupplier(int supplier_id) {
         return null;
     }
+
 
     @Override
     public CompletableFuture<Boolean> deleteIncomeDoc(int incomeDoc_id) {

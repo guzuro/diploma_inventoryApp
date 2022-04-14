@@ -146,4 +146,48 @@ public class PostgresProductDaoImpl implements ProductDao {
                 });
         return future;
     }
+
+    @Override
+    public CompletableFuture<Boolean> incrementProductQuantity(long sku, int value) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("" +
+                "UPDATE db_product " +
+                "SET quantity = quantity + $2 " +
+                "WHERE sku = $1;")
+                .execute(Tuple.of(
+                        sku, value
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(true);
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> decrementProductQuantity(long sku, int value) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("" +
+                "UPDATE db_product " +
+                "SET quantity = quantity - $2  " +
+                "WHERE sku = $1;")
+                .execute(Tuple.of(
+                        sku, value
+                ), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(true);
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+
+        return future;
+    }
+
+
 }
