@@ -76,7 +76,7 @@
     <div v-if="productCopy.photos.length" class="mt-5">
       <div class="previews" v-for="(preview, index) in productCopy.photos" :key="index">
         <div class="mb-2 preview-wrapper is-flex is-justify-content-space-between is-align-items-center">
-          <img :src="`http://localhost:8888/assets/static/${preview}`" alt="" />
+          <img :src="`${BaseApi.BASE_API}/assets/static/${preview}`" alt="" />
           <div>
             <div class="cursor-pointer" @click="onRemoveBgButtonClick(preview.file, index)">
               <a-button :disabled="disabled" icon="bg-colors" :style="{ fontSize: '18px' }" />
@@ -110,10 +110,16 @@ import { Product } from '@/types/Product';
 import { Category } from '@/types/Category';
 import { Warehouse } from '@/types/Warehouse';
 import UploadFileService from '@/services/UploadFileService';
+import BaseApi from '@/services/BaseApi';
 
 @Component({
   components: {
     FieldWrapper,
+  },
+  data() {
+    return {
+      BaseApi,
+    };
   },
 })
 export default class ProductForm extends Vue {
