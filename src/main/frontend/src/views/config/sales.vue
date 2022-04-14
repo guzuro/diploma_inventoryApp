@@ -108,7 +108,7 @@ export default class Sales extends Vue {
     this.$store
       .dispatch('configModule/REQUEST_SALES')
       .then(() => {
-        this.sales = this.$store.state.configModule.sales.slice();
+        this.sales = this.$store.state.configModule.config.sale;
       })
       .finally(() => {
         this.spinning = false;

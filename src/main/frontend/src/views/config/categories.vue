@@ -104,7 +104,7 @@ export default class Categories extends Vue {
     this.$store
       .dispatch('configModule/REQUEST_SALES')
       .then(() => {
-        this.categories = this.$store.state.configModule.category.slice();
+        this.categories = this.$store.state.configModule.config.category;
       })
       .finally(() => {
         this.spinning = false;
