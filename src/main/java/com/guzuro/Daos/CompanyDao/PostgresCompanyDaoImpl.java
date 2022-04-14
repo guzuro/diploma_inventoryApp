@@ -16,7 +16,21 @@ public class PostgresCompanyDaoImpl implements CompanyDao {
 
     @Override
     public CompletableFuture<Company> createCompany(Company company) {
-        return null;
+        CompletableFuture<Company> future = new CompletableFuture<>();
+
+        this.pgClient.preparedQuery("" +
+                "INSERT INTO db_company (name, inn, phone, email, country, currency) " +
+                "VALUES ($1, $2, $3, $4, $5, $6) " +
+                "RETURNING id, name, inn, phone, email, country, currency;")
+                .execute(Tuple.of(company.getName(), company.getInn(), company.getPhone(),
+                        company.getEmail(), company.getCurrency()), ar -> {
+                    if (ar.succeeded()) {
+                        future.complete(ar.result().iterator().next().toJson().mapTo(Company.class));
+                    } else {
+                        future.completeExceptionally(ar.cause());
+                    }
+                });
+        return future;
     }
 
     @Override

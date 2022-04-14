@@ -24,7 +24,11 @@ public class PostgresAuthDaoImpl implements AuthDao {
     @Override
     public CompletableFuture<User> register(UserCompanyDto userCompanyDto) {
         CompletableFuture<User> future = new CompletableFuture<>();
-        pgClient.preparedQuery("INSERT INTO db_user(email, password, first_name, last_name, phone, role, company_id) " + "VALUES ($1, $2, $3, $4, $5, $6, $7) " + "RETURNING id, email, first_name, last_name, phone, role").execute(Tuple.of(userCompanyDto.user.getEmail(), userCompanyDto.user.getPassword(), userCompanyDto.user.getFirst_name(), userCompanyDto.user.getLast_name(), userCompanyDto.user.getPhone(), userCompanyDto.user.getRole(), userCompanyDto.companyId), ar -> {
+        pgClient.preparedQuery("" +
+                "INSERT INTO db_user(email, password, first_name, last_name, phone, role, company_id) " +
+                "VALUES ($1, $2, $3, $4, $5, $6, $7) " +
+                "RETURNING id, email, first_name, last_name, phone, role")
+                .execute(Tuple.of(userCompanyDto.user.getEmail(), userCompanyDto.user.getPassword(), userCompanyDto.user.getFirst_name(), userCompanyDto.user.getLast_name(), userCompanyDto.user.getPhone(), userCompanyDto.user.getRole(), userCompanyDto.companyId), ar -> {
             if (ar.succeeded()) {
                 User newUser = ar.result().iterator().next().toJson().mapTo(User.class);
                 future.complete(newUser);
