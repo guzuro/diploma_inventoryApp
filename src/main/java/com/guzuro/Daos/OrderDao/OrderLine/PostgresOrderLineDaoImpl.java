@@ -41,7 +41,7 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
                                 OrderLine ol = new OrderLine();
                                 ol.setId(resultRow.getInteger("id"));
                                 ol.setLine_total(resultRow.getDouble("line_total"));
-                                ol.setQuantity(resultRow.getDouble("quantity"));
+                                ol.setQuantity(resultRow.getInteger("quantity"));
 
                                 this.productDao.getProductBySku(resultRow.getLong("product_id"))
                                         .thenAccept(product -> {
@@ -65,9 +65,9 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
         CompletableFuture<CopyOnWriteArrayList<OrderLine>> future = new CompletableFuture<>();
 
         this.pgClient.preparedQuery(
-                "SELECT db_order_line.id, db_order_line.quantity, db_order_line.line_total, db_order_line.product_id, " +
+                "SELECT db_order_line.id, db_order_line.quantity as line_quantity, db_order_line.line_total, db_order_line.product_id, " +
                         "db_product.sku, db_product.category, db_product.name, db_product.description, db_product.price_base, " +
-                        "db_product.price_sale, db_product.currency, db_product.quantity," +
+                        "db_product.price_sale, db_product.currency, db_product.quantity as product_quantity," +
                         "db_product.unit, db_product.photos, db_product.warehouse_id, db_product.company_id, db_product.sale_id, db_product.sale_value " +
                         "FROM db_order_line " +
                         "LEFT JOIN db_product " +
@@ -81,9 +81,9 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
                             ar.result().forEach(row -> {
                                 JsonObject jsonObject = row.toJson();
                                 OrderLine orderLine = new OrderLine();
-
+                                
                                 orderLine.setId(jsonObject.getInteger("id"));
-                                orderLine.setQuantity(jsonObject.getDouble("quantity"));
+                                orderLine.setQuantity(jsonObject.getInteger("line_quantity"));
                                 orderLine.setLine_total(jsonObject.getDouble("line_total"));
 
                                 Product product = new Product();
@@ -94,7 +94,7 @@ public class PostgresOrderLineDaoImpl implements OrderLineDao {
                                 product.setPrice_base(jsonObject.getDouble("price_base"));
                                 product.setPrice_sale(jsonObject.getDouble("price_sale"));
                                 product.setCurrency(jsonObject.getString("currency"));
-                                product.setQuantity(jsonObject.getDouble("quantity"));
+                                product.setQuantity(jsonObject.getDouble("product_quantity"));
                                 product.setUnit(jsonObject.getString("unit"));
                                 product.setPhotos(jsonObject.getJsonArray("photos").getList());
                                 product.setWarehouse_id(jsonObject.getInteger("warehouse_id"));

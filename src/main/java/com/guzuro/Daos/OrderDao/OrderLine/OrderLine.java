@@ -5,20 +5,20 @@ import com.guzuro.Daos.ProductDao.Product;
 public class OrderLine {
     private int id;
     private Product product;
-    private double quantity;
+    private int quantity;
     private double line_total;
 
 
     public OrderLine() {
     }
 
-    public OrderLine(Product product, double quantity, double line_total) {
+    public OrderLine(Product product, int quantity, double line_total) {
         this.product = product;
         this.quantity = quantity;
         this.line_total = line_total;
     }
 
-    public OrderLine(int id, Product product, double quantity, double line_total) {
+    public OrderLine(int id, Product product, int quantity, double line_total) {
         this.id = id;
         this.product = product;
         this.quantity = quantity;
@@ -41,11 +41,11 @@ public class OrderLine {
         this.product = product;
     }
 
-    public double getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
