@@ -109,7 +109,7 @@ export default class IncomeDoc extends Vue {
 
   get orderTotal(): number {
     if (this.order.orderLines.length) {
-      const total = this.order.orderLines.reduce((accumulator, currentValue) => accumulator + (currentValue as any).line_total, 0);
+      const total = this.order.orderLines.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue as any).line_total, 0);
       this.order.total = total;
       console.log(total, 'total');
 
