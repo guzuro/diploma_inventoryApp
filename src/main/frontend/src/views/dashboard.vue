@@ -1,10 +1,10 @@
 <template>
   <div class="dashboard">
     <a-card title="Поступления за последние 7 дней" class="income-graph">
-      <apexchart type="area" height="350" :options="incomeOptionsGraph" :series="series1" />
+      <apexchart type="area" height="350" :options="statistics.income.options" :series="statistics.income.series" />
     </a-card>
     <a-card title="Расходы за последние 7 дней" class="spend-graph mt-5">
-      <apexchart type="area" height="350" :options="spendOptionsGraph" :series="series2" />
+      <apexchart type="area" height="350" :options="statistics.spend.options" :series="statistics.spend.series" />
     </a-card>
   </div>
 </template>
@@ -13,6 +13,8 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import VueApexCharts from 'vue-apexcharts';
+import StatisticsService from '@/services/StatisticsService';
+import prepareStatistics from '@/logic/StatisticsHelper';
 
 @Component({
   components: {
@@ -20,48 +22,12 @@ import VueApexCharts from 'vue-apexcharts';
   },
 })
 export default class Dashboards extends Vue {
-  series1 = [
-    {
-      name: 'Поступления',
-      data: [14500, 11484, 2482, 9774, 5487, 35413, 25475],
-    },
-  ];
+  statistics: any = null;
 
-  series2 = [
-    {
-      name: 'Расходы',
-      data: [12479, 14774, 25874, 1452, 587, 2365, 6741],
-    },
-  ];
-
-  chartOptions = {
-    chart: {
-      height: 350,
-      type: 'area',
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      curve: 'smooth',
-    },
-    xaxis: {
-      type: 'date',
-      categories: ['2022-04-05', '2022-04-06', '2022-04-07', '2022-04-08', '2022-04-09', '2022-04-10', '2022-04-11'],
-    },
-    tooltip: {
-      x: {
-        format: 'dd/MM/yy HH:mm',
-      },
-    },
-  };
-
-  get spendOptionsGraph(): any {
-    return { ...this.chartOptions, title: { text: '' }, colors: ['red'] };
-  }
-
-  get incomeOptionsGraph(): any {
-    return { ...this.chartOptions, title: { text: '' }, colors: ['green'] };
+  created(): void {
+    StatisticsService.getStatistics({ company_id: this.$store.state.companyModule.company.id }).then((res) => {
+      this.statistics = prepareStatistics(res);
+    });
   }
 }
 </script>
