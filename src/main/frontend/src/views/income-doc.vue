@@ -1,54 +1,59 @@
 <template>
-  <div class="income-doc">
-    <field-wrapper fieldTitle="Поставшик">
-      <a-select :disabled="disabled" v-model="selectedSupplier" @change="handleChange">
-        <a-select-option v-for="(supplier, index) in suppliersOptions" :key="index" :value="supplier.value">
-          {{ supplier.label }}
-        </a-select-option>
-      </a-select>
-    </field-wrapper>
-    <div v-if="supplier.id" class="mt-2 supplier-info">
-      <h3>Данные поставщика:</h3>
-      <div class="mt-2 supplier-info__inn"><b>ИНН:</b> {{ supplier.inn }}</div>
-      <div class="mt-2 supplier-info__address"><b>Адрес: </b> {{ supplier.address }}</div>
-      <div class="mt-2 supplier-info__phone"><b>Номер телефона: </b> {{ supplier.phone }}</div>
-    </div>
-    <a-card class="order mt-5" title="Позиции к заказу">
-      <span slot="extra"> <a-button :disabled="disabled" @click="addOrderLine" shape="circle" icon="plus" /> <b class="ml-5">Итого:</b> {{ orderTotal }}</span>
-
-      <a-empty v-if="!order.orderLines.length" />
-      <div v-else class="order__lines">
-        <a-table :disabled="disabled" :columns="columns" :data-source="order.orderLines">
-          <div slot="product-select" slot-scope="record">
-            <a-select :disabled="disabled" v-model="record.product.sku" class="w-full" @change="(value) => handleProductChange(value, record.id)">
-              <a-select-option v-for="(product, index) in products" :key="index" :value="product.sku">
-                {{ product.name }}
-              </a-select-option>
-            </a-select>
-          </div>
-          <span slot="quantity-select" slot-scope="record">
-            <a-input-number :disabled="disabled" v-model="record.quantity" :min="1" />
-          </span>
-          <span slot="price_base" slot-scope="record">
-            <div :class="{ 'line-through': record.product.price_sale > 0 }" class="price_base" v-if="record.product.price_base">{{ record.product.price_base }}</div>
-          </span>
-          <span slot="price_sale" slot-scope="record">
-            <div class="price_sale" v-if="record.product.price_sale && record.product.price_sale > 0">{{ record.product.price_sale }}</div>
-          </span>
-          <span slot="total" slot-scope="record">
-            <a-input-number :disabled="disabled" :value="lineTotal(record, record.id)" :min="1" />
-          </span>
-          <span slot="action" slot-scope="text, record">
-            <a-tooltip><template #title>Удалить</template><a-button type="danger" :disabled="disabled" icon="delete" @click="deleteRow(record.id)"></a-button></a-tooltip>
-          </span>
-        </a-table>
+  <a-spin :spinning="spinning">
+    <div class="income-doc">
+      <field-wrapper fieldTitle="Поставшик">
+        <a-select :disabled="disabled" v-model="selectedSupplier" @change="handleChange">
+          <a-select-option v-for="(supplier, index) in suppliersOptions" :key="index" :value="supplier.value">
+            {{ supplier.label }}
+          </a-select-option>
+        </a-select>
+      </field-wrapper>
+      <div v-if="supplier.id" class="mt-2 supplier-info">
+        <h3>Данные поставщика:</h3>
+        <div class="mt-2 supplier-info__inn"><b>ИНН:</b> {{ supplier.inn }}</div>
+        <div class="mt-2 supplier-info__address"><b>Адрес: </b> {{ supplier.address }}</div>
+        <div class="mt-2 supplier-info__phone"><b>Номер телефона: </b> {{ supplier.phone }}</div>
       </div>
-    </a-card>
-    <div class="flex mt-5">
-      <a-button v-if="$route.params.actionType !== 'watch'" @click="saveOrder">Сохранить</a-button>
-      <a-button class="ml-2" @click="$router.back()">Назад</a-button>
+      <a-card class="order mt-5" title="Позиции к заказу">
+        <span slot="extra"> <a-button :disabled="disabled" @click="addOrderLine" shape="circle" icon="plus" /> <b class="ml-5">Итого:</b> {{ orderTotal }}</span>
+
+        <a-empty v-if="!order.orderLines.length" />
+        <div v-else class="order__lines">
+          <a-table :disabled="disabled" :columns="columns" :data-source="order.orderLines">
+            <div slot="product-select" slot-scope="record">
+              <a-select :disabled="disabled" v-model="record.product.sku" class="w-full" @change="(value) => handleProductChange(value, record.id)">
+                <a-select-option v-for="(product, index) in products" :key="index" :value="product.sku">
+                  {{ product.name }}
+                </a-select-option>
+              </a-select>
+            </div>
+            <span slot="quantity-select" slot-scope="record">
+              <a-input-number :disabled="disabled" v-model="record.quantity" :min="1" />
+            </span>
+            <span slot="price_base" slot-scope="record">
+              <div :class="{ 'line-through': record.product.price_sale > 0 }" class="price_base" v-if="record.product.price_base">{{ record.product.price_base }}</div>
+            </span>
+            <span slot="price_sale" slot-scope="record">
+              <div class="price_sale" v-if="record.product.price_sale && record.product.price_sale > 0">{{ record.product.price_sale }}</div>
+            </span>
+            <span slot="total" slot-scope="record">
+              <a-input-number disabled :value="lineTotal(record, record.id)" :min="1" />
+            </span>
+            <span slot="action" slot-scope="text, record">
+              <a-tooltip>
+                <template #title>Удалить</template>
+                <a-button type="danger" :disabled="disabled" icon="delete" @click="deleteRow(record.id)" />
+              </a-tooltip>
+            </span>
+          </a-table>
+        </div>
+      </a-card>
+      <div class="flex mt-5">
+        <a-button v-if="$route.params.actionType !== 'watch'" @click="saveOrder">Сохранить</a-button>
+        <a-button class="ml-2" @click="$router.back()">Назад</a-button>
+      </div>
     </div>
-  </div>
+  </a-spin>
 </template>
 
 <script lang="ts">
@@ -88,6 +93,8 @@ export default class IncomeDoc extends Vue {
     orderLines: [],
   };
 
+  spinning = false;
+
   doc: any = {
     created_at: moment().format('YYYY-MM-DD'),
   };
@@ -102,20 +109,16 @@ export default class IncomeDoc extends Vue {
     this.order.orderLines.push({
       id: uniqueId(),
       product: {},
-      quantity: 0,
+      quantity: 1,
       line_total: 0,
     });
   }
 
   get orderTotal(): number {
-    if (this.order.orderLines.length) {
-      const total = this.order.orderLines.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue as any).line_total, 0);
-      this.order.total = total;
-      console.log(total, 'total');
+    const total = this.order.orderLines.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue as any).line_total, 0);
+    this.order.total = total;
 
-      return total;
-    }
-    return 0.0;
+    return total;
   }
 
   deleteRow(rowIndex: string): void {
@@ -129,6 +132,7 @@ export default class IncomeDoc extends Vue {
     if (typeof line.product.price_sale === 'number' || typeof line.product.price_base === 'number') {
       if (line.product.price_sale > 0) {
         total = line.product.price_sale * line.quantity;
+        console.log(line.product.price_sale, line.quantity);
       } else {
         total = line.product.price_base * line.quantity;
       }
@@ -150,6 +154,7 @@ export default class IncomeDoc extends Vue {
 
   handleProductChange(value: number, idx: number): void {
     const product = this.products.find((p) => p.sku === value);
+
     this.order.orderLines = this.order.orderLines.map((l: any) => {
       if (l.id === idx) {
         // eslint-disable-next-line no-param-reassign
@@ -192,31 +197,37 @@ export default class IncomeDoc extends Vue {
     }));
   }
 
+  loadIncomeDocument(): void {
+    IncomeDocumentService.getIncomeDocument({ incomeDocId: Number.parseInt(this.$route.query.docId.toString(), 10) })
+      .then((res) => {
+        this.order = res.order;
+        this.order.total = res.order.total;
+        this.supplier = res.supplier;
+        this.doc.created_at = res.created_at;
+        this.selectedSupplier = res.supplier.id;
+      })
+      .finally(() => {
+        this.spinning = false;
+      });
+  }
+
   disabled = false;
 
   created(): void {
+    this.spinning = true;
     ProductApiService.getProducts(this.$store.state.companyModule.company.id).then((res) => {
       this.products = res;
     });
 
     if (this.$route.params.actionType === 'watch') {
       this.disabled = true;
-      IncomeDocumentService.getIncomeDocument({ incomeDocId: Number.parseInt(this.$route.query.docId.toString(), 10) }).then((res) => {
-        this.order = res.order;
-        this.order.total = res.order.total;
-        this.supplier = res.supplier;
-        this.doc.created_at = res.created_at;
-        this.selectedSupplier = res.supplier.id;
-      });
+      this.loadIncomeDocument();
     }
     if (this.$route.params.actionType === 'edit') {
-      IncomeDocumentService.getIncomeDocument({ incomeDocId: Number.parseInt(this.$route.query.docId.toString(), 10) }).then((res) => {
-        this.order = res.order;
-        this.supplier = res.supplier;
-        this.doc.created_at = res.created_at;
-        this.selectedSupplier = res.supplier.id;
-        this.supplier = res.supplier;
-      });
+      this.loadIncomeDocument();
+    }
+    if (this.$route.params.actionType === 'new') {
+      this.spinning = false;
     }
   }
 }

@@ -15,7 +15,7 @@
         ></a-tooltip>
         <a-tooltip
           ><template #title>Редактировать</template
-          ><a-icon v-if="!record.is_payed" :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editIncomeDoc(record.id)"></a-icon
+          ><a-icon v-if="!record.is_payed"  :style="{ fontSize: '19px' }" class="ml-2 cursor-pointer hover:text-purple-900" type="edit" @click="editIncomeDoc(record.id)"></a-icon
         ></a-tooltip>
         <a-tooltip
           ><template #title>Оплатить</template>
