@@ -66,7 +66,7 @@ export default class IncomeDocs extends Vue {
       title: 'Оплатить приходную номенклатуру?',
       content: 'Вы Действительно хотите Оплатить приходную номенклатуру?',
       async onOk() {
-        await IncomeDocumentService.paytIncomeDocument({ incomeDocId: docId });
+        await IncomeDocumentService.paytIncomeDocument({ incomeDocId: docId, company_id: self.$store.state.companyModule.company.id });
         self.$notification.success({
           message: 'Оплата прошла успешно',
           description: 'Оплата прошла успешно, единицы товара обновлены в соответствии с накладной.',

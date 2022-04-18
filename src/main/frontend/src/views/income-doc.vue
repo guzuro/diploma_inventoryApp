@@ -132,7 +132,6 @@ export default class IncomeDoc extends Vue {
     if (typeof line.product.price_sale === 'number' || typeof line.product.price_base === 'number') {
       if (line.product.price_sale > 0) {
         total = line.product.price_sale * line.quantity;
-        console.log(line.product.price_sale, line.quantity);
       } else {
         total = line.product.price_base * line.quantity;
       }
