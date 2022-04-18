@@ -83,8 +83,9 @@ public class IncomeDocHandler {
         HttpServerResponse response = routingContext.response();
 
         int incomeDocId = routingContext.getBodyAsJson().getInteger("incomeDocId");
+        int company_id = routingContext.getBodyAsJson().getInteger("company_id");
 
-        this.incomeDocDao.payIncomeDoc(incomeDocId).thenAccept(aBoolean -> {
+        this.incomeDocDao.payIncomeDoc(incomeDocId, company_id).thenAccept(aBoolean -> {
             response.putHeader("content-type", "application/json; charset=UTF-8")
                     .setStatusCode(200)
                     .end();

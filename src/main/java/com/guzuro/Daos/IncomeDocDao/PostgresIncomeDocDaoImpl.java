@@ -6,6 +6,9 @@ import com.guzuro.Daos.OrderDao.OrderLine.OrderLine;
 import com.guzuro.Daos.OrderDao.PostgresOrderDaoImpl;
 import com.guzuro.Daos.ProductDao.PostgresProductDaoImpl;
 import com.guzuro.Daos.ProductDao.ProductDao;
+import com.guzuro.Daos.StatisticsDao.PostgresStatisticsDao;
+import com.guzuro.Daos.StatisticsDao.Statistics;
+import com.guzuro.Daos.StatisticsDao.StatisticsDao;
 import com.guzuro.Daos.SupplierDao.PostgresSupplierDaoImpl;
 import com.guzuro.Daos.SupplierDao.SupplierDao;
 import com.guzuro.Dto.IncomeDocumentDto;
@@ -14,6 +17,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
+import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -23,12 +27,14 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     OrderDao orderDao;
     SupplierDao supplierDao;
     ProductDao productDao;
+    StatisticsDao statisticsDao;
 
     public PostgresIncomeDocDaoImpl(Vertx vertx) {
         pgClient = PostgresDAOFactory.createConnection(vertx);
         this.orderDao = new PostgresOrderDaoImpl(vertx);
         this.supplierDao = new PostgresSupplierDaoImpl(vertx);
         this.productDao = new PostgresProductDaoImpl(vertx);
+        this.statisticsDao = new PostgresStatisticsDao(vertx);
     }
 
     @Override
@@ -38,7 +44,8 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                 .thenAccept(order -> {
                     this.pgClient.preparedQuery("" +
                             "INSERT INTO db_income_document(order_id, company_id, supplier_id, created_at) " +
-                            "VALUES ($1, $2, $3, $4) RETURNING created_at, id;")
+                            "VALUES ($1, $2, $3, $4) " +
+                            "RETURNING created_at, id;")
                             .execute(Tuple.of(order.getOrder_id(), companyId,
                                     incomeDoc.getSupplier().getId(), incomeDoc.getCreated_at()),
                                     ar -> {
@@ -72,7 +79,8 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                 "ON db_order.order_id = db_income_document.order_id " +
                 "LEFT JOIN db_supplier " +
                 "ON db_supplier.id = db_income_document.supplier_id " +
-                "WHERE db_income_document.company_id = $1")
+                "WHERE db_income_document.company_id = $1" +
+                "ORDER BY db_income_document.id DESC;")
                 .execute(Tuple.of(company_id),
                         ar -> {
                             if (ar.succeeded()) {
@@ -133,7 +141,7 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
     }
 
     @Override
-    public CompletableFuture<Boolean> payIncomeDoc(int incomeDocId) {
+    public CompletableFuture<Boolean> payIncomeDoc(int incomeDocId, int company_id) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         Boolean is_payed = true;
         this.pgClient.preparedQuery("" +
@@ -146,6 +154,12 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                     if (ar.succeeded()) {
                         this.getIncomeDoc(incomeDocId)
                                 .thenAccept(incomeDoc -> {
+
+                                    Statistics statRecord = new Statistics();
+
+                                    statRecord.setSpend_sum(incomeDoc.getOrder().getTotal());
+                                    statRecord.setDate(LocalDate.now());
+
                                     CopyOnWriteArrayList<OrderLine> lines = incomeDoc.getOrder().getOrderLines();
                                     CopyOnWriteArrayList<CompletableFuture<Boolean>> list = new CopyOnWriteArrayList<>();
 
@@ -154,7 +168,15 @@ public class PostgresIncomeDocDaoImpl implements IncomeDocDao {
                                     });
 
                                     CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]))
-                                            .thenAccept(aVoid -> future.complete(true))
+                                            .thenAccept(aVoid -> {
+                                                this.statisticsDao.addSpendRecord(statRecord, company_id)
+                                                        .thenAccept(aBoolean -> {
+                                                            future.complete(true);
+                                                        }).exceptionally(throwable -> {
+                                                    future.completeExceptionally(throwable);
+                                                    return null;
+                                                });
+                                            })
                                             .exceptionally(throwable -> {
                                                 future.completeExceptionally(throwable);
                                                 return null;
