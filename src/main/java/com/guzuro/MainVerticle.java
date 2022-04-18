@@ -107,6 +107,8 @@ public class MainVerticle extends AbstractVerticle {
 
         router.mountSubRouter("/incomedoc", new IncomeDocRoutes(vertx).setRoutes(vertx));
 
+        router.mountSubRouter("/statistics", new StatisticsRoutes(vertx).setRoutes());
+
         router.get("/").handler(routingContext -> {
             routingContext.response()
                     .putHeader("content-type", "text/html")
