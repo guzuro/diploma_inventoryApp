@@ -45,8 +45,6 @@ export default function prepareStatistics(data: any): any {
     values.push(0);
   }
 
-  console.log(incomeOptionsGraph(dateTicks));
-
   const resObj = {
     income: {
       series: [{ name: 'приход', data: cloneDeep(values) }],

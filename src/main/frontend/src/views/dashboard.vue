@@ -1,12 +1,14 @@
 <template>
-  <div class="dashboard">
-    <a-card title="Поступления за последние 7 дней" class="income-graph">
-      <apexchart type="area" height="350" :options="statistics.income.options" :series="statistics.income.series" />
-    </a-card>
-    <a-card title="Расходы за последние 7 дней" class="spend-graph mt-5">
-      <apexchart type="area" height="350" :options="statistics.spend.options" :series="statistics.spend.series" />
-    </a-card>
-  </div>
+  <a-spin :spinning="loading">
+    <div v-if="statistics" class="dashboard">
+      <a-card title="Поступления за последние 7 дней" class="income-graph">
+        <apexchart type="area" height="350" :options="statistics.income.options" :series="statistics.income.series" />
+      </a-card>
+      <a-card title="Расходы за последние 7 дней" class="spend-graph mt-5">
+        <apexchart type="area" height="350" :options="statistics.spend.options" :series="statistics.spend.series" />
+      </a-card>
+    </div>
+  </a-spin>
 </template>
 
 <script lang="ts">
@@ -24,10 +26,18 @@ import prepareStatistics from '@/logic/StatisticsHelper';
 export default class Dashboards extends Vue {
   statistics: any = null;
 
+  loading = false;
+
   created(): void {
-    StatisticsService.getStatistics({ company_id: this.$store.state.companyModule.company.id }).then((res) => {
-      this.statistics = prepareStatistics(res);
-    });
+    this.loading = true;
+    StatisticsService.getStatistics({ company_id: this.$store.state.companyModule.company.id })
+      .then((res) => {
+        this.statistics = prepareStatistics(res);
+        this.loading = false;
+      })
+      .finally(() => {
+        this.loading = false;
+      });
   }
 }
 </script>

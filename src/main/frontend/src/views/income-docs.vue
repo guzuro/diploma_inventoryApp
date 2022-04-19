@@ -1,6 +1,6 @@
 <template>
   <div class="income-docs">
-    <div class="mb-5 flex justify-between">
+    <div class="mb-5 flex flex-col md:flex-row justify-between">
       <h1>Все товары</h1>
       <a-button @click="onAddButtonClick"> Сформировать накладную </a-button>
     </div>

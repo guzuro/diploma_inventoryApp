@@ -233,8 +233,9 @@ export default class ProductForm extends Vue {
 
   handleQuantityAvailabilityChange(value: Event): void {
     if ((value.target as HTMLInputElement).checked) {
-      this.productCopy.quantity = 0;
-    } else {
+      this.productCopy.quantity = 1;
+    }
+    if (!(value.target as HTMLInputElement).checked) {
       this.productCopy.quantity = null;
     }
   }
