@@ -21,7 +21,6 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,8 +83,6 @@ public class MainVerticle extends AbstractVerticle {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-
-
         });
 
         router.route("/api");

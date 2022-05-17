@@ -1,6 +1,6 @@
 <template>
   <a-layout id="components-layout-demo-responsive">
-    <a-layout-sider breakpoint="lg" collapsed-width="0" @collapse="onCollapse" @breakpoint="onBreakpoint">
+    <a-layout-sider breakpoint="lg" collapsed-width="0">
       <div class="logo" />
       <a-menu theme="dark" mode="inline" :default-selected-keys="activeKey" :style="{ lineHeight: '64px' }">
         <a-menu-item key="Dashboard" @click="goto('Dashboard')"> <a-icon type="appstore" />Dashboard </a-menu-item>

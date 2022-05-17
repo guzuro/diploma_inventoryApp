@@ -1,17 +1,12 @@
 package com.guzuro.Daos.StatisticsDao;
 
-import com.guzuro.Daos.Config.Category.Category;
 import com.guzuro.Daos.DaoFactory.PostgresDAOFactory;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PostgresStatisticsDao implements StatisticsDao {
     SqlClient pgClient;

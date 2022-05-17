@@ -9,7 +9,7 @@
         class="mb-5"
         >Добавить роль</a-button
       >
-      <div v-if="employeeRolesList && employeeRolesList.length" class="flex flex-wrap">
+      <div v-if="employeeRolesList && employeeRolesList.length" class="flex">
         <div v-for="(employeeRole, index) in employeeRolesList" :key="index" class="mb-2 md:mb-0 md:mr-2 w-full md:w-1/3">
           <a-card hoverable>
             <template slot="actions" class="ant-card-actions">

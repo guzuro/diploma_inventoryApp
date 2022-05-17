@@ -23,7 +23,7 @@ public class PostgresCompanyDaoImpl implements CompanyDao {
                 "VALUES ($1, $2, $3, $4, $5, $6) " +
                 "RETURNING id, name, inn, phone, email, country, currency;")
                 .execute(Tuple.of(company.getName(), company.getInn(), company.getPhone(),
-                        company.getEmail(), company.getCurrency()), ar -> {
+                        company.getEmail(), company.getCountry(), company.getCurrency()), ar -> {
                     if (ar.succeeded()) {
                         future.complete(ar.result().iterator().next().toJson().mapTo(Company.class));
                     } else {

@@ -55,7 +55,6 @@ public class ProductsHandler {
                     .setStatusCode(200)
                     .putHeader("content-type", "application/json; charset=UTF-8")
                     .end(JsonObject.mapFrom(resProduct).encodePrettily());
-
         }).exceptionally(throwable -> {
             response.putHeader("content-type", "application/json; charset=UTF-8")
                     .setStatusCode(500).end(throwable.getMessage());

@@ -87,6 +87,7 @@
           </div>
         </div>
       </div>
+      Background remove by API <a style="color: orange" href="https://benzin.io">Benzin.io</a>
     </div>
     <a-empty v-else class="mt-2"><span slot="description">Изображения пока не загружены...</span></a-empty>
     <a-drawer title="Дополнительные поля" placement="right" :closable="true" :visible="visible" @close="visible = false">

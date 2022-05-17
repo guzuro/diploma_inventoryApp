@@ -22,6 +22,7 @@ import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import { User } from '@/types/User';
 import AuthService from '@/services/AuthService';
 import MainUserInfoForm from '../MainUserInfoForm.vue';
+import { errorNotification, successNotification } from '@/services/NotificationService';
 
 @Component({
   components: {
@@ -41,8 +42,25 @@ export default class RegistrationForm extends Vue {
 
   company = '';
 
+  resetForm():void {
+    this.user = {
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
+    };
+    this.company = '';
+  }
+
   async register(): Promise<void> {
-    const res = await AuthService.register({ user: this.user, company: this.company });
+    try {
+      await AuthService.register({ user: this.user, company: this.company });
+      this.resetForm();
+      successNotification('Пользователь зарегистрирован');
+    } catch (error:any) {
+      errorNotification(error);
+    }
   }
 }
 </script>
