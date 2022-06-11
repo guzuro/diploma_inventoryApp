@@ -86,6 +86,37 @@ const routes: Array<RouteConfig> = [
         path: '/income-doc/:actionType',
         name: 'IncomeDoc',
       },
+      {
+        component: () => import('../views/sale-docs.vue'),
+        path: '/sale-docs',
+        name: 'SaleDocs',
+      },
+      {
+        component: () => import('../views/sale-doc.vue'),
+        path: '/sale-doc/:actionType',
+        name: 'SaleDoc',
+      },
+    ],
+  },
+  {
+    component: () => import('../layouts/App.vue'),
+    path: '',
+    children: [
+      {
+        component: () => import('../views/catalog/catalog.vue'),
+        path: '/catalog/:companyId/products',
+        name: 'Catalog',
+      },
+      {
+        component: () => import('../views/catalog/product.vue'),
+        path: '/catalog/:companyId/product/:id',
+        name: 'CatalogProduct',
+      },
+      {
+        component: () => import('../views/catalog/cart.vue'),
+        path: '/catalog/:companyId/cart',
+        name: 'CatalogCart',
+      },
     ],
   },
 ];

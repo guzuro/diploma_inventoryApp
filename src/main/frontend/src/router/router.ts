@@ -14,7 +14,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && to.name !== 'Main') {
+  if (to.name && to.name !== 'Login' && to.name !== 'Main' && !['Catalog', 'CatalogProduct', 'CatalogCart'].includes(to.name)) {
     if ((store.state as any).userModule.userData === null) {
       AuthService.checkLogin()
         .then(() => {

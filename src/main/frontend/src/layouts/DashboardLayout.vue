@@ -12,6 +12,12 @@
             <a-menu-item key="setting:2" @click="goto('IncomeDocs')"> Приходные накладные </a-menu-item>
           </a-menu-item-group>
         </a-sub-menu>
+         <a-sub-menu>
+          <span slot="title" class="submenu-title-wrapper"><a-icon type="setting" />Продажи</span>
+          <a-menu-item-group>
+            <a-menu-item key="setting:3" @click="goto('SaleDocs')"> Расходная накладная </a-menu-item>
+          </a-menu-item-group>
+        </a-sub-menu>
       </a-menu>
     </a-layout-sider>
     <a-layout>
